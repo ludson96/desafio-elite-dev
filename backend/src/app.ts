@@ -1,0 +1,14 @@
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+
+export const app = express();
+
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+
+// Rota de verificação de saúde da API
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});

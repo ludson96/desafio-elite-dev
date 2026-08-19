@@ -18,7 +18,7 @@ async function main() {
   const organizer = await prisma.user.create({
     data: {
       name: "Carlos Organizador",
-      email: "organizador@elite.com",
+      email: "organizador@verzel.com",
       passwordHash,
       role: "ORGANIZER",
     },
@@ -28,7 +28,7 @@ async function main() {
   const client1 = await prisma.user.create({
     data: {
       name: "Ana Cliente",
-      email: "cliente1@elite.com",
+      email: "cliente1@verzel.com",
       passwordHash,
       role: "CLIENT",
     },
@@ -37,7 +37,7 @@ async function main() {
   const client2 = await prisma.user.create({
     data: {
       name: "Bruno Cliente",
-      email: "cliente2@elite.com",
+      email: "cliente2@verzel.com",
       passwordHash,
       role: "CLIENT",
     },
@@ -47,7 +47,7 @@ async function main() {
   const gatekeeper = await prisma.user.create({
     data: {
       name: "Roberto Portaria",
-      email: "portaria@elite.com",
+      email: "portaria@verzel.com",
       passwordHash,
       role: "GATEKEEPER",
     },
