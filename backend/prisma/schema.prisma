@@ -1,13 +1,157 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ORGANIZER
+  CLIENT
+  GATEKEEPER
+}
+
+enum EventType {
+  SHOW
+  MOVIE
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELED
+  FINISHED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+  REFUSED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REFUSED
+}
+
+enum TicketStatus {
+  ACTIVE
+  USED
+  CANCELED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+
+  events       Event[]
+  reservations Reservation[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Event {
+  id              String      @id @default(uuid())
+  title           String
+  description     String?
+  type            EventType
+
+  date            DateTime
+  location        String
+
+  capacity        Int
+  availableTickets Int
+
+  price           Decimal     @db.Decimal(10, 2)
+
+  status          EventStatus @default(DRAFT)
+
+  organizerId     String
+  organizer       User        @relation(fields: [organizerId], references: [id])
+
+  reservations    Reservation[]
+  tickets         Ticket[]
+
+  externalEventId String?
+  externalSource  String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizerId])
+  @@index([status])
+  @@index([date])
+  @@map("events")
+}
+
+model Reservation {
+  id            String            @id @default(uuid())
+
+  quantity      Int
+  totalAmount   Decimal           @db.Decimal(10, 2)
+
+  status        ReservationStatus @default(PENDING)
+
+  clientId      String
+  client        User              @relation(fields: [clientId], references: [id])
+
+  eventId       String
+  event         Event             @relation(fields: [eventId], references: [id])
+
+  payment       Payment?
+  tickets       Ticket[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([eventId])
+  @@map("reservations")
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+
+  status        PaymentStatus @default(PENDING)
+
+  amount        Decimal       @db.Decimal(10, 2)
+
+  reservationId String        @unique
+  reservation   Reservation   @relation(fields: [reservationId], references: [id])
+
+  createdAt     DateTime      @default(now())
+
+  @@map("payments")
+}
+
+model Ticket {
+  id            String       @id @default(uuid())
+
+  code          String       @unique
+  status        TicketStatus @default(ACTIVE)
+
+  eventId       String
+  event         Event        @relation(fields: [eventId], references: [id])
+
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  usedAt       DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([reservationId])
+  @@map("tickets")
 }
