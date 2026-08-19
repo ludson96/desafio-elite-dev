@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "../config/prisma.js";
 import type { User, UserRole } from "../generated/prisma/client.js";
 
 export interface CreateUserData {
