@@ -61,32 +61,34 @@ model User {
 }
 
 model Event {
-  id              String      @id @default(uuid())
-  title           String
-  description     String?
-  type            EventType
+  id               String      @id @default(uuid())
+  title            String
+  description      String?
+  type             EventType
+  imageUrl         String?
+  category         String?
 
-  date            DateTime
-  location        String
+  date             DateTime
+  location         String
 
-  capacity        Int
+  capacity         Int
   availableTickets Int
 
-  price           Decimal     @db.Decimal(10, 2)
+  price            Decimal     @db.Decimal(10, 2)
 
-  status          EventStatus @default(DRAFT)
+  status           EventStatus @default(DRAFT)
 
-  organizerId     String
-  organizer       User        @relation(fields: [organizerId], references: [id])
+  organizerId      String
+  organizer        User        @relation(fields: [organizerId], references: [id])
 
-  reservations    Reservation[]
-  tickets         Ticket[]
+  reservations     Reservation[]
+  tickets          Ticket[]
 
-  externalEventId String?
-  externalSource  String?
+  externalEventId  String?
+  externalSource   String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
   @@index([organizerId])
   @@index([status])
@@ -111,8 +113,8 @@ model Reservation {
   payment       Payment?
   tickets       Ticket[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
   @@index([clientId])
   @@index([eventId])
@@ -138,20 +140,23 @@ model Ticket {
   id            String       @id @default(uuid())
 
   code          String       @unique
+  shareToken    String       @unique @default(uuid())
+  qrSignature   String?      // Assinatura HMAC criptográfica anti-fraude
   status        TicketStatus @default(ACTIVE)
 
   eventId       String
   event         Event        @relation(fields: [eventId], references: [id])
 
   reservationId String
-  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservation   Reservation  @relation(fields: [reservationId], references: [id])
 
-  usedAt       DateTime?
+  usedAt        DateTime?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@index([eventId])
   @@index([reservationId])
+  @@index([shareToken])
   @@map("tickets")
 }
