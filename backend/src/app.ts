@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import { authRoutes } from "./routes/auth.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 export const app = express();
@@ -13,6 +14,9 @@ app.use(express.json());
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+// Rotas da Aplicação
+app.use("/api/auth", authRoutes);
 
 // Middleware Global de Tratamento de Erros (sempre após as rotas)
 app.use(errorHandler);

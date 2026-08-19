@@ -5,10 +5,10 @@ import { AppError } from "../utils/AppError.js";
 import type { RegisterInput, LoginInput } from "../schemas/auth.schema.js";
 
 export class AuthService {
-  constructor(private userRepo: UserRepository = userRepository) {}
+  constructor(private userRepository: UserRepository = userRepository) {}
 
   async register(data: RegisterInput) {
-    const userExists = await this.userRepo.findByEmail(data.email);
+    const userExists = await this.userRepository.findByEmail(data.email);
 
     if (userExists) {
       throw new AppError("E-mail já cadastrado na plataforma", 409);
@@ -16,7 +16,7 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(data.password, 10);
 
-    const user = await this.userRepo.create({
+    const user = await this.userRepository.create({
       name: data.name,
       email: data.email,
       passwordHash,
@@ -44,7 +44,7 @@ export class AuthService {
   }
 
   async login(data: LoginInput) {
-    const user = await this.userRepo.findByEmail(data.email);
+    const user = await this.userRepository.findByEmail(data.email);
 
     if (!user) {
       throw new AppError("E-mail ou senha incorretos", 401);
@@ -77,7 +77,7 @@ export class AuthService {
   }
 
   async getProfile(userId: string) {
-    const user = await this.userRepo.findById(userId);
+    const user = await this.userRepository.findById(userId);
 
     if (!user) {
       throw new AppError("Usuário não encontrado", 404);
