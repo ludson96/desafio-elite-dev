@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { authRoutes } from "./routes/auth.routes.js";
 import { catalogRoutes } from "./routes/catalog.routes.js";
 import { eventRoutes } from "./routes/event.routes.js";
+import { reservationRoutes } from "./routes/reservation.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 export const app = express();
@@ -21,6 +22,7 @@ app.get("/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/catalog", catalogRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/reservations", reservationRoutes);
 
 // Middleware Global de Tratamento de Erros (sempre após as rotas)
 app.use(errorHandler);
