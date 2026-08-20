@@ -15,7 +15,14 @@ export function generateTicketSignature(ticketCode: string, eventId: string): st
  */
 export function verifyTicketSignature(ticketCode: string, eventId: string, signature: string): boolean {
   const expectedSignature = generateTicketSignature(ticketCode, eventId);
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
+  const sigBuffer = Buffer.from(signature, "hex");
+  const expectedBuffer = Buffer.from(expectedSignature, "hex");
+
+  if (sigBuffer.length !== expectedBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(sigBuffer, expectedBuffer);
 }
 
 /**

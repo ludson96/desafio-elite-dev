@@ -5,7 +5,11 @@ import { AppError } from "../utils/AppError.js";
 import type { RegisterInput, LoginInput } from "../schemas/auth.schema.js";
 
 export class AuthService {
-  constructor(private userRepository: UserRepository = userRepository) {}
+  private userRepository: UserRepository;
+
+  constructor(userRepo?: UserRepository) {
+    this.userRepository = userRepo || userRepository;
+  }
 
   async register(data: RegisterInput) {
     const userExists = await this.userRepository.findByEmail(data.email);
