@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { authRoutes } from "./routes/auth.routes.js";
+import { catalogRoutes } from "./routes/catalog.routes.js";
+import { eventRoutes } from "./routes/event.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 export const app = express();
@@ -17,6 +19,8 @@ app.get("/health", (_req, res) => {
 
 // Rotas da Aplicação
 app.use("/api/auth", authRoutes);
+app.use("/api/catalog", catalogRoutes);
+app.use("/api/events", eventRoutes);
 
 // Middleware Global de Tratamento de Erros (sempre após as rotas)
 app.use(errorHandler);

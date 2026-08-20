@@ -8,13 +8,10 @@ import type { SearchCatalogQuery } from "../schemas/catalog.schema.js";
 export class CatalogController {
   constructor(private catalogService: ExternalCatalogService = externalCatalogService) {}
 
-  search = async (
-    req: Request<Record<string, never>, unknown, unknown, SearchCatalogQuery>,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  search = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const items = await this.catalogService.searchCatalog(req.query);
+      const queryParams = req.query as unknown as SearchCatalogQuery;
+      const items = await this.catalogService.searchCatalog(queryParams);
 
       res.status(200).json({
         status: "success",
