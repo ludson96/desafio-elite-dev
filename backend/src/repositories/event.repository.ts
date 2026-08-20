@@ -19,8 +19,10 @@ export class EventRepository {
   }
 
   async findMany(query: ListEventsQuery) {
-    const { search, type, status, page, limit } = query;
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 10;
     const skip = (page - 1) * limit;
+    const { search, type, status } = query;
 
     const where: Prisma.EventWhereInput = {};
 

@@ -15,10 +15,12 @@ export function validate(schemas: ValidationSchemas) {
         req.body = await schemas.body.parseAsync(req.body);
       }
       if (schemas.query) {
-        req.query = (await schemas.query.parseAsync(req.query)) as any;
+        const parsedQuery = await schemas.query.parseAsync(req.query);
+        Object.assign(req.query, parsedQuery);
       }
       if (schemas.params) {
-        req.params = (await schemas.params.parseAsync(req.params)) as any;
+        const parsedParams = await schemas.params.parseAsync(req.params);
+        Object.assign(req.params, parsedParams);
       }
       next();
     } catch (error) {
