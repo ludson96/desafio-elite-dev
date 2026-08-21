@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { TicketService } from "../src/services/ticket.service.js";
 import type { TicketRepository } from "../src/repositories/ticket.repository.js";
-import { generateTicketSignature } from "../utils/qrSecurity.js";
+import { generateTicketSignature } from "../src/utils/qrSecurity.js";
 
 describe("TicketService - Validação de Portaria (Unit Tests)", () => {
   let ticketService: TicketService;

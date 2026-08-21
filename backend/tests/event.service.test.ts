@@ -33,11 +33,10 @@ describe("EventService (Unit Tests)", () => {
           type: "SHOW",
           price: 150,
           capacity: 100,
-          status: "PUBLISHED",
         },
         "org-1"
       )
-    ).rejects.toThrow("A data do evento não pode ser no passado");
+    ).rejects.toThrow("A data do evento deve ser no futuro");
   });
 
   it("deve rejeitar edição de evento pertencente a outro organizador", async () => {
@@ -49,10 +48,10 @@ describe("EventService (Unit Tests)", () => {
 
     await expect(
       eventService.updateEvent("event-1", { title: "Novo Título" }, "org-hacker-tentativa")
-    ).rejects.toThrow("Você só pode atualizar seus próprios eventos");
+    ).rejects.toThrow("Você não tem permissão para alterar este evento");
   });
 
-  it("deve calcular tickets disponíveis igual à capacidade na criação", async () => {
+  it("deve repassar os dados de criação com o organizerId para o repositório", async () => {
     const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Daqui a 7 dias
 
     vi.mocked(mockEventRepo.create).mockResolvedValue({
@@ -73,17 +72,21 @@ describe("EventService (Unit Tests)", () => {
         type: "SHOW",
         price: 200,
         capacity: 500,
-        status: "PUBLISHED",
       },
       "org-1"
     );
 
     expect(result.capacity).toBe(500);
-    expect(mockEventRepo.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        availableTickets: 500,
-        organizerId: "org-1",
-      })
-    );
+    expect(mockEventRepo.create).toHaveBeenCalledWith({
+      title: "Show Futuro",
+      description: "Desc",
+      date: futureDate,
+      location: "Allianz Parque",
+      category: "Show",
+      type: "SHOW",
+      price: 200,
+      capacity: 500,
+      organizerId: "org-1",
+    });
   });
 });

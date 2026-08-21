@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ReservationService } from "../src/services/reservation.service.js";
-import { AppError } from "../src/utils/AppError.js";
 import type { ReservationRepository } from "../src/repositories/reservation.repository.js";
 import type { EventRepository } from "../src/repositories/event.repository.js";
 
@@ -91,7 +90,8 @@ describe("ReservationService (Unit Tests)", () => {
       "client-1"
     );
 
-    expect(result.status).toBe("CONFIRMED");
+    expect(result.reservation.status).toBe("CONFIRMED");
+    expect(result.paymentOutcome.status).toBe("APPROVED");
     expect(mockReservationRepo.createReservationTransaction).toHaveBeenCalledWith(
       expect.objectContaining({
         totalAmount: 300,
