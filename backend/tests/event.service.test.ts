@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { EventService } from "../src/services/event.service.js";
-import { AppError } from "../src/utils/AppError.js";
 import type { EventRepository } from "../src/repositories/event.repository.js";
 
 describe("EventService (Unit Tests)", () => {
