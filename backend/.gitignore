@@ -15,3 +15,6 @@ dist/
 
 # Generated client
 /src/generated/prisma
+
+# Test coverage
+coverage/
