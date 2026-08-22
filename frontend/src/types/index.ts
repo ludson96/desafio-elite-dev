@@ -1,4 +1,8 @@
-export type UserRole = 'ORGANIZER' | 'CLIENT' | 'GATEKEEPER';
+export type UserRole = "CLIENT" | "ORGANIZER" | "GATEKEEPER";
+export type EventType = "SHOW" | "MOVIE";
+export type EventStatus = "DRAFT" | "PUBLISHED" | "CANCELED";
+export type ReservationStatus = "PENDING" | "CONFIRMED" | "REFUSED" | "CANCELED";
+export type TicketStatus = "ACTIVE" | "USED" | "CANCELED";
 
 export interface User {
   id: string;
@@ -6,10 +10,8 @@ export interface User {
   email: string;
   role: UserRole;
   createdAt: string;
+  updatedAt: string;
 }
-
-export type EventType = 'SHOW' | 'MOVIE';
-export type EventStatus = 'DRAFT' | 'PUBLISHED' | 'CANCELED' | 'FINISHED';
 
 export interface Event {
   id: string;
@@ -17,12 +19,12 @@ export interface Event {
   description?: string | null;
   type: EventType;
   category?: string | null;
-  imageUrl?: string | null;
   date: string;
   location: string;
   capacity: number;
   availableTickets: number;
   price: number | string;
+  imageUrl?: string | null;
   status: EventStatus;
   organizerId: string;
   organizer?: {
@@ -34,71 +36,62 @@ export interface Event {
   updatedAt: string;
 }
 
-export type TicketStatus = 'ACTIVE' | 'USED' | 'CANCELED';
-
 export interface Ticket {
   id: string;
   code: string;
   status: TicketStatus;
+  qrCodeUrl?: string | null;
   shareToken: string;
-  qrSignature: string;
-  qrCodeUrl?: string;
   usedAt?: string | null;
   eventId: string;
-  reservationId: string;
-  event?: Event;
+  userId: string;
+  reservationId?: string | null;
+  event?: {
+    id: string;
+    title: string;
+    date: string;
+    location: string;
+    price: number | string;
+    type: EventType;
+  };
   createdAt: string;
   updatedAt: string;
 }
 
-export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELED' | 'REFUSED';
-export type PaymentStatus = 'PENDING' | 'APPROVED' | 'REFUSED';
-
 export interface Reservation {
   id: string;
+  quantity: number;
   totalAmount: number | string;
   status: ReservationStatus;
-  clientId: string;
+  userId: string;
   eventId: string;
-  event?: Event;
-  tickets?: Ticket[];
-  payment?: {
+  event?: {
     id: string;
-    amount: number | string;
-    status: PaymentStatus;
-    provider: string;
+    title: string;
+    date: string;
+    location: string;
+    price: number | string;
   };
+  tickets?: Ticket[];
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface CatalogItem {
-  id: string;
+  externalId: string;
   title: string;
-  type: EventType;
   description: string;
-  imageUrl: string;
+  type: EventType;
+  category: string;
+  imageUrl?: string;
   date?: string;
   location?: string;
-  category?: string;
-  externalSource: 'TMDB' | 'TICKETMASTER' | 'DEMO';
+  source: "TMDB" | "TICKETMASTER" | "INTERNAL";
 }
 
 export interface TicketValidationResult {
-  status: 'VALID' | 'ALREADY_USED' | 'INVALID' | 'WRONG_EVENT';
+  valid: boolean;
+  status: "VALID" | "ALREADY_USED" | "WRONG_EVENT" | "INVALID";
   message: string;
-  ticket?: {
-    code: string;
-    status: string;
-    usedAt?: string | null;
-    event: {
-      id: string;
-      title: string;
-      date: string;
-      location: string;
-    };
-    client?: {
-      name: string;
-      email: string;
-    };
-  };
+  ticket?: Ticket;
 }
