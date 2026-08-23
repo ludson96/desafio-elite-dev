@@ -19,8 +19,8 @@ export class EventRepository {
   }
 
   async findMany(query: ListEventsQuery) {
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 10;
+    const page = Number(query.page ?? 1);
+    const limit = Number(query.limit ?? 10);
     const skip = (page - 1) * limit;
     const { search, type, status } = query;
 
