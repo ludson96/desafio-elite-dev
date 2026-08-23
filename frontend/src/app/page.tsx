@@ -149,7 +149,7 @@ export default function HomePage() {
               className={cn(
                 "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5",
                 selectedType === "SHOW"
-                  ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
+                  ? "bg-zinc-800 text-white shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200"
               )}
             >
@@ -164,7 +164,7 @@ export default function HomePage() {
               className={cn(
                 "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5",
                 selectedType === "MOVIE"
-                  ? "bg-indigo-600/20 text-indigo-400 border border-indigo-500/30"
+                  ? "bg-zinc-800 text-white shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200"
               )}
             >
