@@ -54,7 +54,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg space-y-6">
         {/* Cabeçalho */}
         <div className="text-center space-y-2">
-          <div className="inline-flex w-12 h-12 rounded-2xl bg-linear-to-tr from-blue-600 to-indigo-500 items-center justify-center text-white shadow-lg shadow-blue-500/25 mb-2">
+          <div className="inline-flex w-12 h-12 rounded-2xl bg-blue-600 items-center justify-center text-white shadow-md shadow-blue-500/20 mb-2">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">Criar Nova Conta</h1>
@@ -64,7 +64,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Formulário */}
-        <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm space-y-5">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-5">
           {errorMessage && (
             <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
               <span>⚠️</span>
@@ -118,7 +118,7 @@ export default function RegisterPage() {
                     "p-3 rounded-xl border text-left transition-all flex flex-col gap-1.5",
                     role === "CLIENT"
                       ? "bg-blue-600/10 border-blue-500 text-white shadow-sm ring-1 ring-blue-500/40"
-                      : "bg-zinc-950/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
+                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
                   )}
                 >
                   <Ticket className={cn("w-4 h-4", role === "CLIENT" ? "text-blue-400" : "text-zinc-500")} />
@@ -133,11 +133,11 @@ export default function RegisterPage() {
                   className={cn(
                     "p-3 rounded-xl border text-left transition-all flex flex-col gap-1.5",
                     role === "ORGANIZER"
-                      ? "bg-indigo-600/10 border-indigo-500 text-white shadow-sm ring-1 ring-indigo-500/40"
-                      : "bg-zinc-950/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
+                      ? "bg-blue-600/10 border-blue-500 text-white shadow-sm ring-1 ring-blue-500/40"
+                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
                   )}
                 >
-                  <Calendar className={cn("w-4 h-4", role === "ORGANIZER" ? "text-indigo-400" : "text-zinc-500")} />
+                  <Calendar className={cn("w-4 h-4", role === "ORGANIZER" ? "text-blue-400" : "text-zinc-500")} />
                   <span className="text-xs font-semibold text-zinc-200">Organizador</span>
                   <span className="text-[10px] text-zinc-400 leading-tight">Criar eventos e vender</span>
                 </button>
@@ -150,7 +150,7 @@ export default function RegisterPage() {
                     "p-3 rounded-xl border text-left transition-all flex flex-col gap-1.5",
                     role === "GATEKEEPER"
                       ? "bg-emerald-600/10 border-emerald-500 text-white shadow-sm ring-1 ring-emerald-500/40"
-                      : "bg-zinc-950/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
+                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
                   )}
                 >
                   <QrCode className={cn("w-4 h-4", role === "GATEKEEPER" ? "text-emerald-400" : "text-zinc-500")} />

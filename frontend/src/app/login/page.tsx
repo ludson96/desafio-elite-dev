@@ -56,7 +56,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-6">
         {/* Cabeçalho */}
         <div className="text-center space-y-2">
-          <div className="inline-flex w-12 h-12 rounded-2xl bg-linear-to-tr from-blue-600 to-indigo-500 items-center justify-center text-white shadow-lg shadow-blue-500/25 mb-2">
+          <div className="inline-flex w-12 h-12 rounded-2xl bg-blue-600 items-center justify-center text-white shadow-md shadow-blue-500/20 mb-2">
             <Ticket className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">Acesse sua Conta</h1>
@@ -66,7 +66,7 @@ export default function LoginPage() {
         </div>
 
         {/* Formulário */}
-        <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm space-y-5">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-5">
           {errorMessage && (
             <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
               <span>⚠️</span>

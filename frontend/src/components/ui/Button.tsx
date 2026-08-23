@@ -23,7 +23,7 @@ export function Button({
 }: ButtonProps) {
   const variantStyles = {
     primary:
-      "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-md shadow-blue-500/20 border border-blue-500/30",
+      "bg-blue-600 hover:bg-blue-500 text-white shadow-sm border border-blue-500",
     secondary:
       "bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 shadow-sm",
     outline:
@@ -31,7 +31,7 @@ export function Button({
     ghost:
       "bg-transparent hover:bg-zinc-800/40 text-zinc-400 hover:text-zinc-100",
     danger:
-      "bg-rose-600/90 hover:bg-rose-600 text-white shadow-md shadow-rose-600/20 border border-rose-500/30",
+      "bg-rose-600 hover:bg-rose-500 text-white shadow-sm border border-rose-500",
   };
 
   const sizeStyles = {
@@ -43,7 +43,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]",
+        "inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]",
         variantStyles[variant],
         sizeStyles[size],
         className

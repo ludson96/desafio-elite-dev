@@ -140,7 +140,7 @@ export default function NewEventPage() {
         {/* Cabeçalho */}
         <div className="space-y-1">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-2.5">
-            <Plus className="w-7 h-7 text-indigo-400" />
+            <Plus className="w-7 h-7 text-blue-500" />
             Criar Novo Evento
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400">
@@ -149,8 +149,8 @@ export default function NewEventPage() {
         </div>
 
         {/* Assistente de Catálogo Inteligente (TMDb / Ticketmaster) */}
-        <div className="bg-linear-to-br from-indigo-950/40 via-zinc-900 to-zinc-900 border border-indigo-500/30 rounded-2xl p-6 shadow-xl space-y-4">
-          <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4">
+          <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
             <Sparkles className="w-4 h-4" />
             <span>Assistente de Catálogo Externo (TMDb & Ticketmaster)</span>
           </div>
@@ -165,7 +165,7 @@ export default function NewEventPage() {
                 value={catalogQuery}
                 onChange={(e) => setCatalogQuery(e.target.value)}
                 leftIcon={<Search className="w-4 h-4" />}
-                className="bg-zinc-950/80"
+                className="bg-zinc-950"
               />
             </div>
             <Button type="submit" variant="secondary" size="md" isLoading={isSearchingCatalog}>
@@ -179,7 +179,7 @@ export default function NewEventPage() {
               {catalogResults.slice(0, 4).map((item) => (
                 <div
                   key={item.externalId}
-                  className="flex items-start gap-3 p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 hover:border-indigo-500/50 transition-all text-left group"
+                  className="flex items-start gap-3 p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-all text-left group"
                 >
                   {item.imageUrl ? (
                     <div className="relative w-14 h-18 rounded-lg overflow-hidden shrink-0 bg-zinc-900">
@@ -211,7 +211,7 @@ export default function NewEventPage() {
                     <button
                       type="button"
                       onClick={() => handleApplyCatalogItem(item)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-400 hover:text-indigo-300 pt-1"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 pt-1"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       Usar estes dados
@@ -267,7 +267,7 @@ export default function NewEventPage() {
                   className={cn(
                     "p-3 rounded-xl border text-center transition-all flex items-center justify-center gap-2 text-xs font-bold",
                     type === "MOVIE"
-                      ? "bg-indigo-600/20 border-indigo-500 text-indigo-400 shadow-sm ring-1 ring-indigo-500/40"
+                      ? "bg-blue-600/20 border-blue-500 text-blue-400 shadow-sm ring-1 ring-blue-500/40"
                       : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
                   )}
                 >
@@ -294,7 +294,7 @@ export default function NewEventPage() {
                 placeholder="Descreva detalhes sobre as atrações, horários de abertura e classificação etária..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-3 text-sm bg-zinc-950/80 text-zinc-100 placeholder-zinc-500 rounded-lg border border-zinc-700/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="w-full p-3 text-sm bg-zinc-950 text-zinc-100 placeholder-zinc-500 rounded-lg border border-zinc-700/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 

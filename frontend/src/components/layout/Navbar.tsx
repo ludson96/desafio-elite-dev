@@ -46,19 +46,7 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Links Desktop */}
           <nav className="hidden md:flex items-center gap-1">
-            <Link
-              href="/"
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-                isActive("/")
-                  ? "text-white bg-zinc-800/60"
-                  : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/30"
-              )}
-            >
-              Eventos
-            </Link>
 
             {/* Links do Cliente */}
             {isHydrated && user?.role === "CLIENT" && (

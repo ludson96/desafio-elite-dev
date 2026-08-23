@@ -13,7 +13,7 @@ describe("UI Components", () => {
 
     it("deve aplicar a classe de variante correta", () => {
       const { container } = render(<Badge variant="success">Sucesso</Badge>);
-      expect(container.firstChild).toHaveClass("bg-emerald-500/10");
+      expect(container.firstChild).toHaveClass("bg-emerald-950/80");
     });
   });
 
