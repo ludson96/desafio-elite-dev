@@ -40,6 +40,7 @@ export interface Ticket {
   id: string;
   code: string;
   status: TicketStatus;
+  qrCode?: string | null;
   qrCodeUrl?: string | null;
   shareToken: string;
   usedAt?: string | null;
@@ -49,6 +50,8 @@ export interface Ticket {
   event?: {
     id: string;
     title: string;
+    description?: string | null;
+    imageUrl?: string | null;
     date: string;
     location: string;
     price: number | string;
@@ -68,6 +71,8 @@ export interface Reservation {
   event?: {
     id: string;
     title: string;
+    description?: string | null;
+    imageUrl?: string | null;
     date: string;
     location: string;
     price: number | string;

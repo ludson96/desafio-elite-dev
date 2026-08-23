@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Calendar, MapPin, Ticket, Filter, Music, Film, ArrowRight } from "lucide-react";
+import { Search, Calendar, MapPin, Ticket, Filter, Music, Film, ArrowRight, Flame } from "lucide-react";
 import { eventsApi } from "@/services/api";
 import type { Event, EventType } from "@/types";
 import { formatCurrency, formatDateTime } from "@/utils/formatters";
@@ -13,6 +13,7 @@ import { cn } from "@/utils/cn";
 
 export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
+  const [featuredEvent, setFeaturedEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<EventType | "ALL">("ALL");
@@ -20,6 +21,26 @@ export default function HomePage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalEvents, setTotalEvents] = useState(0);
 
+  // Carrega o evento de Destaque principal fixo
+  useEffect(() => {
+    let ignore = false;
+    async function loadFeatured() {
+      try {
+        const response = await eventsApi.list({ limit: 1, status: "PUBLISHED" });
+        if (!ignore && response.data.events.length > 0) {
+          setFeaturedEvent(response.data.events[0]);
+        }
+      } catch (e) {
+        console.error("Erro ao carregar destaque:", e);
+      }
+    }
+    loadFeatured();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  // Carrega a listagem conforme os filtros selecionados
   useEffect(() => {
     let ignore = false;
     const fetchEvents = async () => {
@@ -49,7 +70,7 @@ export default function HomePage() {
 
     const timer = setTimeout(() => {
       fetchEvents();
-    }, 300);
+    }, 200);
 
     return () => {
       ignore = true;
@@ -59,105 +80,171 @@ export default function HomePage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      {/* Topo Sóbrio & Direto (Estilo Plataforma Real) */}
-      <section className="border-b border-zinc-800 bg-zinc-950 py-8 sm:py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      {/* Banner de Destaque da Semana */}
+      {featuredEvent && (
+        <section className="relative border-b border-zinc-800 bg-zinc-950">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            <div className="relative rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900 shadow-2xl min-h-70 sm:min-h-90 flex flex-col justify-end">
+              {/* Imagem de Fundo do Evento com Overlay Escuro */}
+              {featuredEvent.imageUrl ? (
+                <div className="absolute inset-0">
+                  <Image
+                    src={featuredEvent.imageUrl}
+                    alt={featuredEvent.title}
+                    fill
+                    unoptimized
+                    priority
+                    className="object-cover object-center"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-zinc-950/30" />
+                </div>
+              ) : (
+                <div className="absolute inset-0 bg-zinc-900" />
+              )}
+
+              {/* Conteúdo do Destaque */}
+              <div className="relative z-10 p-6 sm:p-10 max-w-3xl space-y-4">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-blue-600 text-white shadow-sm">
+                    <Flame className="w-3.5 h-3.5 text-amber-300" />
+                    Destaque da Semana
+                  </span>
+                  <Badge variant={featuredEvent.type === "SHOW" ? "purple" : "default"}>
+                    {featuredEvent.type === "SHOW" ? "Show ao Vivo" : "Sessão Especial"}
+                  </Badge>
+                </div>
+
+                <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                  {featuredEvent.title}
+                </h1>
+
+                {featuredEvent.description && (
+                  <p className="text-xs sm:text-sm text-zinc-300 line-clamp-2 max-w-2xl leading-relaxed">
+                    {featuredEvent.description}
+                  </p>
+                )}
+
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-zinc-300 pt-1">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4 text-blue-400 shrink-0" />
+                    <span>{formatDateTime(featuredEvent.date)}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-zinc-400 shrink-0" />
+                    <span>{featuredEvent.location}</span>
+                  </div>
+                  <div className="text-sm font-bold text-white">
+                    A partir de {formatCurrency(featuredEvent.price)}
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Link href={`/events/${featuredEvent.id}`}>
+                    <Button variant="primary" size="md" rightIcon={<ArrowRight className="w-4 h-4" />}>
+                      Garantir Ingresso Agora
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Seção de Busca & Catálogo Completo */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Próximos Eventos
-            </h1>
-            <p className="text-sm text-zinc-400 mt-1">
-              Explore shows, concertos e sessões de cinema com ingressos disponíveis.
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              Todos os Eventos
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
+              Explore o catálogo filtrando por shows ou cinema.
             </p>
           </div>
 
-          {/* Barra de Busca e Filtros Integrados */}
-          <div className="flex flex-col md:flex-row items-center gap-3">
-            {/* Input de Busca */}
-            <div className="relative w-full flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-              <input
-                type="text"
-                placeholder="Buscar por artista, filme, local ou gênero..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full h-11 pl-10 pr-4 bg-zinc-900 text-zinc-100 placeholder-zinc-500 rounded-lg border border-zinc-700/80 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm transition-all shadow-sm"
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-zinc-200"
-                >
-                  Limpar
-                </button>
+          {/* Filtros de Categoria */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedType("ALL");
+                setPage(1);
+              }}
+              className={cn(
+                "px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 border whitespace-nowrap",
+                selectedType === "ALL"
+                  ? "bg-blue-600 text-white border-blue-500 shadow-sm"
+                  : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
               )}
-            </div>
+            >
+              <Filter className="w-3.5 h-3.5" />
+              Todos ({totalEvents})
+            </button>
 
-            {/* Filtros de Categoria */}
-            <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedType("ALL");
-                  setPage(1);
-                }}
-                className={cn(
-                  "px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 border whitespace-nowrap",
-                  selectedType === "ALL"
-                    ? "bg-blue-600 text-white border-blue-500 shadow-sm"
-                    : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
-                )}
-              >
-                <Filter className="w-3.5 h-3.5" />
-                Todos ({totalEvents})
-              </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedType("SHOW");
+                setPage(1);
+              }}
+              className={cn(
+                "px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 border whitespace-nowrap",
+                selectedType === "SHOW"
+                  ? "bg-blue-600 text-white border-blue-500 shadow-sm"
+                  : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+              )}
+            >
+              <Music className="w-3.5 h-3.5" />
+              Shows & Festivais
+            </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedType("SHOW");
-                  setPage(1);
-                }}
-                className={cn(
-                  "px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 border whitespace-nowrap",
-                  selectedType === "SHOW"
-                    ? "bg-blue-600 text-white border-blue-500 shadow-sm"
-                    : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
-                )}
-              >
-                <Music className="w-3.5 h-3.5" />
-                Shows & Festivais
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedType("MOVIE");
-                  setPage(1);
-                }}
-                className={cn(
-                  "px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 border whitespace-nowrap",
-                  selectedType === "MOVIE"
-                    ? "bg-blue-600 text-white border-blue-500 shadow-sm"
-                    : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
-                )}
-              >
-                <Film className="w-3.5 h-3.5" />
-                Filmes & Cinema
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedType("MOVIE");
+                setPage(1);
+              }}
+              className={cn(
+                "px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 border whitespace-nowrap",
+                selectedType === "MOVIE"
+                  ? "bg-blue-600 text-white border-blue-500 shadow-sm"
+                  : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+              )}
+            >
+              <Film className="w-3.5 h-3.5" />
+              Filmes & Cinema
+            </button>
           </div>
         </div>
-      </section>
 
-      {/* Grade de Eventos */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        {/* Input de Busca */}
+        <div className="relative w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <input
+            type="text"
+            placeholder="Buscar por artista, filme, local ou gênero..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+            className="w-full h-11 pl-10 pr-4 bg-zinc-900 text-zinc-100 placeholder-zinc-500 rounded-lg border border-zinc-700/80 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm transition-all shadow-sm"
+          />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-zinc-200"
+            >
+              Limpar
+            </button>
+          )}
+        </div>
+
+        {/* Grade de Eventos */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
@@ -197,7 +284,7 @@ export default function HomePage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
             {events.map((event) => {
               const isSoldOut = event.availableTickets <= 0;
 
@@ -245,9 +332,9 @@ export default function HomePage() {
                   {/* Informações do Card */}
                   <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-2">
-                      <h2 className="text-base font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1">
+                      <h3 className="text-base font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1">
                         {event.title}
-                      </h2>
+                      </h3>
 
                       <div className="space-y-1.5 text-xs text-zinc-400">
                         <div className="flex items-center gap-2">
