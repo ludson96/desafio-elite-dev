@@ -78,7 +78,7 @@ export default function SharedTicketPage({ params }: PageProps) {
   const isUsed = ticket.status === "USED";
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 py-12 bg-gradient-to-b from-blue-950/20 via-zinc-950 to-zinc-950">
+    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 py-12 bg-linear-to-b from-blue-950/20 via-zinc-950 to-zinc-950">
       <div className="w-full max-w-sm space-y-6">
         {/* Topo: Logo & Identificação */}
         <div className="text-center space-y-1">
@@ -92,7 +92,7 @@ export default function SharedTicketPage({ params }: PageProps) {
         {/* Card do Ingresso com Efeito Ticket Stub */}
         <div className="relative bg-zinc-900 border border-zinc-700/80 rounded-3xl overflow-hidden shadow-2xl">
           {/* Topo do Ticket */}
-          <div className="p-6 pb-5 space-y-3 bg-gradient-to-b from-zinc-800/80 to-zinc-900 border-b border-dashed border-zinc-700">
+          <div className="p-6 pb-5 space-y-3 bg-linear-to-b from-zinc-800/80 to-zinc-900 border-b border-dashed border-zinc-700">
             <div className="flex items-center justify-between">
               <span className="font-mono text-xs font-bold text-blue-400 tracking-wider">
                 {ticket.code}
@@ -109,13 +109,13 @@ export default function SharedTicketPage({ params }: PageProps) {
             <div className="space-y-1 text-xs text-zinc-300">
               {ticket.event?.date && (
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                  <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                   <span>{formatDateTime(ticket.event.date)}</span>
                 </div>
               )}
               {ticket.event?.location && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                  <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                   <span>{ticket.event.location}</span>
                 </div>
               )}

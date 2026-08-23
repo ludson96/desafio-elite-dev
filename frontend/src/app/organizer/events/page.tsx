@@ -201,7 +201,7 @@ export default function OrganizerEventsPage() {
                       </div>
                       <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                         <div
-                          className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all"
+                          className="bg-linear-to-r from-blue-500 to-indigo-500 h-full transition-all"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>

@@ -54,7 +54,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg space-y-6">
         {/* Cabeçalho */}
         <div className="text-center space-y-2">
-          <div className="inline-flex w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 items-center justify-center text-white shadow-lg shadow-blue-500/25 mb-2">
+          <div className="inline-flex w-12 h-12 rounded-2xl bg-linear-to-tr from-blue-600 to-indigo-500 items-center justify-center text-white shadow-lg shadow-blue-500/25 mb-2">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">Criar Nova Conta</h1>

@@ -129,7 +129,7 @@ export default function MyTicketsPage() {
                 >
                   {/* Linha Decorativa Superior */}
                   <div
-                    className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${
+                    className={`absolute top-0 left-0 right-0 h-1 bg-linear-to-r ${
                       isUsed ? "from-purple-600 to-zinc-700" : "from-blue-500 via-indigo-500 to-blue-600"
                     }`}
                   />
@@ -152,13 +152,13 @@ export default function MyTicketsPage() {
                     <div className="space-y-1.5 text-xs text-zinc-400">
                       {ticket.event?.date && (
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                          <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                           <span>{formatDateTime(ticket.event.date)}</span>
                         </div>
                       )}
                       {ticket.event?.location && (
                         <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                          <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                           <span className="line-clamp-1">{ticket.event.location}</span>
                         </div>
                       )}
@@ -247,7 +247,7 @@ export default function MyTicketsPage() {
 
             {/* Aviso Anti-Fraude */}
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Assinatura HMAC-SHA256 verificada e anti-duplicação</span>
             </div>
 

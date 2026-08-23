@@ -68,7 +68,7 @@ export default function HomePage() {
   return (
     <div className="flex-1 flex flex-col">
       {/* Hero Section */}
-      <section className="relative py-16 sm:py-24 border-b border-zinc-800/80 overflow-hidden bg-gradient-to-b from-blue-950/20 via-zinc-950 to-zinc-950">
+      <section className="relative py-16 sm:py-24 border-b border-zinc-800/80 overflow-hidden bg-linear-to-b from-blue-950/20 via-zinc-950 to-zinc-950">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(59,130,246,0.15),rgba(255,255,255,0))]" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
@@ -79,7 +79,7 @@ export default function HomePage() {
 
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-3xl mx-auto leading-tight">
             Descubra eventos inesquecíveis com ingressos{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
               100% autênticos
             </span>
             .
@@ -228,7 +228,7 @@ export default function HomePage() {
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-tr from-zinc-900 to-zinc-800 text-zinc-600">
+                      <div className="w-full h-full flex items-center justify-center bg-linear-to-tr from-zinc-900 to-zinc-800 text-zinc-600">
                         <Ticket className="w-12 h-12 opacity-40" />
                       </div>
                     )}
@@ -261,11 +261,11 @@ export default function HomePage() {
 
                       <div className="space-y-1.5 text-xs text-zinc-400">
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                          <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                           <span>{formatDateTime(event.date)}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                          <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                           <span className="line-clamp-1">{event.location}</span>
                         </div>
                       </div>

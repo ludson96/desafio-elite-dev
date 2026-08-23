@@ -149,7 +149,7 @@ export default function NewEventPage() {
         </div>
 
         {/* Assistente de Catálogo Inteligente (TMDb / Ticketmaster) */}
-        <div className="bg-gradient-to-br from-indigo-950/40 via-zinc-900 to-zinc-900 border border-indigo-500/30 rounded-2xl p-6 shadow-xl space-y-4">
+        <div className="bg-linear-to-br from-indigo-950/40 via-zinc-900 to-zinc-900 border border-indigo-500/30 rounded-2xl p-6 shadow-xl space-y-4">
           <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
             <Sparkles className="w-4 h-4" />
             <span>Assistente de Catálogo Externo (TMDb & Ticketmaster)</span>
@@ -182,7 +182,7 @@ export default function NewEventPage() {
                   className="flex items-start gap-3 p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 hover:border-indigo-500/50 transition-all text-left group"
                 >
                   {item.imageUrl ? (
-                    <div className="relative w-14 h-18 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-900">
+                    <div className="relative w-14 h-18 rounded-lg overflow-hidden shrink-0 bg-zinc-900">
                       <Image
                         src={item.imageUrl}
                         alt={item.title}
@@ -192,7 +192,7 @@ export default function NewEventPage() {
                       />
                     </div>
                   ) : (
-                    <div className="w-14 h-18 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-600 flex-shrink-0">
+                    <div className="w-14 h-18 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-600 shrink-0">
                       <Film className="w-6 h-6" />
                     </div>
                   )}
@@ -238,7 +238,7 @@ export default function NewEventPage() {
 
           {errorMessage && (
             <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}

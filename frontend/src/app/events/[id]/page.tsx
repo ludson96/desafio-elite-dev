@@ -168,11 +168,11 @@ export default function EventDetailsPage({ params }: PageProps) {
               className="object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-tr from-zinc-900 to-zinc-800 text-zinc-600">
+            <div className="w-full h-full flex items-center justify-center bg-linear-to-tr from-zinc-900 to-zinc-800 text-zinc-600">
               <Ticket className="w-16 h-16 opacity-30" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
           {/* Badges Flutuantes */}
           <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
@@ -355,7 +355,7 @@ export default function EventDetailsPage({ params }: PageProps) {
           {/* Feedback de Erro */}
           {checkoutError && (
             <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{checkoutError}</span>
             </div>
           )}

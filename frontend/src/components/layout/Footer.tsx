@@ -1,5 +1,4 @@
-import React from "react";
-import { Ticket, ShieldCheck } from "lucide-react";
+import { Ticket } from "lucide-react";
 
 export function Footer() {
   return (
@@ -7,7 +6,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Logo & Marca */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
             <Ticket className="w-4 h-4" />
           </div>
           <div>
@@ -18,7 +17,6 @@ export function Footer() {
 
         {/* Informações do Desafio */}
         <div className="flex items-center gap-2 text-xs text-zinc-400">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
           <span>
             Desenvolvido para o Desafio Técnico <strong>Verzel (Elite Dev)</strong>
           </span>
