@@ -1,12 +1,14 @@
-# 🧠 Decisões de Arquitetura e Engenharia - Backend (DECISIONS.md)
+# 🧠 Decisões de Arquitetura e Engenharia - Backend
 
-Este documento registra os fundamentos técnicos, padrões arquiteturais e decisões de engenharia adotados no desenvolvimento da API do **Elite Ingressos** (Desafio Técnico Elite Dev).
+> Este documento registra os fundamentos técnicos, padrões arquiteturais e decisões de engenharia adotados no desenvolvimento da API do **Elite Ingressos** (Desafio Técnico Elite Dev da Verzel).
 
----
+Iniciei o projeto realizando uma etapa de planejamento colaborativo em conjunto com ferramentas de Inteligência Artificial (ChatGPT, Google Gemini e Antigravity IDE). Nessa fase inicial, foram levantados todos os requisitos técnicos, analisadas as possibilidades de implementação e avaliados modelos de referência. A partir desse levantamento, estruturei a aplicação de forma modular, conforme detalhado nas seções seguintes. A *stack* foi composta predominantemente por tecnologias com as quais já possuo sólida familiaridade, com exceção do Prisma ORM e do Vitest. Considerando que o Sequelize e o Jest têm se tornado cada vez mais defasados e lentos em comparação às ferramentas modernas para Node.js e TypeScript, este projeto representou uma excelente oportunidade para me aprofundar e consolidar o uso prático de ambas as tecnologias.
+
+A utilização da IA atuou como uma extensão de produtividade (*Pair Programming* assistido por IA) para acelerar entregas dentro do prazo proposto. A maior parte do desenvolvimento foi conduzida de forma prática (*hands-on*). A IA teve maior protagonismo na geração e assinatura criptográfica dos QR Codes, área com a qual ainda não possuía experiência prévia, funcionando como consulta técnica direta e contextualizada. Todo o código gerado passou por análise criteriosa, validação de tipos e testes antes de ser integrado, evitando qualquer aceitação passiva.
 
 ## 1. Arquitetura em Camadas (*Clean Architecture* Adaptada)
 
-Optamos por uma arquitetura em camadas bem delimitadas com responsabilidade única:
+Optei por uma arquitetura em camadas bem delimitadas com responsabilidade única:
 
 ```
 [ HTTP Request ]
@@ -32,8 +34,6 @@ Optamos por uma arquitetura em camadas bem delimitadas com responsabilidade úni
 2. **Desacoplamento**: Se o ORM ou banco de dados mudar no futuro, apenas a camada de `repositories/` precisa ser ajustada;
 3. **Legibilidade e Manutenção**: Controllers permanecem enxutos, focados apenas na interface HTTP.
 
----
-
 ## 2. Racional das Tecnologias Escolhidas
 
 ### Express 5
@@ -49,24 +49,20 @@ Optamos por uma arquitetura em camadas bem delimitadas com responsabilidade úni
 ### Helmet & CORS
 - **Por quê?** `helmet` adiciona cabeçalhos HTTP padrão de segurança (*OWASP*), prevenindo ataques de Clickjacking, MIME sniffing e escondendo o cabeçalho `X-Powered-By: Express`.
 
----
-
 ## 3. Decisões de Modelagem de Banco de Dados
 
 ### Formato Pista (Disponibilidade por Capacidade)
-- **Decisão**: Modelamos os eventos utilizando controle de estoque numérico (`capacity` e `availableTickets`), garantindo suporte fluido a grandes quantidades de ingressos por compra.
+- **Decisão**: Os eventos foram modelados utilizando controle de estoque numérico (`capacity` e `availableTickets`), garantindo suporte fluido a grandes quantidades de ingressos por compra.
 - **Por quê?** Atende de forma objetiva ao requisito do desafio, priorizando a garantia de concorrência atômica antes de adicionar complexidade de matriz de assentos.
 
 ### Enums Centralizados
-Criamos enums nativos no PostgreSQL via Prisma para evitar estados inconsistentes:
+Foram criados enums nativos no PostgreSQL via Prisma para evitar estados inconsistentes:
 - `UserRole`: `ORGANIZER`, `CLIENT`, `GATEKEEPER`
 - `EventType`: `SHOW`, `MOVIE`
 - `EventStatus`: `DRAFT`, `PUBLISHED`, `CANCELED`, `FINISHED`
 - `ReservationStatus`: `PENDING`, `CONFIRMED`, `CANCELED`, `REFUSED`
 - `PaymentStatus`: `PENDING`, `APPROVED`, `REFUSED`
 - `TicketStatus`: `ACTIVE`, `USED`, `CANCELED`
-
----
 
 ## 4. Módulos Implementados e Decisões de Negócio
 
@@ -107,8 +103,6 @@ Criamos enums nativos no PostgreSQL via Prisma para evitar estados inconsistente
     3. **`WRONG_EVENT`**: Ingresso válido, mas emitido para outro evento diferente do qual a portaria está controlando;
     4. **`INVALID`**: Código inexistente ou assinatura adulterada.
 
----
-
 ## 5. Segurança e Prevenção de Fraudes
 
 ### Assinatura Criptográfica HMAC-SHA256
@@ -117,8 +111,6 @@ Para garantir que o código do ingresso não possa ser forjado por um usuário m
    $$\text{Signature} = \text{HMAC-SHA256}(\text{ticketCode} + ":" + \text{eventId}, \text{QR\_SECRET})$$
 2. O QR Code armazena o payload `{ code, eventId, sig }`.
 3. Na portaria, o backend valida a assinatura utilizando `crypto.timingSafeEqual` para mitigar ataques de temporização (*Timing Attacks*).
-
----
 
 ## 6. Resolução de Concorrência e Overbooking
 
@@ -141,20 +133,16 @@ Um dos maiores desafios em sistemas de ingressos é garantir que o mesmo ingress
 3. Se `count === 0`, a transação é abortada e uma exceção `409 Conflict` ("Ingressos esgotados") é retornada imediatamente.
 4. Na portaria, a transição para `USED` utiliza o mesmo princípio (`updateMany where: { id, status: 'ACTIVE' }`), impedindo que duas catracas liberem o mesmo ingresso simultaneamente.
 
----
-
 ## 7. O que foi descartado / Evitado
 
 | Item | Motivo do Descarte |
 | :--- | :--- |
 | **Sistemas de fila pesados (RabbitMQ/Redis/BullMQ)** | Desnecessário para o escopo do desafio. O controle transacional no PostgreSQL resolve concorrência com simplicidade e zero overhead de infraestrutura. |
-| **Gateway de pagamento real (Stripe/Pagar.me)** | O desafio solicitou explicitamente cobrança simulada. Usar um gateway real adicionaria complexidade de webhooks sem ganho didático. |
-| **Envio de e-mails / PDF anexo** | Focamos na experiência moderna via Link de Compartilhamento público e QR Code diretamente na tela. |
+| **Gateway de pagamento real (Stripe/Pagar.me)** | Implementado apenas cobrança simulada. Usar um gateway real adicionaria complexidade de webhooks sem ganho didático. |
+| **Envio de e-mails** | Focamos na experiência moderna via Link de Compartilhamento público e QR Code diretamente na tela. |
 
----
+## 8. Implementações Futuras
 
-## 8. Uso de Ferramentas de IA
-
-Em total conformidade com a seção de boas práticas:
-- **Ferramentas utilizadas**: Pair Programming assistido por IA (Antigravity IDE / Google Gemini).
-- **Como foi conduzido**: O desenvolvimento seguiu um fluxo estritamente guiado passo a passo (*Top-Down: Route ➔ Controller ➔ Service ➔ Repository ➔ Database*), com validação manual de cada arquivo, separação de interfaces e constantes, e refatorações conscientes para garantir decisões de engenharia sólidas e autênticas.
+- **Mapa Visual de Assentos (Seat Map Interativo)**: Evolução do modelo atual de capacidade/pista para suporte a matriz de poltronas numeradas (ex.: filas e colunas para salas de cinema e teatros), com reserva temporária (*lock* otimista por WebSocket ou Redis com expiração automática);
+- **Melhorias Contínuas de Design e UI/UX**: Refinamento da identidade visual, adição de microinterações mais ricas e expansão do design system modular (*Bento Grid*);
+- **Fluxo de Cancelamento & Reembolso com Devolução ao Estoque**: Interface e endpoint dedicado para cancelamento de pedidos com estorno seguro de ingressos e liberação automática de vagas.

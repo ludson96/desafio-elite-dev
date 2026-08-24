@@ -1,8 +1,12 @@
-# 🧠 Decisões de Arquitetura e Engenharia - Front-End (DECISIONS.md)
+# 🧠 Decisões de Arquitetura e Engenharia - Front-End
 
-Este documento detalha a arquitetura, padrões e decisões técnicas adotadas no desenvolvimento do **Front-End** da plataforma **Elite Ingressos** (Desafio Técnico Elite Dev).
+> Este documento detalha a arquitetura, padrões e decisões técnicas adotadas no desenvolvimento do **Front-End** da plataforma **Elite Ingressos** (Desafio Técnico Elite Dev da Verzel).
 
----
+A *stack* foi composta predominantemente por tecnologias com as quais já possuo sólida familiaridade, com exceção de bibliotecas pontuais como `clsx`, `html5-qrcode` e o próprio Vitest para testes de componentes. Considerando que o Jest tem se tornado cada vez mais lento e verboso em ecossistemas Next.js/React modernos, este projeto representou uma excelente oportunidade para me aprofundar e consolidar o uso prático do Vitest e de bibliotecas especializadas de interface.
+
+A utilização da IA atuou como uma extensão de produtividade (*Pair Programming* assistido por IA) para acelerar as entregas dentro do prazo proposto. Todo o código gerado passou por análise criteriosa, validação de tipos e testes antes de ser integrado, evitando qualquer aceitação passiva. Dessa forma, foi possível agilizar a construção das funcionalidades em que já possuía domínio prévio e dedicar maior foco ao aprendizado e à implementação de bibliotecas com as quais tinha menos afinidade, como `html5-qrcode` (leitor de QR Code), Zustand e Vitest.
+
+Em relação ao design visual, fiz alguns testes iniciais com o [Google Stitch](https://stitch.withgoogle.com/), mas achei as telas geradas muito padronizadas e com aquela cara artificial típica de IA. Por isso, preferi seguir com uma interface mais sóbria e funcional, utilizando o estilo *Bento Grid / Modular UI* (parecido com o que o Notion e a Linear usam), focando em clareza, usabilidade e uma boa experiência de uso, com espaço para refinar e evoluir o visual conforme a disponibilidade de tempo.
 
 ## 1. Stack Tecnológica e Racional de Escolha
 
@@ -26,8 +30,6 @@ Este documento detalha a arquitetura, padrões e decisões técnicas adotadas no
   - **Estética Sóbria e Profissional**: Badges sólidas com pontos indicadores coloridos (*dots* de status), alertas em fundo escuro (`bg-zinc-950 border-rose-900/60`) e botões com `cursor: pointer` nativo;
   - **Utilitário `cn` (`clsx` + `tailwind-merge`)**: Garante combinação segura de classes condicionais e substituição de classes de layout sem conflitos de especificidade.
 
----
-
 ## 2. Camadas Arquiteturais e Separação de Módulos
 
 O frontend foi concebido e implementado em **4 camadas bem definidas**:
@@ -50,8 +52,6 @@ O frontend foi concebido e implementado em **4 camadas bem definidas**:
 │  - Tipagens TypeScript completas espelhando o Prisma Schema  │
 └─────────────────────────────────────────────────────────────┘
 ```
-
----
 
 ## 3. Principais Decisões por Fluxo Funcional
 
@@ -79,8 +79,6 @@ O frontend foi concebido e implementado em **4 camadas bem definidas**:
 - Utilização da biblioteca `html5-qrcode` para ler códigos diretamente da câmera do dispositivo;
 - Fallback para digitação manual do código legível (`TKT-...`);
 - Exibição imediata dos 4 status do backend: `VALID`, `ALREADY_USED`, `WRONG_EVENT` e `INVALID`.
-
----
 
 ## 4. Testes Automatizados e Qualidade
 - **Testes Unitários & Componentes**: Implementados com Vitest e React Testing Library cobrindo `authStore`, formatadores semânticos e componentes de UI (`Badge`, `Button`, `Input`);
