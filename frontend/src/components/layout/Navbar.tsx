@@ -5,19 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Ticket,
-  Calendar,
   PlusCircle,
   QrCode,
-  ShoppingBag,
   LogOut,
   Menu,
   X,
-  User as UserIcon,
+  Calendar,
+  ShoppingBag,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { formatRole } from "@/utils/formatters";
 import { cn } from "@/utils/cn";
 
 export function Navbar() {
@@ -28,23 +25,21 @@ export function Navbar() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <div className="flex items-center gap-6">
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Logo & Marca */}
+        <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
               <Ticket className="w-5 h-5" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-base font-bold tracking-tight text-white group-hover:text-blue-400 transition-colors">
-                Elite Ingressos
-              </span>
-            </div>
+            <span className="text-base font-bold tracking-tight text-white group-hover:text-blue-400 transition-colors">
+              Elite Ingressos
+            </span>
           </Link>
 
+          {/* Navegação Desktop */}
           <nav className="hidden md:flex items-center gap-1">
-
             {/* Links do Cliente */}
             {isHydrated && user?.role === "CLIENT" && (
               <>
@@ -87,7 +82,7 @@ export function Navbar() {
                       : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/30"
                   )}
                 >
-                  <Calendar className="w-4 h-4 text-indigo-400" />
+                  <Calendar className="w-4 h-4 text-zinc-400" />
                   Painel de Eventos
                 </Link>
               </>
@@ -104,7 +99,7 @@ export function Navbar() {
                     : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/30"
                 )}
               >
-                <QrCode className="w-4 h-4 text-emerald-400" />
+                <QrCode className="w-4 h-4 text-zinc-400" />
                 Validar Entrada
               </Link>
             )}
@@ -124,21 +119,19 @@ export function Navbar() {
 
           {isHydrated && user ? (
             <div className="flex items-center gap-3 pl-3 border-l border-zinc-800">
-              <div className="flex flex-col text-right">
-                <span className="text-sm font-medium text-zinc-100 leading-tight">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-300 border border-zinc-700">
+                  {user.name.charAt(0)}
+                </div>
+                <span className="text-sm font-medium text-zinc-200">
                   {user.name}
                 </span>
-                <div className="flex justify-end mt-0.5">
-                  <Badge variant={user.role === "ORGANIZER" ? "purple" : user.role === "GATEKEEPER" ? "warning" : "default"}>
-                    {formatRole(user.role)}
-                  </Badge>
-                </div>
               </div>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={logout}
-                className="text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 p-2"
+                className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 p-2"
                 title="Sair da Conta"
               >
                 <LogOut className="w-4 h-4" />
@@ -189,7 +182,7 @@ export function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="px-3 py-2 rounded-lg text-sm text-zinc-300 hover:bg-zinc-900 flex items-center gap-2"
                 >
-                  <Ticket className="w-4 h-4 text-blue-400" />
+                  <Ticket className="w-4 h-4 text-zinc-400" />
                   Meus Ingressos
                 </Link>
                 <Link
@@ -209,7 +202,7 @@ export function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="px-3 py-2 rounded-lg text-sm text-zinc-300 hover:bg-zinc-900 flex items-center gap-2"
                 >
-                  <Calendar className="w-4 h-4 text-indigo-400" />
+                  <Calendar className="w-4 h-4 text-zinc-400" />
                   Painel de Eventos
                 </Link>
                 <Link
@@ -228,7 +221,7 @@ export function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg text-sm text-zinc-300 hover:bg-zinc-900 flex items-center gap-2"
               >
-                <QrCode className="w-4 h-4 text-emerald-400" />
+                <QrCode className="w-4 h-4 text-zinc-400" />
                 Validar Entrada
               </Link>
             )}
@@ -237,17 +230,16 @@ export function Navbar() {
           <div className="pt-3 border-t border-zinc-800">
             {isHydrated && user ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <UserIcon className="w-4 h-4 text-zinc-400" />
-                    <span className="text-sm font-medium text-white">{user.name}</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-300 border border-zinc-700">
+                    {user.name.charAt(0)}
                   </div>
-                  <Badge>{formatRole(user.role)}</Badge>
+                  <span className="text-sm font-medium text-white">{user.name}</span>
                 </div>
                 <Button
                   size="sm"
-                  variant="danger"
-                  className="w-full"
+                  variant="outline"
+                  className="w-full text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 border-zinc-800"
                   onClick={() => {
                     logout();
                     setIsMobileMenuOpen(false);

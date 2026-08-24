@@ -361,7 +361,7 @@ export default function EventDetailsPage() {
 
               {/* Informações de Segurança */}
               <div className="pt-2 text-center text-[11px] text-zinc-500 space-y-1 border-t border-zinc-800/80">
-                <p>🔒 Transação protegida com simulação imediata.</p>
+                <p>🔒 Transação protegida.</p>
                 <p>🎟️ Emissão do QR Code com assinatura criptográfica.</p>
               </div>
             </div>

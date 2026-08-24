@@ -8,7 +8,7 @@ const DEFAULT_MOVIE_COVER =
   "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80";
 
 async function main() {
-  console.log("🌱 Iniciando o seed do banco de dados...");
+  console.log("🌱 Iniciando o seed do banco de dados com capas padronizadas...");
 
   // 1. Limpar dados anteriores (na ordem correta de integridade referencial)
   await prisma.ticket.deleteMany();
@@ -65,7 +65,7 @@ async function main() {
   console.log(` - Cliente 2: ${client2.email} (senha: 123456)`);
   console.log(` - Portaria: ${gatekeeper.email} (senha: 123456)`);
 
-  // 3. Criar Eventos Publicados com Padrão Visual (4 Shows + 4 Filmes)
+  // 3. Criar Eventos Publicados com Capas Padronizadas do Unsplash
   const event1 = await prisma.event.create({
     data: {
       title: "Coldplay - Music of the Spheres Tour",
@@ -218,7 +218,7 @@ async function main() {
     },
   });
 
-  console.log("✅ 8 Eventos publicados com capas oficiais padronizadas!");
+  console.log("✅ 8 Eventos criados com capas oficiais padronizadas do Unsplash!");
 
   // 4. Criar Reserva de Teste para o Cliente 1
   const reservation = await prisma.reservation.create({

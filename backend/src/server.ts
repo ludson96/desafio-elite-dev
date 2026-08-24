@@ -8,3 +8,4 @@ app.listen(PORT, () => {
   console.log(`📡 Modo: ${env.NODE_ENV}`);
   console.log(`📡 Healthcheck disponível em: http://localhost:${PORT}/health`);
 });
+ 

@@ -3,21 +3,22 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User as UserIcon, Mail, Lock, ArrowRight, ShieldCheck, Ticket, Calendar, QrCode } from "lucide-react";
+import { Ticket, User as UserIcon, Mail, Lock, UserPlus, AlertCircle } from "lucide-react";
 import { authApi } from "@/services/api";
 import { useAuthStore } from "@/stores/authStore";
+import type { UserRole } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/utils/cn";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const { setAuth } = useAuthStore();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"CLIENT" | "ORGANIZER" | "GATEKEEPER">("CLIENT");
+  const [role, setRole] = useState<UserRole>("CLIENT");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -42,7 +43,7 @@ export default function RegisterPage() {
       if (err instanceof Error) {
         setErrorMessage(err.message);
       } else {
-        setErrorMessage("Erro ao cadastrar. Tente novamente.");
+        setErrorMessage("Erro ao criar conta. Verifique seus dados.");
       }
     } finally {
       setIsLoading(false);
@@ -50,137 +51,121 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-      <div className="w-full max-w-lg space-y-6">
-        {/* Cabeçalho */}
+    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-zinc-900 border border-zinc-800 p-8 rounded-3xl shadow-2xl">
+        {/* Topo */}
         <div className="text-center space-y-2">
-          <div className="inline-flex w-12 h-12 rounded-2xl bg-blue-600 items-center justify-center text-white shadow-md shadow-blue-500/20 mb-2">
-            <ShieldCheck className="w-6 h-6" />
+          <div className="inline-flex p-3 rounded-2xl bg-blue-600 text-white shadow-sm mx-auto">
+            <Ticket className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Criar Nova Conta</h1>
-          <p className="text-sm text-zinc-400">
-            Cadastre-se para aproveitar todos os recursos da Elite Ingressos.
+          <h2 className="text-2xl font-extrabold text-white">Criar Nova Conta</h2>
+          <p className="text-xs text-zinc-400">
+            Cadastre-se na Elite Ingressos para comprar ou gerenciar eventos.
           </p>
         </div>
 
+        {/* Feedback de Erro Sólido e Elegante */}
+        {errorMessage && (
+          <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-zinc-950 border border-rose-900/60 text-xs text-rose-300">
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         {/* Formulário */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-5">
-          {errorMessage && (
-            <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
-              <span>⚠️</span>
-              <span>{errorMessage}</span>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Nome Completo"
+            placeholder="Ex: Carlos Silva"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            leftIcon={<UserIcon className="w-4 h-4" />}
+          />
+
+          <Input
+            label="E-mail"
+            type="email"
+            placeholder="seu.email@exemplo.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            leftIcon={<Mail className="w-4 h-4" />}
+          />
+
+          <Input
+            label="Senha (mínimo 6 caracteres)"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            leftIcon={<Lock className="w-4 h-4" />}
+          />
+
+          {/* Seleção do Perfil */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-zinc-300">Tipo de Perfil</label>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => setRole("CLIENT")}
+                className={cn(
+                  "p-2.5 rounded-xl border text-xs font-semibold text-center transition-all",
+                  role === "CLIENT"
+                    ? "bg-zinc-800 border-zinc-600 text-white shadow-sm"
+                    : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                )}
+              >
+                Cliente
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("ORGANIZER")}
+                className={cn(
+                  "p-2.5 rounded-xl border text-xs font-semibold text-center transition-all",
+                  role === "ORGANIZER"
+                    ? "bg-zinc-800 border-zinc-600 text-white shadow-sm"
+                    : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                )}
+              >
+                Organizador
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("GATEKEEPER")}
+                className={cn(
+                  "p-2.5 rounded-xl border text-xs font-semibold text-center transition-all",
+                  role === "GATEKEEPER"
+                    ? "bg-zinc-800 border-zinc-600 text-white shadow-sm"
+                    : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                )}
+              >
+                Portaria
+              </button>
             </div>
-          )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Nome Completo"
-              type="text"
-              placeholder="Ex: João da Silva"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              leftIcon={<UserIcon className="w-4 h-4" />}
-            />
-
-            <Input
-              label="E-mail"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              leftIcon={<Mail className="w-4 h-4" />}
-            />
-
-            <Input
-              label="Senha"
-              type="password"
-              placeholder="Mínimo 6 caracteres"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              leftIcon={<Lock className="w-4 h-4" />}
-            />
-
-            {/* Seleção do Tipo de Perfil */}
-            <div className="space-y-2 pt-2">
-              <label className="block text-xs font-medium text-zinc-300">
-                Selecione o seu Tipo de Perfil:
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {/* Opção Cliente */}
-                <button
-                  type="button"
-                  onClick={() => setRole("CLIENT")}
-                  className={cn(
-                    "p-3 rounded-xl border text-left transition-all flex flex-col gap-1.5",
-                    role === "CLIENT"
-                      ? "bg-blue-600/10 border-blue-500 text-white shadow-sm ring-1 ring-blue-500/40"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
-                  )}
-                >
-                  <Ticket className={cn("w-4 h-4", role === "CLIENT" ? "text-blue-400" : "text-zinc-500")} />
-                  <span className="text-xs font-semibold text-zinc-200">Cliente</span>
-                  <span className="text-[10px] text-zinc-400 leading-tight">Comprar ingressos e curtir</span>
-                </button>
-
-                {/* Opção Organizador */}
-                <button
-                  type="button"
-                  onClick={() => setRole("ORGANIZER")}
-                  className={cn(
-                    "p-3 rounded-xl border text-left transition-all flex flex-col gap-1.5",
-                    role === "ORGANIZER"
-                      ? "bg-blue-600/10 border-blue-500 text-white shadow-sm ring-1 ring-blue-500/40"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
-                  )}
-                >
-                  <Calendar className={cn("w-4 h-4", role === "ORGANIZER" ? "text-blue-400" : "text-zinc-500")} />
-                  <span className="text-xs font-semibold text-zinc-200">Organizador</span>
-                  <span className="text-[10px] text-zinc-400 leading-tight">Criar eventos e vender</span>
-                </button>
-
-                {/* Opção Portaria */}
-                <button
-                  type="button"
-                  onClick={() => setRole("GATEKEEPER")}
-                  className={cn(
-                    "p-3 rounded-xl border text-left transition-all flex flex-col gap-1.5",
-                    role === "GATEKEEPER"
-                      ? "bg-emerald-600/10 border-emerald-500 text-white shadow-sm ring-1 ring-emerald-500/40"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
-                  )}
-                >
-                  <QrCode className={cn("w-4 h-4", role === "GATEKEEPER" ? "text-emerald-400" : "text-zinc-500")} />
-                  <span className="text-xs font-semibold text-zinc-200">Portaria</span>
-                  <span className="text-[10px] text-zinc-400 leading-tight">Validar entradas no evento</span>
-                </button>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full mt-4"
-              isLoading={isLoading}
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-            >
-              Criar Conta e Começar
-            </Button>
-          </form>
-        </div>
-
-        {/* Link para Login */}
-        <p className="text-center text-xs text-zinc-400">
-          Já tem uma conta cadastrada?{" "}
-          <Link
-            href="/login"
-            className="text-blue-400 hover:text-blue-300 font-medium underline-offset-4 hover:underline"
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="w-full"
+            isLoading={isLoading}
+            leftIcon={<UserPlus className="w-4 h-4" />}
           >
-            Fazer login
+            Cadastrar e Acessar
+          </Button>
+        </form>
+
+        {/* Rodapé do Box */}
+        <div className="text-center text-xs text-zinc-400">
+          Já possui uma conta?{" "}
+          <Link href="/login" className="text-blue-400 hover:text-blue-300 font-semibold underline underline-offset-4">
+            Faça login
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
