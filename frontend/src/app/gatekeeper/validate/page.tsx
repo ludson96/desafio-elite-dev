@@ -22,6 +22,7 @@ import type { Event, TicketValidationResult } from "@/types";
 import { formatDateTime } from "@/utils/formatters";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/utils/cn";
 
 export default function GatekeeperValidatePage() {
@@ -65,7 +66,6 @@ export default function GatekeeperValidatePage() {
     };
   }, [user, isHydrated, router]);
 
-  // Função declarada antes do useEffect que a consome
   const handleValidateTicket = useCallback(
     async (code: string, signature?: string) => {
       if (!code.trim() || !selectedEventId) return;
@@ -133,9 +133,7 @@ export default function GatekeeperValidatePage() {
           handleValidateTicket(decodedText);
         }
       },
-      () => {
-        // Callback ignorado para leitura contínua de frames
-      }
+      () => {}
     );
 
     return () => {
@@ -149,13 +147,13 @@ export default function GatekeeperValidatePage() {
     <div className="flex-1 py-8 sm:py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Cabeçalho */}
-        <div className="space-y-1 pb-6 border-b border-zinc-800/80">
-          <div className="flex items-center gap-2 text-emerald-400 font-medium text-xs">
-            <ShieldCheck className="w-4 h-4" />
+        <div className="space-y-1 pb-6 border-b border-zinc-800">
+          <div className="flex items-center gap-2 text-zinc-400 font-medium text-xs">
+            <ShieldCheck className="w-4 h-4 text-blue-400" />
             <span>Controle de Acesso & Portaria</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-2.5">
-            <QrCode className="w-7 h-7 text-emerald-400" />
+            <QrCode className="w-7 h-7 text-blue-500" />
             Validação de Ingressos
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400">
@@ -202,8 +200,8 @@ export default function GatekeeperValidatePage() {
             className={cn(
               "p-3.5 rounded-xl border flex items-center justify-center gap-2 text-xs font-bold transition-all",
               mode === "MANUAL"
-                ? "bg-blue-600/20 border-blue-500 text-blue-400 shadow-sm ring-1 ring-blue-500/40"
-                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200"
+                ? "bg-zinc-800 border-zinc-600 text-white shadow-sm"
+                : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
             )}
           >
             <Keyboard className="w-4 h-4" />
@@ -216,8 +214,8 @@ export default function GatekeeperValidatePage() {
             className={cn(
               "p-3.5 rounded-xl border flex items-center justify-center gap-2 text-xs font-bold transition-all",
               mode === "CAMERA"
-                ? "bg-emerald-600/20 border-emerald-500 text-emerald-400 shadow-sm ring-1 ring-emerald-500/40"
-                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200"
+                ? "bg-zinc-800 border-zinc-600 text-white shadow-sm"
+                : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
             )}
           >
             <Camera className="w-4 h-4" />
@@ -248,7 +246,7 @@ export default function GatekeeperValidatePage() {
             >
               <div className="flex-1">
                 <Input
-                  placeholder="Ex: TKT-SHOW-1724300000000-A1B2C3"
+                  placeholder="Ex: TKT-CP-001-ANA"
                   value={ticketCode}
                   onChange={(e) => setTicketCode(e.target.value.toUpperCase())}
                   required
@@ -265,44 +263,35 @@ export default function GatekeeperValidatePage() {
 
         {/* Resultado Visual da Validação */}
         {validationResult && (
-          <div
-            className={cn(
-              "p-6 sm:p-8 rounded-3xl border text-center space-y-4 shadow-2xl animate-in zoom-in-95 duration-200",
-              validationResult.status === "VALID"
-                ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-400"
-                : validationResult.status === "ALREADY_USED"
-                ? "bg-purple-500/10 border-purple-500/40 text-purple-400"
-                : validationResult.status === "WRONG_EVENT"
-                ? "bg-amber-500/10 border-amber-500/40 text-amber-400"
-                : "bg-rose-500/10 border-rose-500/40 text-rose-400"
-            )}
-          >
-            <div className="inline-flex p-4 rounded-full bg-zinc-950 border border-white/10 shadow-lg mx-auto">
-              {validationResult.status === "VALID" && <CheckCircle2 className="w-12 h-12 text-emerald-400" />}
-              {validationResult.status === "ALREADY_USED" && <RotateCcw className="w-12 h-12 text-purple-400" />}
-              {validationResult.status === "WRONG_EVENT" && <AlertTriangle className="w-12 h-12 text-amber-400" />}
-              {validationResult.status === "INVALID" && <XCircle className="w-12 h-12 text-rose-400" />}
+          <div className="p-6 sm:p-8 rounded-3xl bg-zinc-900 border border-zinc-800 text-center space-y-4 shadow-2xl">
+            <div className="inline-flex p-4 rounded-2xl bg-zinc-950 border border-zinc-800 shadow-md mx-auto">
+              {validationResult.status === "VALID" && <CheckCircle2 className="w-10 h-10 text-emerald-400" />}
+              {validationResult.status === "ALREADY_USED" && <RotateCcw className="w-10 h-10 text-purple-400" />}
+              {validationResult.status === "WRONG_EVENT" && <AlertTriangle className="w-10 h-10 text-amber-400" />}
+              {validationResult.status === "INVALID" && <XCircle className="w-10 h-10 text-rose-400" />}
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <h2 className="text-2xl font-extrabold text-white">
-                {validationResult.status === "VALID" && "ENTRADA LIBERADA! ✅"}
-                {validationResult.status === "ALREADY_USED" && "INGRESSO JÁ UTILIZADO! ⛔"}
-                {validationResult.status === "WRONG_EVENT" && "EVENTO INCORRETO! ⚠️"}
-                {validationResult.status === "INVALID" && "INGRESSO INVÁLIDO! ❌"}
+                {validationResult.status === "VALID" && "ENTRADA LIBERADA!"}
+                {validationResult.status === "ALREADY_USED" && "INGRESSO JÁ UTILIZADO!"}
+                {validationResult.status === "WRONG_EVENT" && "EVENTO INCORRETO!"}
+                {validationResult.status === "INVALID" && "INGRESSO INVÁLIDO!"}
               </h2>
               <p className="text-sm text-zinc-300 font-medium">{validationResult.message}</p>
             </div>
 
             {validationResult.ticket && (
-              <div className="max-w-md mx-auto p-4 rounded-xl bg-zinc-950/80 border border-zinc-800 text-left text-xs space-y-1.5 text-zinc-300">
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Código:</span>
-                  <span className="font-mono font-bold text-blue-400">{validationResult.ticket.code}</span>
+              <div className="max-w-md mx-auto p-4 rounded-xl bg-zinc-950 border border-zinc-800 text-left text-xs space-y-2 text-zinc-300">
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-500">Código do Ingresso:</span>
+                  <span className="font-mono font-bold text-white">{validationResult.ticket.code}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-zinc-500">Evento:</span>
-                  <span className="font-semibold text-white">{validationResult.ticket.event?.title}</span>
+                  <span className="font-semibold text-white truncate max-w-50">
+                    {validationResult.ticket.event?.title}
+                  </span>
                 </div>
               </div>
             )}
@@ -326,20 +315,23 @@ export default function GatekeeperValidatePage() {
                       {scan.time}
                     </span>
                   </div>
-                  <span
-                    className={cn(
-                      "px-2 py-0.5 rounded text-[11px] font-bold",
+                  <Badge
+                    variant={
                       scan.result.status === "VALID"
-                        ? "text-emerald-400 bg-emerald-500/10"
+                        ? "success"
                         : scan.result.status === "ALREADY_USED"
-                        ? "text-purple-400 bg-purple-500/10"
+                        ? "purple"
                         : scan.result.status === "WRONG_EVENT"
-                        ? "text-amber-400 bg-amber-500/10"
-                        : "text-rose-400 bg-rose-500/10"
-                    )}
+                        ? "warning"
+                        : "danger"
+                    }
+                    size="sm"
                   >
-                    {scan.result.status}
-                  </span>
+                    {scan.result.status === "VALID" && "Válido"}
+                    {scan.result.status === "ALREADY_USED" && "Já Utilizado"}
+                    {scan.result.status === "WRONG_EVENT" && "Evento Incorreto"}
+                    {scan.result.status === "INVALID" && "Inválido"}
+                  </Badge>
                 </div>
               ))}
             </div>
