@@ -56,7 +56,6 @@ export default function NewEventPage() {
     setIsSearchingCatalog(true);
     setHasSearched(true);
     try {
-      // Busca ampla (ALL) para encontrar tanto shows quanto filmes
       const response = await catalogApi.search(catalogQuery.trim(), "ALL");
       setCatalogResults(response.data);
     } catch (error) {
@@ -80,36 +79,71 @@ export default function NewEventPage() {
         setDate(parsedDate.toISOString().slice(0, 16));
       }
     }
-    // Scroll suave até o formulário
     window.scrollTo({ top: 400, behavior: "smooth" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setErrorMessage("");
+
+    // Validações explícitas com feedback imediato
+    if (!title.trim()) {
+      setErrorMessage("Por favor, informe o título do evento.");
+      return;
+    }
+    if (!date) {
+      setErrorMessage("Por favor, selecione a data e hora do evento.");
+      return;
+    }
+    const eventDate = new Date(date);
+    if (isNaN(eventDate.getTime())) {
+      setErrorMessage("A data selecionada é inválida.");
+      return;
+    }
+    if (eventDate <= new Date()) {
+      setErrorMessage("A data do evento deve ser no futuro.");
+      return;
+    }
+    if (!location.trim()) {
+      setErrorMessage("Por favor, informe o local do evento.");
+      return;
+    }
+    const capNum = parseInt(capacity, 10);
+    if (isNaN(capNum) || capNum <= 0) {
+      setErrorMessage("A capacidade de ingressos deve ser um número maior que zero.");
+      return;
+    }
+    const priceNum = parseFloat(price);
+    if (isNaN(priceNum) || priceNum < 0) {
+      setErrorMessage("O preço do ingresso deve ser um valor válido.");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       await eventsApi.create({
-        title,
-        description,
+        title: title.trim(),
+        description: description.trim() || undefined,
         type,
-        category,
-        date: new Date(date).toISOString(),
-        location,
-        capacity: parseInt(capacity, 10),
-        price: parseFloat(price),
+        category: category.trim() || undefined,
+        date: eventDate.toISOString(),
+        location: location.trim(),
+        capacity: capNum,
+        price: priceNum,
         imageUrl: imageUrl.trim() || undefined,
         status,
       });
 
       router.push("/organizer/events");
     } catch (err) {
+      console.error("Erro ao criar evento:", err);
       if (err instanceof Error) {
         setErrorMessage(err.message);
       } else {
         setErrorMessage("Erro ao criar evento. Verifique os campos e tente novamente.");
       }
+      window.scrollTo({ top: 350, behavior: "smooth" });
     } finally {
       setIsLoading(false);
     }

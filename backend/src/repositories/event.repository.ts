@@ -88,9 +88,9 @@ export class EventRepository {
         date: data.date,
         location: data.location,
         capacity: data.capacity,
-        availableTickets: data.capacity, // Na criação, ingressos disponíveis = capacidade total
+        availableTickets: data.capacity,
         price: data.price,
-        status: "PUBLISHED", // Ao publicar o evento criado
+        status: (data.status as EventStatus) ?? "PUBLISHED",
         organizerId: data.organizerId,
         externalEventId: data.externalEventId ?? null,
         externalSource: data.externalSource ?? null,
@@ -111,10 +111,16 @@ export class EventRepository {
         ...(data.location ? { location: data.location } : {}),
         ...(data.capacity ? { capacity: data.capacity } : {}),
         ...(data.price !== undefined ? { price: data.price } : {}),
-        ...(data.status ? { status: data.status } : {}),
+        ...(data.status ? { status: data.status as EventStatus } : {}),
         ...(data.externalEventId !== undefined ? { externalEventId: data.externalEventId ?? null } : {}),
         ...(data.externalSource !== undefined ? { externalSource: data.externalSource ?? null } : {}),
       },
+    });
+  }
+
+  async delete(id: string): Promise<Event> {
+    return prisma.event.delete({
+      where: { id },
     });
   }
 }

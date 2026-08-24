@@ -12,18 +12,19 @@ export const createEventSchema = z.object({
   location: z.string().min(2, "O local deve ter pelo menos 2 caracteres"),
   capacity: z.coerce.number().int().min(1, "A capacidade deve ser de pelo menos 1 ingresso"),
   price: z.coerce.number().min(0, "O preço não pode ser negativo"),
+  status: z.enum(["DRAFT", "PUBLISHED", "CANCELED"]).optional().default("PUBLISHED"),
   externalEventId: z.string().optional(),
   externalSource: z.string().optional(),
 });
 
 export const updateEventSchema = createEventSchema.partial().extend({
-  status: z.enum(["DRAFT", "PUBLISHED", "CANCELED", "FINISHED"]).optional(),
+  status: z.enum(["DRAFT", "PUBLISHED", "CANCELED"]).optional(),
 });
 
 export const listEventsQuerySchema = z.object({
   search: z.string().optional(),
   type: z.enum(["SHOW", "MOVIE"]).optional(),
-  status: z.enum(["DRAFT", "PUBLISHED", "CANCELED", "FINISHED"]).optional().default("PUBLISHED"),
+  status: z.enum(["DRAFT", "PUBLISHED", "CANCELED"]).optional().default("PUBLISHED"),
   page: z.coerce.number().min(1).optional().default(1),
   limit: z.coerce.number().min(1).max(100).optional().default(10),
 });
