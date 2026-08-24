@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,53 +12,50 @@ import {
   ArrowLeft,
   Share2,
   Check,
+  AlertCircle,
   CreditCard,
   XCircle,
-  AlertCircle,
 } from "lucide-react";
 import { eventsApi, reservationsApi } from "@/services/api";
 import { useAuthStore } from "@/stores/authStore";
 import type { Event } from "@/types";
 import { formatCurrency, formatDateTime } from "@/utils/formatters";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
+import { cn } from "@/utils/cn";
 
 export default function EventDetailsPage() {
-  const params = useParams<{ id: string }>();
+  const params = useParams();
   const router = useRouter();
-  const { user, isHydrated } = useAuthStore();
+  const eventId = params.id as string;
+
+  const { user, token } = useAuthStore();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [ticketQuantity, setTicketQuantity] = useState(1);
-  const [isCopied, setIsCopied] = useState(false);
-
-  // Estados do Modal de Checkout Simulado
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSimulationType, setPaymentSimulationType] = useState<"APPROVED" | "REFUSED">("APPROVED");
+  const [isProcessing, setIsProcessing] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
-
-  const eventId = params?.id;
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     let ignore = false;
-    const loadEvent = async () => {
-      if (!eventId) return;
-      setLoading(true);
+    async function loadEvent() {
       try {
+        setLoading(true);
         const response = await eventsApi.getById(eventId);
         if (!ignore) {
           setEvent(response.data);
         }
       } catch (error) {
-        console.error("Erro ao carregar detalhes do evento:", error);
+        console.error("Erro ao carregar evento:", error);
       } finally {
         if (!ignore) setLoading(false);
       }
-    };
-
+    }
     loadEvent();
     return () => {
       ignore = true;
@@ -74,8 +71,7 @@ export default function EventDetailsPage() {
   };
 
   const handleOpenCheckout = () => {
-    if (!isHydrated) return;
-    if (!user) {
+    if (!token || !user) {
       router.push(`/login?redirect=/events/${eventId}`);
       return;
     }
@@ -83,46 +79,50 @@ export default function EventDetailsPage() {
     setIsCheckoutOpen(true);
   };
 
-  const handleConfirmReservation = async () => {
+  const handleProcessPayment = async () => {
     if (!event) return;
-
     setIsProcessing(true);
     setCheckoutError("");
 
     try {
-      // Cria a reserva com a simulação escolhida no modal (APPROVED ou REFUSED)
-      await reservationsApi.create({
+      const response = await reservationsApi.create({
         eventId: event.id,
         quantity: ticketQuantity,
         paymentStatus: paymentSimulationType,
       });
 
-      setIsProcessing(false);
-      setIsCheckoutOpen(false);
+      const { paymentOutcome } = response.data;
 
-      if (paymentSimulationType === "APPROVED") {
-        // Redireciona o usuário para a tela dos seus ingressos com QR Code
+      // Se o pagamento for aprovado -> redireciona para Meus Ingressos
+      if (paymentOutcome.status === "APPROVED") {
         router.push("/my-tickets");
       } else {
-        // Caso recusado, redireciona para o histórico de compras onde verá a reserva como RECUSADA
+        // Se o pagamento for recusado -> redireciona diretamente para Minhas Compras & Reservas
         router.push("/my-reservations");
       }
     } catch (err) {
-      setIsProcessing(false);
       if (err instanceof Error) {
         setCheckoutError(err.message);
       } else {
-        setCheckoutError("Erro ao processar reserva. Tente novamente.");
+        setCheckoutError("Erro ao processar reserva e pagamento.");
       }
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center py-24">
-        <div className="space-y-3 text-center">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-zinc-400">Carregando detalhes do evento...</p>
+      <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8 animate-pulse">
+        <div className="h-8 bg-zinc-800 rounded w-48" />
+        <div className="h-96 bg-zinc-800 rounded-3xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="h-10 bg-zinc-800 rounded w-3/4" />
+            <div className="h-4 bg-zinc-800 rounded w-1/2" />
+            <div className="h-32 bg-zinc-800 rounded-2xl" />
+          </div>
+          <div className="h-80 bg-zinc-800 rounded-3xl" />
         </div>
       </div>
     );
@@ -130,14 +130,14 @@ export default function EventDetailsPage() {
 
   if (!event) {
     return (
-      <div className="flex-1 flex items-center justify-center py-24">
-        <div className="text-center space-y-4 max-w-sm px-4">
-          <div className="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-500 mx-auto">
-            <Ticket className="w-7 h-7" />
+      <div className="flex-1 flex items-center justify-center py-20">
+        <div className="text-center space-y-4 max-w-md mx-auto p-8 rounded-3xl bg-zinc-900 border border-zinc-800">
+          <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-500 mx-auto">
+            <Ticket className="w-6 h-6" />
           </div>
           <h2 className="text-xl font-bold text-white">Evento não encontrado</h2>
           <p className="text-xs text-zinc-400">
-            O evento que você está procurando pode ter sido cancelado ou removido.
+            O evento solicitado não existe ou foi removido.
           </p>
           <Link href="/">
             <Button variant="outline" size="sm">
@@ -332,7 +332,7 @@ export default function EventDetailsPage() {
                   </div>
 
                   {/* Informação sobre Disponibilidade */}
-                  <div className="flex items-center gap-2 text-xs text-zinc-400 bg-zinc-950/60 p-3 rounded-xl border border-zinc-800">
+                  <div className="flex items-center gap-2 text-xs text-zinc-400 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
                     <Users className="w-4 h-4 text-blue-400 shrink-0" />
                     <span>
                       Capacidade total: <strong>{event.capacity}</strong> pessoas.
@@ -350,9 +350,9 @@ export default function EventDetailsPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-center space-y-2">
-                  <XCircle className="w-6 h-6 mx-auto" />
-                  <p className="text-xs font-bold uppercase">Ingressos Esgotados</p>
+                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 text-center space-y-2">
+                  <XCircle className="w-6 h-6 mx-auto text-rose-500" />
+                  <p className="text-xs font-bold uppercase text-rose-400">Ingressos Esgotados</p>
                   <p className="text-[11px] text-zinc-400">
                     Todos os ingressos para este evento já foram vendidos.
                   </p>
@@ -360,7 +360,7 @@ export default function EventDetailsPage() {
               )}
 
               {/* Informações de Segurança */}
-              <div className="pt-2 text-center text-[11px] text-zinc-500 space-y-1 border-t border-zinc-800/80">
+              <div className="pt-2 text-center text-[11px] text-zinc-500 space-y-1 border-t border-zinc-800">
                 <p>🔒 Transação protegida.</p>
                 <p>🎟️ Emissão do QR Code com assinatura criptográfica.</p>
               </div>
@@ -372,8 +372,8 @@ export default function EventDetailsPage() {
         <Modal
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
-          title="Checkout Simulado — Elite Ingressos"
-          description="Simulação de pagamento sem cobrança financeira real para avaliação do desafio técnico."
+          title="Checkout — Elite Ingressos"
+          description="Essa é apenas uma simulação de pagamento sem cobrança financeira real para avaliação do desafio técnico."
           maxWidth="md"
         >
           <div className="space-y-6 py-2">
@@ -381,7 +381,7 @@ export default function EventDetailsPage() {
             <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2 text-xs">
               <div className="flex justify-between">
                 <span className="text-zinc-400">Evento:</span>
-                <span className="font-semibold text-white">{event.title}</span>
+                <span className="font-semibold text-white truncate max-w-55">{event.title}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-400">Quantidade:</span>
@@ -397,7 +397,7 @@ export default function EventDetailsPage() {
 
             {/* Escolha do Cenário de Simulação */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-zinc-200">
+              <label className="block text-xs font-bold text-zinc-300">
                 Escolha o Cenário de Teste do Pagamento:
               </label>
 
@@ -405,16 +405,18 @@ export default function EventDetailsPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentSimulationType("APPROVED")}
-                  className={`p-3.5 rounded-xl border text-left transition-all flex flex-col gap-1 ${
+                  className={cn(
+                    "p-3.5 rounded-xl border text-left transition-all flex flex-col gap-1.5",
                     paymentSimulationType === "APPROVED"
-                      ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-sm"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700"
-                  }`}
+                      ? "bg-zinc-800 border-zinc-600 text-white shadow-sm"
+                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
+                  )}
                 >
-                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                    ✓ APROVAR Pagamento
-                  </span>
-                  <span className="text-[10px] text-zinc-400 leading-tight">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="text-xs font-bold text-white">Aprovar Pagamento</span>
+                  </div>
+                  <span className="text-[11px] text-zinc-400 leading-relaxed">
                     Debita estoque e emite os ingressos com QR Code
                   </span>
                 </button>
@@ -422,16 +424,18 @@ export default function EventDetailsPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentSimulationType("REFUSED")}
-                  className={`p-3.5 rounded-xl border text-left transition-all flex flex-col gap-1 ${
+                  className={cn(
+                    "p-3.5 rounded-xl border text-left transition-all flex flex-col gap-1.5",
                     paymentSimulationType === "REFUSED"
-                      ? "bg-rose-500/10 border-rose-500 text-rose-400 shadow-sm"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700"
-                  }`}
+                      ? "bg-zinc-800 border-zinc-600 text-white shadow-sm"
+                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
+                  )}
                 >
-                  <span className="text-xs font-bold text-rose-400 flex items-center gap-1">
-                    ✕ RECUSAR Pagamento
-                  </span>
-                  <span className="text-[10px] text-zinc-400 leading-tight">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+                    <span className="text-xs font-bold text-white">Recusar Pagamento</span>
+                  </div>
+                  <span className="text-[11px] text-zinc-400 leading-relaxed">
                     Simula falha da operadora sem debitar estoque
                   </span>
                 </button>
@@ -440,8 +444,8 @@ export default function EventDetailsPage() {
 
             {/* Feedback de Erro */}
             {checkoutError && (
-              <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+              <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-zinc-950 border border-rose-900/60 text-xs text-rose-300">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
                 <span>{checkoutError}</span>
               </div>
             )}
@@ -458,15 +462,13 @@ export default function EventDetailsPage() {
               </Button>
 
               <Button
-                variant={paymentSimulationType === "APPROVED" ? "primary" : "danger"}
+                variant="primary"
                 size="sm"
-                onClick={handleConfirmReservation}
+                onClick={handleProcessPayment}
                 isLoading={isProcessing}
                 leftIcon={<CreditCard className="w-4 h-4" />}
               >
-                {paymentSimulationType === "APPROVED"
-                  ? "Confirmar e Pagar"
-                  : "Simular Recusa de Pagamento"}
+                Confirmar Simulação
               </Button>
             </div>
           </div>
