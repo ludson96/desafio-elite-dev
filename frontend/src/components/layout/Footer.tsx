@@ -15,13 +15,6 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Informações do Desafio */}
-        <div className="flex items-center gap-2 text-xs text-zinc-400">
-          <span>
-            Desenvolvido para o Desafio Técnico <strong>Verzel (Elite Dev)</strong>
-          </span>
-        </div>
-
         {/* Direitos */}
         <div className="text-xs text-zinc-500 flex items-center gap-1">
           <span>© {new Date().getFullYear()} Elite Ingressos.</span>

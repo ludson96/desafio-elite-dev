@@ -40,9 +40,6 @@ export function Navbar() {
               <span className="text-base font-bold tracking-tight text-white group-hover:text-blue-400 transition-colors">
                 Elite Ingressos
               </span>
-              <span className="text-[10px] text-zinc-500 font-mono -mt-1 tracking-wider uppercase">
-                Verzel Challenge
-              </span>
             </div>
           </Link>
 
