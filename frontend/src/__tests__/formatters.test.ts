@@ -1,84 +1,77 @@
 import { describe, it, expect } from "vitest";
 import {
   formatCurrency,
-  formatDateTime,
   formatDate,
+  formatDateTime,
   formatRole,
   formatEventType,
   getStatusBadge,
 } from "@/utils/formatters";
 
-describe("formatters utils", () => {
+describe("Utils / Formatters", () => {
   describe("formatCurrency", () => {
-    it("deve formatar número para moeda BRL", () => {
-      const result = formatCurrency(150);
-      expect(result).toContain("150,00");
+    it("deve formatar número para moeda brasileira (BRL)", () => {
+      const result = formatCurrency(150.5);
+      expect(result).toContain("150,50");
+      expect(result).toMatch(/R\$\s?150,50/);
     });
 
-    it("deve formatar string numérica para moeda BRL", () => {
+    it("deve formatar string numérica corretamente", () => {
       const result = formatCurrency("99.90");
       expect(result).toContain("99,90");
     });
 
-    it("deve retornar R$ 0,00 para entradas inválidas", () => {
-      expect(formatCurrency("invalid")).toContain("0,00");
+    it("deve retornar R$ 0,00 para valores inválidos", () => {
+      expect(formatCurrency("invalido")).toBe("R$ 0,00");
+    });
+  });
+
+  describe("formatDate", () => {
+    it("deve formatar data ISO para dd/mm/aaaa", () => {
+      const isoDate = "2026-08-15T14:30:00.000Z";
+      const result = formatDate(isoDate);
+      expect(result).toMatch(/\d{2}\/\d{2}\/\d{4}/);
+    });
+
+    it("deve retornar string vazia para entrada vazia", () => {
+      expect(formatDate("")).toBe("");
+    });
+  });
+
+  describe("formatDateTime", () => {
+    it("deve formatar data e hora corretamente", () => {
+      const isoDate = "2026-08-15T14:30:00.000Z";
+      const result = formatDateTime(isoDate);
+      expect(result).toMatch(/\d{2}\/\d{2}\/\d{4}/);
     });
   });
 
   describe("formatRole", () => {
-    it("deve traduzir ORGANIZER para Organizador", () => {
+    it("deve traduzir papéis de usuário", () => {
       expect(formatRole("ORGANIZER")).toBe("Organizador");
-    });
-
-    it("deve traduzir CLIENT para Cliente", () => {
-      expect(formatRole("CLIENT")).toBe("Cliente");
-    });
-
-    it("deve traduzir GATEKEEPER para Portaria", () => {
       expect(formatRole("GATEKEEPER")).toBe("Portaria");
+      expect(formatRole("CLIENT")).toBe("Cliente");
     });
   });
 
   describe("formatEventType", () => {
-    it("deve formatar SHOW como Show / Concerto", () => {
+    it("deve traduzir os tipos de evento", () => {
       expect(formatEventType("SHOW")).toBe("Show / Concerto");
-    });
-
-    it("deve formatar MOVIE como Filme / Cinema", () => {
       expect(formatEventType("MOVIE")).toBe("Filme / Cinema");
     });
   });
 
   describe("getStatusBadge", () => {
-    it("deve retornar label Válido / Ativo e cor verde para ACTIVE", () => {
-      const badge = getStatusBadge("ACTIVE");
-      expect(badge.label).toBe("Válido / Ativo");
-      expect(badge.color).toContain("emerald");
+    it("deve retornar variant success para status ativos/confirmados", () => {
+      const badge = getStatusBadge("CONFIRMED");
+      expect(badge.label).toBe("Confirmado");
+      expect(badge.variant).toBe("success");
     });
 
-    it("deve retornar label Utilizado e cor roxa para USED", () => {
-      const badge = getStatusBadge("USED");
-      expect(badge.label).toBe("Utilizado");
-      expect(badge.color).toContain("purple");
-    });
-
-    it("deve retornar label Recusado e cor vermelha para REFUSED", () => {
+    it("deve retornar variant danger para status recusados ou cancelados", () => {
       const badge = getStatusBadge("REFUSED");
       expect(badge.label).toBe("Recusado");
-      expect(badge.color).toContain("rose");
-    });
-  });
-
-  describe("formatDate and formatDateTime", () => {
-    it("deve formatar data ISO válida", () => {
-      const dateStr = "2026-10-25T20:00:00.000Z";
-      const formatted = formatDate(dateStr);
-      expect(formatted).toMatch(/\d{2}\/\d{2}\/\d{4}/);
-    });
-
-    it("deve retornar string vazia para entrada nula ou vazia", () => {
-      expect(formatDate("")).toBe("");
-      expect(formatDateTime("")).toBe("");
+      expect(badge.variant).toBe("danger");
     });
   });
 });

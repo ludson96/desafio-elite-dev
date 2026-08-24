@@ -144,7 +144,7 @@ export default function MyTicketsPage() {
                         <Film className="w-8 h-8 opacity-40" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/30 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-zinc-900 via-zinc-900/30 to-transparent" />
 
                     {/* Status Flutuante */}
                     <div className="absolute top-3 left-3 z-10">
