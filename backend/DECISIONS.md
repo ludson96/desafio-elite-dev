@@ -1,45 +1,46 @@
-# 🧠 Registro de Decisões de Arquitetura e Engenharia (ADR / DECISIONS)
+# 🧠 Decisões de Arquitetura e Engenharia - Backend (DECISIONS.md)
 
-Este documento detalha **todas as decisões técnicas, arquiteturais e de negócio** tomadas durante o desenvolvimento do backend da Plataforma de Eventos e Ingressos do **Desafio Elite Dev (Verzel)**, justificando cada escolha, o que foi descartado e como os requisitos do desafio foram atendidos.
-
----
-
-## 📑 Sumário Executivo
-
-1. [Visão Geral da Arquitetura](#1-visão-geral-da-arquitetura)
-2. [Escolha e Justificativa da Stack](#2-escolha-e-justificativa-da-stack)
-3. [Decisões de Modelagem de Banco de Dados](#3-decisões-de-modelagem-de-banco-de-dados)
-4. [Módulos Implementados e Decisões de Negócio](#4-módulos-implementados-e-decisões-de-negócio)
-5. [Segurança e Prevenção de Fraudes](#5-segurança-e-prevenção-de-fraudes)
-6. [Resolução de Concorrência e Overbooking](#6-resolução-de-concorrência-e-overbooking)
-7. [O que foi descartado / Evitado](#7-o-que-foi-descartado--evitado)
-8. [Uso de Ferramentas de IA](#8-uso-de-ferramentas-de-ia)
+Este documento registra os fundamentos técnicos, padrões arquiteturais e decisões de engenharia adotados no desenvolvimento da API do **Elite Ingressos** (Desafio Técnico Elite Dev).
 
 ---
 
-## 1. Visão Geral da Arquitetura
+## 1. Arquitetura em Camadas (*Clean Architecture* Adaptada)
 
-Optamos pelo padrão **Layered Architecture (Arquitetura em Camadas)** com fluxo unidirecional estrito:
+Optamos por uma arquitetura em camadas bem delimitadas com responsabilidade única:
 
-$$\text{Routes} \longrightarrow \text{Middlewares} \longrightarrow \text{Controllers} \longrightarrow \text{Services} \longrightarrow \text{Repositories} \longrightarrow \text{Prisma / PostgreSQL}$$
+```
+[ HTTP Request ]
+       │
+       ▼
+[ Routes & Middlewares ]  (Express Router + JWT + RBAC + Validação Zod)
+       │
+       ▼
+[ Controllers ]           (Extrai DTOs, chama Services, devolve Status HTTP)
+       │
+       ▼
+[ Services ]              (Regras de Negócio, Transações ACID, HMAC, Overbooking)
+       │
+       ▼
+[ Repositories ]          (Abstração e isolamento das queries do Prisma ORM)
+       │
+       ▼
+[ PostgreSQL Database ]   (Modelagem Relacional com Enums Nativos)
+```
 
-### Por que essa estrutura?
-- **Desacoplamento real**: A camada de regras de negócio (`services`) não sabe o que é Express (`req`/`res`). Isso permite testar services de forma isolada através de injeção de dependência (`constructor(private repo = defaultRepo)`).
-- **Isolamento de Persistência (`repositories`)**: Encapsula qualquer chamada do Prisma ORM. Se o ORM for trocado, apenas o repositório é modificado.
-- **Validação Antecipada (`middlewares/validate.middleware.ts`)**: Nenhuma requisição com dados inválidos chega ao Controller ou Service. O Zod rejeita no portão de entrada com HTTP 400.
+### Por que essa divisão?
+1. **Testabilidade Real**: Permite testar Services isoladamente através de injeção de dependência dos Repositories (sem depender de conexões com o banco de dados);
+2. **Desacoplamento**: Se o ORM ou banco de dados mudar no futuro, apenas a camada de `repositories/` precisa ser ajustada;
+3. **Legibilidade e Manutenção**: Controllers permanecem enxutos, focados apenas na interface HTTP.
 
 ---
 
-## 2. Escolha e Justificativa da Stack
-
-### Node.js 20+ com TypeScript (ESM Nativo)
-- **Por quê?** Tipagem estática fim a fim com TypeScript em modo ESM (`"type": "module"`), permitindo autocomplete completo e segurança em tempo de compilação sem necessidade de transpilação pesada para CJS.
+## 2. Racional das Tecnologias Escolhidas
 
 ### Express 5
 - **Por quê?** A versão 5 do Express traz suporte nativo a rotas assíncronas (tratando promises rejeitadas sem travar o event-loop) e robustez consagrada no ecossistema Node.js.
 
 ### Prisma ORM 7 + Driver Adapter (`@prisma/adapter-pg`)
-- **Por quê?** O Prisma 7 é a versão mais moderna do ORM, utilizando driver adapters nativos para conexões PostgreSQL via TCP pool de alta performance. Garante schemas declarativos, migrações versionadas automatizadas e geração estática de tipos.
+- **Por quê?** O Prisma 7 é a versão mais moderna do ORM, utilizando driver adapters nativos para conexões PostgreSQL via pool de alta performance. Garante schemas declarativos, migrações versionadas automatizadas e geração estática de tipos.
 - **Por que não Sequelize?** O Sequelize possui tipagem TypeScript deficiente, sintaxe verbosa para queries e migrations manuais propensas a erro.
 
 ### Zod (v4)
@@ -74,33 +75,33 @@ Criamos enums nativos no PostgreSQL via Prisma para evitar estados inconsistente
 - **Senhas**: Hasheadas com `bcryptjs` (salt rounds = 10).
 - **Endpoints**:
   - `POST /api/auth/register`: Cadastro de usuários com validação de unicidade de e-mail.
-  - `POST /api/auth/login`: Autenticação e geração de token JWT de 7 dias.
+  - `POST /api/auth/login`: Autenticação e geração de token JWT com validade de 7 dias.
   - `GET /api/auth/me`: Retorno do perfil logado a partir do token.
 
-### 🎬 Módulo 2: Catálogo Externo (`/api/catalog`)
+### 🌐 Módulo 2: Catálogo Externo (`/api/catalog`)
 - **Integração Real + Fallback de Alta Fidelidade**:
   - Integração com **TMDb** (filmes) e **Ticketmaster** (shows).
   - Caso as chaves de API não estejam preenchidas no `.env`, a API recorre de forma transparente ao `src/constants/demoCatalog.ts`.
   - **Decisão**: A extração de dados estáticos para `src/constants/` manteve o arquivo de serviço (`externalCatalog.service.ts`) 100% focado em lógica de negócio, sem poluição visual.
 
-### 🎪 Módulo 3: Gestão de Eventos (`/api/events`)
+### 🎭 Módulo 3: Gestão de Eventos (`/api/events`)
 - **Regras de Negócio**:
   - Validação para impedir criação ou edição de eventos com datas no passado.
   - Apenas organizadores autenticados podem criar eventos.
   - Um organizador só pode editar eventos dos quais seja o criador legítimo (`event.organizerId === req.user.id`).
   - Listagem pública com paginação e busca textual flexível (`contains` case-insensitive em título, descrição, local e categoria).
 
-### 🎟️ Módulo 4: Reservas & Checkout Simulado (`/api/reservations`)
+### 💳 Módulo 4: Reservas & Checkout Simulado (`/api/reservations`)
 - **Pagamento Simulado Realista**: O schema aceita `paymentStatus: 'APPROVED' | 'REFUSED'`, cumprindo o requisito de simular tanto cenários de sucesso quanto de falha de pagamento.
 - **Cenário APROVADO**: Executa transação atômica, debita o estoque e emite os ingressos com assinatura digital.
 - **Cenário RECUSADO**: Grava a tentativa como recusada, não emite nenhum ingresso e mantém o estoque intacto.
 
-### 🚪 Módulo 5: Ingressos, Compartilhamento & Validação de Portaria (`/api/tickets`)
+### 🎟️ Módulo 5: Ingressos, Compartilhamento & Validação de Portaria (`/api/tickets`)
 - **Área do Cliente (`GET /api/tickets/my-tickets`)**: Retorna os ingressos com a imagem do QR Code gerada em Base64 Data URL (`qrCodeUrl`) para renderização direta sem requisições adicionais.
 - **Link Público (`GET /api/tickets/share/:shareToken`)**: Permite que o cliente compartilhe um ingresso específico via URL com token UUID randômico, sem expor os outros ingressos de sua conta.
 - **Validação de Portaria (`POST /api/tickets/validate`)**:
   - Aceita leitura óptica via câmera (JSON do QR) ou digitação manual do código.
-  - Retornos claros conforme o PDF:
+  - Retornos claros conforme a especificação:
     1. **`VALID`**: Entrada autorizada, ingresso marcado como utilizado;
     2. **`ALREADY_USED`**: Ingresso já validado anteriormente, informando a data/hora exata do uso;
     3. **`WRONG_EVENT`**: Ingresso válido, mas emitido para outro evento diferente do qual a portaria está controlando;
@@ -148,12 +149,12 @@ Um dos maiores desafios em sistemas de ingressos é garantir que o mesmo ingress
 | :--- | :--- |
 | **Sistemas de fila pesados (RabbitMQ/Redis/BullMQ)** | Desnecessário para o escopo do desafio. O controle transacional no PostgreSQL resolve concorrência com simplicidade e zero overhead de infraestrutura. |
 | **Gateway de pagamento real (Stripe/Pagar.me)** | O desafio solicitou explicitamente cobrança simulada. Usar um gateway real adicionaria complexidade de webhooks sem ganho didático. |
-| **Envio de e-mails / PDF anexo** | Dispensado explicitamente na página 4 do enunciado ("Não precisa fazer: envio de ingresso por e-mail"). Focamos na experiência via Link de Compartilhamento e QR Code na tela. |
+| **Envio de e-mails / PDF anexo** | Focamos na experiência moderna via Link de Compartilhamento público e QR Code diretamente na tela. |
 
 ---
 
 ## 8. Uso de Ferramentas de IA
 
-Em total conformidade com a seção *"Uso de IA"* da página 5 do PDF do desafio:
+Em total conformidade com a seção de boas práticas:
 - **Ferramentas utilizadas**: Pair Programming assistido por IA (Antigravity IDE / Google Gemini).
-- **Como foi conduzido**: O desenvolvimento seguiu um fluxo estritamente guiado passo a passo (*Top-Down: Route ➔ Controller ➔ Service ➔ Repository ➔ Database*), com validação manual de cada arquivo, separação de interfaces e constantes, e refatorações conscientes para garantir que a arquitetura representasse decisões de engenharia sólidas e autênticas.
+- **Como foi conduzido**: O desenvolvimento seguiu um fluxo estritamente guiado passo a passo (*Top-Down: Route ➔ Controller ➔ Service ➔ Repository ➔ Database*), com validação manual de cada arquivo, separação de interfaces e constantes, e refatorações conscientes para garantir decisões de engenharia sólidas e autênticas.

@@ -1,6 +1,6 @@
-# 🏛️ Front-End Architecture & Technical Decisions (DECISIONS.md)
+# 🧠 Decisões de Arquitetura e Engenharia - Front-End (DECISIONS.md)
 
-Este documento detalha a arquitetura, padrões e decisões técnicas adotadas no desenvolvimento do **Front-End** da plataforma **Elite Ingressos** (Desafio Técnico Verzel / Elite Dev).
+Este documento detalha a arquitetura, padrões e decisões técnicas adotadas no desenvolvimento do **Front-End** da plataforma **Elite Ingressos** (Desafio Técnico Elite Dev).
 
 ---
 
@@ -11,7 +11,7 @@ Este documento detalha a arquitetura, padrões e decisões técnicas adotadas no
 - **Racional**:
   - **Otimização de Carregamento & SEO**: Renderização rápida das páginas públicas (Vitrine e Ingressos Compartilhados);
   - **Roteamento Baseado em Arquivos**: Organização modular e intuitiva das rotas (`/events/[id]`, `/tickets/share/[shareToken]`, `/organizer/events`, `/gatekeeper/validate`);
-  - **Compatibilidade com Next Image**: Componente `<Image />` oficial configurado com `remotePatterns` para suporte otimizado às imagens do TMDb, Ticketmaster e Unsplash sem riscos de crash de domínio.
+  - **Compatibilidade com Next Image**: Componente `<Image />` oficial configurado com `remotePatterns` para suporte otimizado às imagens do TMDb, Ticketmaster e Unsplash sem riscos de travamento de domínio.
 
 ### 1.2 Zustand para Gerenciamento de Estado Global
 - **Decisão**: Adoção do **Zustand** com middleware `persist` em vez de Redux Toolkit ou Context API puro.
@@ -20,10 +20,10 @@ Este documento detalha a arquitetura, padrões e decisões técnicas adotadas no
   - **Persistência Transparente**: O token JWT e os dados do usuário logado são mantidos no `localStorage` sob a chave `'elite-ingressos-auth-storage'`;
   - **Segurança na Hidratação (SSR/Client)**: Implementado o estado `isHydrated` com o callback `onRehydrateStorage` para eliminar divergências de hidratação (*hydration mismatch*) no Next.js.
 
-### 1.3 TailwindCSS v4 com Design System Base
-- **Decisão**: Uso do TailwindCSS com tema escuro nativo (*Dark Theme* moderno), *glassmorphism* e micro-animações.
+### 1.3 TailwindCSS v4 com Design System Sólido (*Anti-AI Slop*)
+- **Decisão**: Design system escuro minimalista, com componentes neutros e sólidos em substituição a vidros coloridos fluorescentes (*glassmorphism exagerado*).
 - **Racional**:
-  - **Estética Premium**: Criação de componentes limpos (`Badge`, `Button`, `Input`, `Modal`) com tokens de cores semânticas consistentes;
+  - **Estética Sóbria e Profissional**: Badges sólidas com pontos indicadores coloridos (*dots* de status), alertas em fundo escuro (`bg-zinc-950 border-rose-900/60`) e botões com `cursor: pointer` nativo;
   - **Utilitário `cn` (`clsx` + `tailwind-merge`)**: Garante combinação segura de classes condicionais e substituição de classes de layout sem conflitos de especificidade.
 
 ---
@@ -32,22 +32,22 @@ Este documento detalha a arquitetura, padrões e decisões técnicas adotadas no
 
 O frontend foi concebido e implementado em **4 camadas bem definidas**:
 
-```text
+```
 ┌─────────────────────────────────────────────────────────────┐
-│  Camada 4: Módulos de Telas & Páginas (src/app/*)          │
-│  - Vitrine, Checkout, Meus Ingressos, Painel, Portaria     │
+│  Camada 4: Módulos de Telas & Páginas (src/app/*)           │
+│  - Vitrine, Checkout, Meus Ingressos, Painel, Portaria      │
 ├─────────────────────────────────────────────────────────────┤
-│  Camada 3: Design System & Layout (src/components/*)        │
-│  - UI: Button, Input, Modal, Badge                          │
+│  Camada 3: Design System & Layout (src/components/*)         │
+│  - UI: Button, Input, Modal, Badge com dot                  │
 │  - Layout: Navbar, Footer                                   │
 ├─────────────────────────────────────────────────────────────┤
-│  Camada 2: Estado Global & API (src/stores & src/services)  │
-│  - authStore.ts (Zustand)                                   │
-│  - api.ts (apiFetch, authApi, eventsApi, ticketsApi...)     │
-│  - formatters.ts (formatCurrency, formatDateTime, Badges)   │
+│  Camada 2: Estado Global & API (src/stores & src/services)   │
+│  - authStore.ts (Zustand com persistência segura)           │
+│  - api.ts (apiFetch, authApi, eventsApi, ticketsApi...)      │
+│  - formatters.ts (formatCurrency, formatDateTime, Badges)    │
 ├─────────────────────────────────────────────────────────────┤
-│  Camada 1: Configuração Base & Tipos (src/types & env)      │
-│  - Tipagens TypeScript completas espelhando o Prisma Schema │
+│  Camada 1: Configuração Base & Tipos (src/types & env)       │
+│  - Tipagens TypeScript completas espelhando o Prisma Schema  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -61,12 +61,12 @@ O frontend foi concebido e implementado em **4 camadas bem definidas**:
 
 ### 3.2 Simulação de Pagamento & Concorrência no Checkout (`/events/[id]`)
 - O modal de checkout permite simular explicitamente os dois cenários:
-  - **`APPROVED`**: Dispara a transação atômica no PostgreSQL com decremento seguro de estoque e emissão de tickets com assinatura HMAC;
-  - **`REFUSED`**: Simula recusa da operadora bancária, informando o cliente sem decrementar o estoque e sem emitir ingressos;
+  - **`APPROVED`**: Dispara a transação atômica no PostgreSQL com decremento seguro de estoque e emissão de tickets com assinatura HMAC, redirecionando para **Meus Ingressos**;
+  - **`REFUSED`**: Simula recusa da operadora bancária sem debitar estoque, redirecionando diretamente para **Minhas Compras & Reservas** com status `RECUSADO`;
 - Captura de erro HTTP 409 caso o evento esgote simultaneamente.
 
 ### 3.3 Experiência do Avaliador (Atalhos de Login Rápido)
-- Na tela de login (`/login`), foram incluídos botões de **preenchimento com 1 clique** para os perfis pré-cadastrados no seed do banco (`Cliente`, `Organizador`, `Portaria`), acelerando os testes sem fricção.
+- Na tela de login (`/login`), foram incluídos botões de **preenchimento com 1 clique** para os perfis pré-cadastrados no seed do banco (`Cliente`, `Organizador`, `Portaria`), acelerando os testes da banca avaliadora.
 
 ### 3.4 Compartilhamento Público de Ingressos (`/tickets/share/[shareToken]`)
 - Rota pública dinâmica que permite a qualquer portador do link visualizar o ingresso com design de ticket digital e QR Code autenticado;
@@ -82,6 +82,6 @@ O frontend foi concebido e implementado em **4 camadas bem definidas**:
 
 ---
 
-## 4. Garantia de Qualidade e Compilação
-- **TypeScript**: 100% tipado com `strict: true` e zero uso de `any`;
-- **Next.js Build**: Compilação executada com sucesso sem nenhum aviso de linter ou erro de compilação.
+## 4. Testes Automatizados e Qualidade
+- **Testes Unitários & Componentes**: Implementados com Vitest e React Testing Library cobrindo `authStore`, formatadores semânticos e componentes de UI (`Badge`, `Button`, `Input`);
+- **TypeScript**: 100% tipado com `strict: true` e zero erros de compilação no build do Next.js.

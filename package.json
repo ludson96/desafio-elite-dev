@@ -1,0 +1,20 @@
+{
+  "name": "desafio-elite-dev-monorepo",
+  "version": "1.0.0",
+  "description": "Plataforma de Eventos e Ingressos - Desafio Elite Dev / Verzel",
+  "private": true,
+  "scripts": {
+    "db:up": "docker compose -f backend/docker-compose.yml up -d",
+    "db:down": "docker compose -f backend/docker-compose.yml down",
+    "backend:dev": "npm --prefix backend run dev",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "backend:seed": "npm --prefix backend run seed",
+    "test:backend": "npm --prefix backend test",
+    "test:frontend": "npm --prefix frontend test",
+    "test": "npm run test:backend && npm run test:frontend",
+    "dev": "npm run db:up && concurrently -n \"BACKEND,FRONTEND\" -c \"blue.bold,cyan.bold\" \"npm run backend:dev\" \"npm run frontend:dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
