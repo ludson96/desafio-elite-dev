@@ -9,14 +9,9 @@ import {
   Sparkles,
   Search,
   ArrowLeft,
-  DollarSign,
-  Users,
-  MapPin,
-  Image as ImageIcon,
   CheckCircle2,
   AlertCircle,
   Film,
-  Music,
   Plus,
 } from "lucide-react";
 import { catalogApi, eventsApi } from "@/services/api";
@@ -150,8 +145,8 @@ export default function NewEventPage() {
 
         {/* Assistente de Catálogo Inteligente (TMDb / Ticketmaster) */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4">
-          <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
-            <Sparkles className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-zinc-200 font-bold text-sm">
+            <Sparkles className="w-4 h-4 text-blue-400" />
             <span>Assistente de Catálogo Externo (TMDb & Ticketmaster)</span>
           </div>
           <p className="text-xs text-zinc-400">
@@ -237,7 +232,7 @@ export default function NewEventPage() {
           </h3>
 
           {errorMessage && (
-            <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
+            <div className="p-3.5 rounded-lg bg-rose-950 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -247,31 +242,29 @@ export default function NewEventPage() {
             {/* Tipo de Evento */}
             <div className="space-y-2">
               <label className="block text-xs font-medium text-zinc-300">Tipo de Evento</label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
                 <button
                   type="button"
                   onClick={() => setType("SHOW")}
                   className={cn(
-                    "p-3 rounded-xl border text-center transition-all flex items-center justify-center gap-2 text-xs font-bold",
+                    "py-2.5 px-3 rounded-lg text-xs font-semibold transition-all text-center",
                     type === "SHOW"
-                      ? "bg-blue-600/20 border-blue-500 text-blue-400 shadow-sm ring-1 ring-blue-500/40"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                      ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                      : "text-zinc-400 hover:text-zinc-200"
                   )}
                 >
-                  <Music className="w-4 h-4" />
                   Show / Concerto / Festival
                 </button>
                 <button
                   type="button"
                   onClick={() => setType("MOVIE")}
                   className={cn(
-                    "p-3 rounded-xl border text-center transition-all flex items-center justify-center gap-2 text-xs font-bold",
+                    "py-2.5 px-3 rounded-lg text-xs font-semibold transition-all text-center",
                     type === "MOVIE"
-                      ? "bg-blue-600/20 border-blue-500 text-blue-400 shadow-sm ring-1 ring-blue-500/40"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                      ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                      : "text-zinc-400 hover:text-zinc-200"
                   )}
                 >
-                  <Film className="w-4 h-4" />
                   Filme / Cinema
                 </button>
               </div>
@@ -294,7 +287,7 @@ export default function NewEventPage() {
                 placeholder="Descreva detalhes sobre as atrações, horários de abertura e classificação etária..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-3 text-sm bg-zinc-950 text-zinc-100 placeholder-zinc-500 rounded-lg border border-zinc-700/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="w-full p-3 text-sm bg-zinc-950 text-zinc-100 placeholder-zinc-500 rounded-lg border border-zinc-700/80 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
             </div>
 
@@ -312,7 +305,6 @@ export default function NewEventPage() {
                 placeholder="https://exemplo.com/imagem.jpg"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                leftIcon={<ImageIcon className="w-4 h-4" />}
               />
             </div>
 
@@ -324,7 +316,6 @@ export default function NewEventPage() {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                leftIcon={<Calendar className="w-4 h-4" />}
               />
 
               <Input
@@ -333,7 +324,6 @@ export default function NewEventPage() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 required
-                leftIcon={<MapPin className="w-4 h-4" />}
               />
             </div>
 
@@ -347,7 +337,6 @@ export default function NewEventPage() {
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
                 required
-                leftIcon={<Users className="w-4 h-4" />}
               />
 
               <Input
@@ -359,34 +348,33 @@ export default function NewEventPage() {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 required
-                leftIcon={<DollarSign className="w-4 h-4" />}
               />
             </div>
 
             {/* Status de Publicação */}
             <div className="space-y-2 pt-2">
               <label className="block text-xs font-medium text-zinc-300">Status de Publicação</label>
-              <div className="flex items-center gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-1 bg-zinc-950 border border-zinc-800 rounded-xl max-w-md">
                 <button
                   type="button"
                   onClick={() => setStatus("PUBLISHED")}
                   className={cn(
-                    "px-4 py-2 rounded-lg text-xs font-semibold border transition-all",
+                    "py-2 px-3 rounded-lg text-xs font-semibold transition-all text-center",
                     status === "PUBLISHED"
-                      ? "bg-emerald-500/20 border-emerald-500 text-emerald-400"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400"
+                      ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                      : "text-zinc-400 hover:text-zinc-200"
                   )}
                 >
-                  ✓ Publicar Imediatamente (Visível na Vitrine)
+                  Publicar Imediatamente
                 </button>
                 <button
                   type="button"
                   onClick={() => setStatus("DRAFT")}
                   className={cn(
-                    "px-4 py-2 rounded-lg text-xs font-semibold border transition-all",
+                    "py-2 px-3 rounded-lg text-xs font-semibold transition-all text-center",
                     status === "DRAFT"
-                      ? "bg-amber-500/20 border-amber-500 text-amber-400"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400"
+                      ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                      : "text-zinc-400 hover:text-zinc-200"
                   )}
                 >
                   Salvar como Rascunho

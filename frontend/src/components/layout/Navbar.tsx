@@ -60,7 +60,7 @@ export function Navbar() {
                       : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/30"
                   )}
                 >
-                  <Ticket className="w-4 h-4 text-blue-400" />
+                  <Ticket className="w-4 h-4" />
                   Meus Ingressos
                 </Link>
                 <Link

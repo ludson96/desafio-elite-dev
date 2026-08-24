@@ -144,7 +144,7 @@ export default function MyTicketsPage() {
                         <Film className="w-8 h-8 opacity-40" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-linear-to-t from-zinc-900 via-zinc-900/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/30 to-transparent" />
 
                     {/* Status Flutuante */}
                     <div className="absolute top-3 left-3 z-10">
@@ -246,9 +246,9 @@ export default function MyTicketsPage() {
             <div className="text-center space-y-5 py-2">
               {/* Box do QR Code */}
               <div className="bg-white p-4 rounded-2xl inline-block shadow-xl">
-                {selectedTicket.qrCode ? (
+                {selectedTicket.qrCodeUrl || selectedTicket.qrCode ? (
                   <Image
-                    src={selectedTicket.qrCode}
+                    src={selectedTicket.qrCodeUrl || selectedTicket.qrCode || ""}
                     alt={`QR Code do ingresso ${selectedTicket.code}`}
                     width={220}
                     height={220}
