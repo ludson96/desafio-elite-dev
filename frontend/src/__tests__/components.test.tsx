@@ -11,9 +11,12 @@ describe("UI Components", () => {
       expect(screen.getByText("Status Ativo")).toBeInTheDocument();
     });
 
-    it("deve aplicar a classe de variante correta", () => {
+    it("deve renderizar o indicador dot para variante de sucesso", () => {
       const { container } = render(<Badge variant="success">Sucesso</Badge>);
-      expect(container.firstChild).toHaveClass("bg-emerald-950");
+      expect(container.firstChild).toHaveClass("bg-zinc-800");
+      const dot = screen.getByTestId("badge-dot");
+      expect(dot).toBeInTheDocument();
+      expect(dot).toHaveClass("bg-emerald-500");
     });
   });
 

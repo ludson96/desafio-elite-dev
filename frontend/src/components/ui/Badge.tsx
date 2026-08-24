@@ -13,13 +13,13 @@ export function Badge({
   children,
   ...props
 }: BadgeProps) {
-  const variantStyles = {
-    default: "bg-zinc-800 text-zinc-300 border border-zinc-700",
-    success: "bg-emerald-950 text-emerald-300 border border-emerald-800",
-    warning: "bg-amber-950 text-amber-300 border border-amber-800",
-    danger: "bg-rose-950 text-rose-300 border border-rose-800",
-    purple: "bg-zinc-800 text-zinc-200 border border-zinc-700",
-    outline: "bg-transparent text-zinc-400 border border-zinc-800",
+  const dotStyles: Record<string, string> = {
+    success: "bg-emerald-500",
+    warning: "bg-amber-500",
+    danger: "bg-rose-500",
+    purple: "bg-zinc-400",
+    default: "",
+    outline: "",
   };
 
   const sizeStyles = {
@@ -27,16 +27,18 @@ export function Badge({
     md: "px-2.5 py-0.5 text-xs",
   };
 
+  const dot = dotStyles[variant];
+
   return (
     <span
       className={cn(
-        "inline-flex items-center font-medium rounded-md",
-        variantStyles[variant],
+        "inline-flex items-center gap-1.5 font-medium rounded-md bg-zinc-800 text-zinc-200 border border-zinc-700 shadow-xs",
         sizeStyles[size],
         className
       )}
       {...props}
     >
+      {dot && <span data-testid="badge-dot" className={cn("w-1.5 h-1.5 rounded-full shrink-0", dot)} />}
       {children}
     </span>
   );
