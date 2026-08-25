@@ -87,10 +87,14 @@ Foram criados enums nativos no PostgreSQL via Prisma para evitar estados inconsi
   - Um organizador só pode editar eventos dos quais seja o criador legítimo (`event.organizerId === req.user.id`).
   - Listagem pública com paginação e busca textual flexível (`contains` case-insensitive em título, descrição, local e categoria).
 
-### 💳 Módulo 4: Reservas & Checkout Simulado (`/api/reservations`)
+### 💳 Módulo 4: Reservas, Checkout Simulado & Cancelamento Atômico (`/api/reservations`)
 - **Pagamento Simulado Realista**: O schema aceita `paymentStatus: 'APPROVED' | 'REFUSED'`, cumprindo o requisito de simular tanto cenários de sucesso quanto de falha de pagamento.
 - **Cenário APROVADO**: Executa transação atômica, debita o estoque e emite os ingressos com assinatura digital.
 - **Cenário RECUSADO**: Grava a tentativa como recusada, não emite nenhum ingresso e mantém o estoque intacto.
+- **Fluxo de Cancelamento (`PATCH /api/reservations/:id/cancel`)**:
+  - Permite que o cliente proprietário cancele uma reserva confirmada;
+  - Valida se nenhum dos ingressos já foi validado na portaria (`status !== 'USED'`);
+  - Executa uma transação atômica no PostgreSQL que marca a reserva e seus ingressos como `CANCELED` e devolve a quantidade exata ao estoque (`availableTickets: { increment: quantity }`).
 
 ### 🎟️ Módulo 5: Ingressos, Compartilhamento & Validação de Portaria (`/api/tickets`)
 - **Área do Cliente (`GET /api/tickets/my-tickets`)**: Retorna os ingressos com a imagem do QR Code gerada em Base64 Data URL (`qrCodeUrl`) para renderização direta sem requisições adicionais.
@@ -144,5 +148,4 @@ Um dos maiores desafios em sistemas de ingressos é garantir que o mesmo ingress
 ## 8. Implementações Futuras
 
 - **Mapa Visual de Assentos (Seat Map Interativo)**: Evolução do modelo atual de capacidade/pista para suporte a matriz de poltronas numeradas (ex.: filas e colunas para salas de cinema e teatros), com reserva temporária (*lock* otimista por WebSocket ou Redis com expiração automática);
-- **Melhorias Contínuas de Design e UI/UX**: Refinamento da identidade visual, adição de microinterações mais ricas e expansão do design system modular (*Bento Grid*);
-- **Fluxo de Cancelamento & Reembolso com Devolução ao Estoque**: Interface e endpoint dedicado para cancelamento de pedidos com estorno seguro de ingressos e liberação automática de vagas.
+- **Melhorias Contínuas de Design e UI/UX**: Refinamento da identidade visual, adição de microinterações mais ricas e expansão do design system modular (*Bento Grid*).

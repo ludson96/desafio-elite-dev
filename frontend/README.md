@@ -2,8 +2,6 @@
 
 Interface web moderna, responsiva, minimalista e acessível para a plataforma de venda, emissão e validação de ingressos para shows e cinema, desenvolvida com **Next.js 15+ (App Router)**, **TypeScript**, **TailwindCSS v4** e gerenciamento de estado global com **Zustand**.
 
----
-
 ## 🚀 Tecnologias & Stack Utilizada
 
 - **Framework**: [Next.js 15+ (App Router)](https://nextjs.org/)
@@ -14,8 +12,6 @@ Interface web moderna, responsiva, minimalista e acessível para a plataforma de
 - **Leitor de QR Code**: [html5-qrcode](https://github.com/mebjas/html5-qrcode) (suporte a câmera de celulares e webcams)
 - **Utilitários**: `clsx` + `tailwind-merge` para classes condicionais seguras
 - **Testes**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/)
-
----
 
 ## 📁 Estrutura de Pastas e Módulos
 
@@ -29,7 +25,7 @@ frontend/
 │   │   ├── register/page.tsx               # Cadastro com seleção de perfil (Cliente, Organizador, Portaria)
 │   │   ├── events/[id]/page.tsx            # Detalhes do Evento & Checkout Simulado com Status
 │   │   ├── my-tickets/page.tsx             # Área do Cliente (Cards Panorâmicos com QR Code)
-│   │   ├── my-reservations/page.tsx        # Histórico de Pedidos & Compras (Badges Semânticas)
+│   │   ├── my-reservations/page.tsx        # Histórico de Pedidos, Compras & Cancelamento
 │   │   ├── tickets/share/[shareToken]/     # Página Pública de Ingresso Compartilhado por Link
 │   │   ├── organizer/events/page.tsx       # Painel de Métricas & Gestão do Organizador
 │   │   ├── organizer/events/new/page.tsx   # Assistente de Criação com TMDb & Ticketmaster
@@ -52,8 +48,6 @@ frontend/
 ├── next.config.ts                          # Configuração de domínios seguros para Next Image
 └── package.json
 ```
-
----
 
 ## 🛠️ Configuração & Execução
 
@@ -89,8 +83,6 @@ npm run build
 npm run start
 ```
 
----
-
 ## 👥 Credenciais de Teste para Avaliação (Seed do Backend)
 
 Para facilitar a avaliação, a tela de login possui botões de **preenchimento automático com 1 clique** para os perfis pré-cadastrados:
@@ -101,8 +93,6 @@ Para facilitar a avaliação, a tela de login possui botões de **preenchimento 
 | **👤 Cliente 2** | `cliente2@eliteingressos.com` | `123456` | Testar concorrência de compra simultânea |
 | **👑 Organizador** | `organizador@eliteingressos.com` | `123456` | Criar eventos (com TMDb/Ticketmaster) e painel de métricas |
 | **🚪 Portaria** | `portaria@eliteingressos.com` | `123456` | Validar ingressos por câmera ou código manual |
-
----
 
 ## ✨ Principais Funcionalidades Implementadas
 
@@ -115,17 +105,23 @@ Para facilitar a avaliação, a tela de login possui botões de **preenchimento 
    - Seleção de quantidade com travas automáticas de estoque disponível;
    - Escolha entre **`Aprovar Pagamento`** (emite ingressos, debita o estoque atômico e redireciona para Meus Ingressos) ou **`Recusar Pagamento`** (simula recusa da operadora e redireciona para Minhas Compras com status recusado).
 
-3. **Ingressos Digitais com QR Code (`/my-tickets`)**:
+3. **Histórico de Compras & Cancelamento com Estorno (`/my-reservations`)**:
+   - Visualização do histórico completo com badges semânticas de status (`CONFIRMADO`, `RECUSADO`, `CANCELADO`);
+   - Botão **"Cancelar Reserva"** para pedidos confirmados, com modal de confirmação seguro e devolução automática dos ingressos ao estoque.
+
+4. **Ingressos Digitais com QR Code (`/my-tickets`)**:
    - Pôster panorâmico do evento no topo do ingresso;
    - QR Code em formato Base64 Data URL para apresentação imediata na portaria;
+   - Ingressos cancelados são renderizados em **preto e branco (`grayscale`)**, com código riscado e botões de QR Code bloqueados;
    - Botão para copiar o link público de compartilhamento com 1 clique.
 
-4. **Página Pública de Compartilhamento (`/tickets/share/[shareToken]`)**:
+5. **Página Pública de Compartilhamento (`/tickets/share/[shareToken]`)**:
    - Visual em formato de *ticket stub* acessível sem necessidade de login;
-   - Exibe código único, validação criptográfica e status do ingresso em tempo real.
+   - Exibe código único, validação criptográfica e status do ingresso em tempo real;
+   - Ingressos cancelados exibem aviso claro de invalidação em escala de cinza.
 
-5. **Assistente de Catálogo TMDb / Ticketmaster (`/organizer/events/new`)**:
+6. **Assistente de Catálogo TMDb / Ticketmaster (`/organizer/events/new`)**:
    - Busca em APIs externas de cinema e música para auto-preenchimento de título, sinopse, gênero e imagem de capa.
 
-6. **Área da Portaria (`/gatekeeper/validate`)**:
+7. **Área da Portaria (`/gatekeeper/validate`)**:
    - Validação com leitor de câmera ao vivo (`html5-qrcode`) e digitação manual com retorno dos 4 status do backend: `VALID`, `ALREADY_USED`, `WRONG_EVENT` e `INVALID`.

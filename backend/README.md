@@ -134,10 +134,11 @@ npm test
 - `POST /api/events` - Criação de evento (`ORGANIZER`);
 - `PUT /api/events/:id` - Edição de evento pelo organizador proprietário (`ORGANIZER`).
 
-### 💳 Reservas & Pagamento Simulado (`/api/reservations`)
+### 💳 Reservas, Pagamento Simulado & Cancelamento (`/api/reservations`)
 - `POST /api/reservations` - Compra com transação atômica e simulação de pagamento (`APPROVED` ou `REFUSED`) (`CLIENT`);
 - `GET /api/reservations/my-reservations` - Histórico completo de compras e reservas do cliente (`CLIENT`);
-- `GET /api/reservations/:id` - Detalhes de uma reserva específica (`CLIENT`).
+- `GET /api/reservations/:id` - Detalhes de uma reserva específica (`CLIENT`);
+- `PATCH /api/reservations/:id/cancel` - Cancelamento de reserva com estorno de ingressos e devolução atômica ao estoque (`CLIENT`).
 
 ### 🎟️ Ingressos, Compartilhamento & Portaria (`/api/tickets`)
 - `GET /api/tickets/my-tickets` - Ingressos do cliente com QR Code Base64 (`CLIENT`);
