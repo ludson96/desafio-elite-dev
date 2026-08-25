@@ -19,5 +19,6 @@ reservationRoutes.post(
 
 reservationRoutes.get("/my-reservations", reservationController.getMyReservations);
 reservationRoutes.get("/:id", reservationController.getById);
+reservationRoutes.patch("/:id/cancel", ensureRole(["CLIENT"]), reservationController.cancel);
 
 export { reservationRoutes };

@@ -70,6 +70,30 @@ export class ReservationController {
       next(error);
     }
   };
+
+  cancel = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        throw new AppError("Usuário não autenticado", 401);
+      }
+
+      const { id } = req.params;
+
+      if (!id || typeof id !== "string") {
+        throw new AppError("ID da reserva é obrigatório", 400);
+      }
+
+      const result = await this.reservationServiceInstance.cancelReservation(id, req.user.id);
+
+      res.status(200).json({
+        status: "success",
+        message: result.message,
+        data: result.reservation,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const reservationController = new ReservationController();
