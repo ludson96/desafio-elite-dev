@@ -3,12 +3,11 @@
 > **Projeto Desenvolvido para o Desafio Técnico Elite Dev da Verzel**  
 > Solução *Full-Stack* completa para compra, gestão, emissão, cancelamento e validação segura de ingressos para **Shows** e **Cinema**, com prevenção rigorosa de *overbooking*, assinatura criptográfica anti-fraude em QR Codes e integração com catálogos externos em tempo real.
 
----
-
 ## 📌 Sumário / Navegação Rápida
 
 - [🌐 Deploy em Produção (Live Demo)](#-deploy-em-produção-live-demo)
 - [📑 Documentos de Decisões Técnicas (DECISIONS.md)](#-documentos-de-decisões-técnicas-decisionsmd)
+- [🤖 Condução Técnica & AI Pair Programming](#-condução-técnica--ai-pair-programming)
 - [⚡ Roteiro Rápido para Avaliação (Como Testar em 3 Minutos)](#-roteiro-rápido-para-avaliação-como-testar-em-3-minutos)
 - [🌟 Destaques do Projeto](#-destaques-do-projeto)
 - [🏗️ Arquitetura e Stack Tecnológica](#️-arquitetura-e-stack-tecnológica)
@@ -25,8 +24,6 @@
 - [🧪 Executando os Testes Automatizados](#-executando-os-testes-automatizados)
 - [🔮 Implementações Futuras & Roadmap](#-implementações-futuras--roadmap)
 
----
-
 ## 🌐 Deploy em Produção (Live Demo)
 
 A aplicação está disponível e pronta para uso online:
@@ -37,15 +34,17 @@ A aplicação está disponível e pronta para uso online:
 > O **Front-End** está hospedado na **Vercel** e a **API do Back-End** está hospedada na plataforma gratuita do **Render.com**.  
 > Por conta do modo de hibernação (*sleep mode*) do plano gratuito do Render, a **primeira requisição ao backend pode levar aproximadamente 50 segundos** para acordar a instância. Após essa inicialização inicial, todas as requisições subsequentes responderão instantaneamente!
 
----
-
 ## 📑 Documentos de Decisões Técnicas (DECISIONS.md)
 
 Para consultar o racional arquitetural completo e aprofundado:
 - 📄 [Backend DECISIONS.md](./backend/DECISIONS.md)
 - 📄 [Frontend DECISIONS.md](./frontend/DECISIONS.md)
 
----
+## 🤖 Condução Técnica & AI Pair Programming
+
+Para detalhes sobre como a Inteligência Artificial foi conduzida como ferramenta de co-pilotagem técnica, mantendo o controle arquitetural e o desenvolvimento estritamente *hands-on*:
+- 📄 [Processo de AI Pair Programming & Racional Crítico](./docs/ai-workflow/AI_PAIR_PROGRAMMING.md)
+- 📋 [Exemplo Real de Implementation Plan Utilizado](./docs/ai-workflow/IMPLEMENTATION_PLAN_EXAMPLE.md)
 
 ## ⚡ Roteiro Rápido para Avaliação (Como Testar em 3 Minutos)
 

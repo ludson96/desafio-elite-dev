@@ -1,0 +1,76 @@
+# 📋 Plano de Implementação: Cancelamento de Reserva & Devolução ao Estoque
+
+Este documento registra o planejamento técnico e todas as decisões e melhorias adicionais executadas para o fluxo de cancelamento de reservas, estorno atômico de ingressos e tratamento visual de ingressos invalidados.
+
+---
+
+## 🎯 Regras de Negócio e Segurança
+
+1. **Apenas o Cliente Dono**: Somente o usuário que realizou a reserva (`clientId === req.user.id`) pode cancelá-la;
+2. **Status Permitido**: Apenas reservas com status `CONFIRMED` e cujos ingressos ainda estejam `ACTIVE` (não utilizados) podem ser canceladas;
+3. **Ingressos Já Usados (Anti-Fraude)**: Se qualquer ingresso da reserva já tiver sido validado na portaria (`status === 'USED'`), o cancelamento é bloqueado com erro amigável (`400 Bad Request`);
+4. **Transação Atômica ACID**:
+   - Atualiza `Reservation.status = 'CANCELED'`;
+   - Atualiza todos os `Ticket.status = 'CANCELED'`;
+   - Devolve a quantidade de ingressos ao evento via `Event.availableTickets: { increment: quantity }`;
+5. **Comportamento na Portaria**: Se alguém tentar validar um ingresso cancelado na portaria, o sistema retorna `"Este ingresso foi cancelado."`.
+
+---
+
+## 📁 Arquivos Modificados & Escopo Realizado
+
+### 🔹 Passo 1 (Back-End: Repositório)
+- **Arquivo**: [`backend/src/repositories/reservation.repository.ts`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/backend/src/repositories/reservation.repository.ts)
+- **Implementação**: Método `cancelReservationWithStockRefund(reservationId, eventId, quantity)` encapsulando a transação atômica do Prisma.
+
+### 🔹 Passo 2 (Back-End: Serviço)
+- **Arquivo**: [`backend/src/services/reservation.service.ts`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/backend/src/services/reservation.service.ts)
+- **Implementação**: Método `cancelReservation(reservationId, clientId)` contendo validações de integridade, autorização e verificação de ingressos utilizados.
+
+### 🔹 Passo 3 (Back-End: Controlador & Rotas)
+- **Arquivos**:
+  - [`backend/src/controllers/reservation.controller.ts`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/backend/src/controllers/reservation.controller.ts) (`cancel` handler com extração segura de IDs e tratamento de erros);
+  - [`backend/src/routes/reservation.routes.ts`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/backend/src/routes/reservation.routes.ts) (rota `PATCH /api/reservations/:id/cancel` protegida para `CLIENT`).
+
+### 🔹 Passo 4 (Back-End: Testes Automatizados)
+- **Arquivo**: [`backend/tests/reservation.service.test.ts`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/backend/tests/reservation.service.test.ts)
+- **Implementação**: Testes unitários para cancelamento com sucesso, bloqueio de ingressos já usados na portaria e bloqueio de acesso a compras de outros usuários (total de 23 testes no backend).
+
+### 🔹 Passo 5 (Front-End: Cliente HTTP Tipado)
+- **Arquivo**: [`frontend/src/services/api.ts`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/frontend/src/services/api.ts)
+- **Implementação**: Método `reservationsApi.cancel(id)` com injeção automática do Bearer token.
+
+### 🔹 Passo 6 (Front-End: Interface de Minhas Compras & Feedback Sóbrio)
+- **Arquivo**: [`frontend/src/app/my-reservations/page.tsx`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/frontend/src/app/my-reservations/page.tsx)
+- **Implementações / Refinamentos**:
+  - Botão **"Cancelar Reserva"** nas compras confirmadas;
+  - Modal de confirmação seguro com texto claro e direto;
+  - Banner de feedback de sucesso minimalista e sóbrio (*Anti-AI Slop*), com dot discreto e botão de fechar (`X`);
+  - Tratamento estrito de erros com `instanceof Error` eliminando qualquer tipagem `any`.
+
+### 🔹 Passo 6.1 (Front-End: Ingressos Invalidados em Escala de Cinza - Grayscale) *(Melhoria Adicionada)*
+- **Arquivos**:
+  - [`frontend/src/app/my-tickets/page.tsx`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/frontend/src/app/my-tickets/page.tsx)
+  - [`frontend/src/app/tickets/share/[shareToken]/page.tsx`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/frontend/src/app/tickets/share/[shareToken]/page.tsx)
+- **Implementação**:
+  - Ingressos cancelados passam a ser renderizados **em preto e branco (`grayscale`) e com opacidade reduzida (`opacity-50` / `opacity-60`)**;
+  - Código do ingresso riscado (`line-through`);
+  - Bloqueio completo do botão de apresentar QR Code e do link de compartilhamento, exibindo o status **`⊘ Ingresso Cancelado / Inativo`**;
+  - Na página pública, o QR Code é ocultado e substituído por uma caixa de aviso neutra de cancelamento.
+
+### 🔹 Passo 7 (Sincronização Completa da Documentação)
+- **Arquivos**:
+  - [`backend/README.md`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/backend/README.md) (adição do endpoint `PATCH /api/reservations/:id/cancel`);
+  - [`backend/DECISIONS.md`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/backend/DECISIONS.md) (registro da decisão de estorno transacional e atualização do roadmap);
+  - [`frontend/README.md`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/frontend/README.md) (documentação do fluxo de cancelamento e estado dos ingressos desativados);
+  - [`frontend/DECISIONS.md`](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/frontend/DECISIONS.md) (registro da decisão de UI/UX minimalista e regras de grayscale);
+  - [`README.md` (Raiz)](file:///d:/Code/desafios-tecnicos/desafio-elite-dev/README.md) (atualização dos destaques, roteiro de avaliação em 3 minutos e métrica consolidada de **40 testes passando**).
+
+---
+
+## 🧪 Verificação & Qualidade
+
+- **Backend**: 23 testes passando (`vitest run`);
+- **Frontend**: 17 testes passando (`vitest run`);
+- **Build de Produção**: `npm run build` no Next.js passando com **0 erros de TypeScript e 0 warnings de ESLint**;
+- **Fluxo E2E**: Testado com sucesso o ciclo completo: Compra ➔ Cancelamento ➔ Estorno ao estoque ➔ Bloqueio em escala de cinza nos ingressos digitais.
