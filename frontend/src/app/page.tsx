@@ -1,19 +1,28 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Search, Calendar, MapPin, Ticket, Filter, Music, Film, ArrowRight, Flame } from "lucide-react";
+import Link from "next/link";
+import {
+  Search,
+  Calendar,
+  MapPin,
+  Music,
+  Film,
+  Filter,
+  ArrowRight,
+  Flame,
+  Ticket,
+} from "lucide-react";
 import { eventsApi } from "@/services/api";
 import type { Event, EventType } from "@/types";
 import { formatCurrency, formatDateTime } from "@/utils/formatters";
+import { cn } from "@/utils/cn";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/utils/cn";
 
 export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [featuredEvent, setFeaturedEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<EventType | "ALL">("ALL");
@@ -21,40 +30,20 @@ export default function HomePage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalEvents, setTotalEvents] = useState(0);
 
-  // Carrega o evento de Destaque principal fixo
+  // Busca eventos da API
   useEffect(() => {
     let ignore = false;
-    async function loadFeatured() {
-      try {
-        const response = await eventsApi.list({ limit: 1, status: "PUBLISHED" });
-        if (!ignore && response.data.events.length > 0) {
-          setFeaturedEvent(response.data.events[0]);
-        }
-      } catch (e) {
-        console.error("Erro ao carregar destaque:", e);
-      }
-    }
-    loadFeatured();
-    return () => {
-      ignore = true;
-    };
-  }, []);
 
-  // Carrega a listagem conforme os filtros selecionados
-  useEffect(() => {
-    let ignore = false;
-    const fetchEvents = async () => {
-      setLoading(true);
+    async function fetchEvents() {
       try {
-        const queryParams = {
+        setLoading(true);
+        const response = await eventsApi.list({
           page,
-          limit: 9,
-          status: "PUBLISHED" as const,
-          search: searchTerm ? searchTerm : undefined,
-          type: selectedType !== "ALL" ? selectedType : undefined,
-        };
-
-        const response = await eventsApi.list(queryParams);
+          limit: 6,
+          search: searchTerm || undefined,
+          type: selectedType === "ALL" ? undefined : selectedType,
+          status: "PUBLISHED",
+        });
 
         if (!ignore) {
           setEvents(response.data.events);
@@ -66,17 +55,18 @@ export default function HomePage() {
       } finally {
         if (!ignore) setLoading(false);
       }
-    };
+    }
 
-    const timer = setTimeout(() => {
-      fetchEvents();
-    }, 200);
+    const timeoutId = setTimeout(fetchEvents, 300);
 
     return () => {
       ignore = true;
-      clearTimeout(timer);
+      clearTimeout(timeoutId);
     };
   }, [searchTerm, selectedType, page]);
+
+  // Evento em destaque (primeiro da lista se não houver busca ativa)
+  const featuredEvent = !searchTerm && selectedType === "ALL" && events.length > 0 ? events[0] : null;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -94,9 +84,10 @@ export default function HomePage() {
                     fill
                     unoptimized
                     priority
+                    loading="eager"
                     className="object-cover object-center"
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-zinc-950/30" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-zinc-950/30" />
                 </div>
               ) : (
                 <div className="absolute inset-0 bg-zinc-900" />
@@ -285,8 +276,10 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-            {events.map((event) => {
+            {events.map((event, index) => {
               const isSoldOut = event.availableTickets <= 0;
+              // Carrega as primeiras imagens com prioridade para acelerar renderização inicial
+              const isAboveFold = index < 3;
 
               return (
                 <Link
@@ -302,6 +295,8 @@ export default function HomePage() {
                         alt={event.title}
                         fill
                         unoptimized
+                        priority={isAboveFold}
+                        loading={isAboveFold ? "eager" : "lazy"}
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
