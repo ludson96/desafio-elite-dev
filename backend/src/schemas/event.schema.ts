@@ -29,6 +29,6 @@ export const listEventsQuerySchema = z.object({
   limit: z.coerce.number().min(1).max(100).optional().default(10),
 });
 
-export type CreateEventInput = z.infer<typeof createEventSchema>;
+export type CreateEventInput = z.input<typeof createEventSchema>;
 export type UpdateEventInput = z.infer<typeof updateEventSchema>;
 export type ListEventsQuery = z.infer<typeof listEventsQuerySchema>;

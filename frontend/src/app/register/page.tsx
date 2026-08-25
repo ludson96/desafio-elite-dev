@@ -22,7 +22,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage("");
@@ -64,7 +64,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {/* Feedback de Erro Sólido e Elegante */}
+        {/* Feedback de Erro */}
         {errorMessage && (
           <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-zinc-950 border border-rose-900/60 text-xs text-rose-300">
             <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
@@ -72,7 +72,6 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* Formulário */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Nome Completo"

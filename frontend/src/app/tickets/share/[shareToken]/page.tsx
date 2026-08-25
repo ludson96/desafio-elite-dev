@@ -82,7 +82,6 @@ export default function SharedTicketPage({ params }: PageProps) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 py-12 bg-zinc-950">
       <div className="w-full max-w-sm space-y-6">
-        {/* Topo: Identificação Limpa & Sóbria */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium">
             <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
@@ -91,7 +90,6 @@ export default function SharedTicketPage({ params }: PageProps) {
           <h1 className="text-xl font-bold text-white">Elite Ingressos</h1>
         </div>
 
-        {/* Card do Ingresso com Efeito Ticket Stub Sólido */}
         <div className="relative bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl">
           {/* Topo do Ticket */}
           <div className="p-6 pb-5 space-y-3 bg-zinc-900 border-b border-dashed border-zinc-800">

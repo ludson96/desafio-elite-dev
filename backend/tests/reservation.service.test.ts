@@ -35,7 +35,7 @@ describe("ReservationService (Unit Tests)", () => {
       reservationService.createReservation(
         {
           eventId: "ev-1",
-          quantity: 5, // Pede 5 mas só tem 2
+          quantity: 5, 
           paymentStatus: "APPROVED",
         },
         "client-1"

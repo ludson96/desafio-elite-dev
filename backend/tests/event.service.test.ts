@@ -51,7 +51,7 @@ describe("EventService (Unit Tests)", () => {
   });
 
   it("deve repassar os dados de criação com o organizerId para o repositório", async () => {
-    const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Daqui a 7 dias
+    const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
     vi.mocked(mockEventRepo.create).mockResolvedValue({
       id: "ev-1",

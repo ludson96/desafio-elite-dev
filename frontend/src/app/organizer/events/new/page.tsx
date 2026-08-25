@@ -49,7 +49,7 @@ export default function NewEventPage() {
   const [catalogResults, setCatalogResults] = useState<CatalogItem[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearchCatalog = async (e: React.FormEvent) => {
+  const handleSearchCatalog = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!catalogQuery.trim()) return;
 
@@ -82,7 +82,7 @@ export default function NewEventPage() {
     window.scrollTo({ top: 400, behavior: "smooth" });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setErrorMessage("");
 

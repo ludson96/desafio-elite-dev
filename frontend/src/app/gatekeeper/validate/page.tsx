@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   QrCode,
@@ -9,7 +9,7 @@ import {
   AlertTriangle,
   Camera,
   Keyboard,
-  ShieldCheck,
+  ShieldCheck,  
   Calendar,
   Clock,
   History,

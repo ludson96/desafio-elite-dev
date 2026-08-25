@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -129,7 +129,7 @@ export default function MyTicketsPage() {
                       : "border-zinc-800 hover:border-zinc-700"
                   }`}
                 >
-                  {/* Pôster / Capa do Evento no Topo do Card */}
+                  {/* Capa do Evento no Topo do Card */}
                   <div className="relative h-36 w-full bg-zinc-950 overflow-hidden border-b border-zinc-800/80">
                     {ticket.event?.imageUrl ? (
                       <Image

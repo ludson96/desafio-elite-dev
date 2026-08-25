@@ -38,7 +38,6 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Navegação Desktop */}
           <nav className="hidden md:flex items-center gap-1">
             {/* Links do Cliente */}
             {isHydrated && user?.role === "CLIENT" && (
@@ -153,7 +152,6 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Botão Mobile Menu */}
         <div className="flex md:hidden">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -164,7 +162,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Menu Dropdown Mobile */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-b border-zinc-800 bg-zinc-950 px-4 pt-2 pb-6 space-y-3">
           <nav className="flex flex-col gap-1">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -230,7 +230,7 @@ export default function EventDetailsPage() {
                 {event.title}
               </h1>
 
-              {/* Informações Principais Limpas & Sóbrias */}
+              {/* Informações Principais */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="flex items-start gap-3 p-3.5 rounded-xl bg-zinc-900 border border-zinc-800">
                   <Calendar className="w-4 h-4 text-zinc-400 mt-0.5 shrink-0" />
@@ -278,7 +278,7 @@ export default function EventDetailsPage() {
             )}
           </div>
 
-          {/* Coluna da Direita: Card de Compra / Reserva */}
+          {/* Coluna da Direita: Card de Reserva */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
               <div className="space-y-1 pb-4 border-b border-zinc-800/80">
