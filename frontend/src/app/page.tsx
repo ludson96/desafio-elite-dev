@@ -87,7 +87,7 @@ export default function HomePage() {
                     loading="eager"
                     className="object-cover object-center"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-zinc-950/30" />
+                  <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-zinc-950/30" />
                 </div>
               ) : (
                 <div className="absolute inset-0 bg-zinc-900" />
