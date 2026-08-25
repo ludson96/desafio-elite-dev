@@ -99,6 +99,46 @@ export class ReservationService {
 
     return reservation;
   }
+
+  async cancelReservation(id: string, clientId: string) {
+    const reservation: any = await this.reservationRepositoryInstance.findById(id);
+
+    if (!reservation) {
+      throw new AppError("Reserva não encontrada", 404);
+    }
+
+    if (reservation.clientId !== clientId) {
+      throw new AppError("Você não tem permissão para cancelar esta reserva", 403);
+    }
+
+    if (reservation.status === "CANCELED") {
+      throw new AppError("Esta reserva já se encontra cancelada", 400);
+    }
+
+    if (reservation.status !== "CONFIRMED") {
+      throw new AppError("Apenas reservas confirmadas podem ser canceladas", 400);
+    }
+
+    // Verifica se algum ingresso já foi utilizado na portaria
+    const hasUsedTicket = reservation.tickets?.some((t: any) => t.status === "USED");
+    if (hasUsedTicket) {
+      throw new AppError(
+        "Não é possível cancelar a reserva pois um ou mais ingressos já foram utilizados na portaria",
+        400
+      );
+    }
+
+    const updatedReservation = await this.reservationRepositoryInstance.cancelReservationWithStockRefund(
+      reservation.id,
+      reservation.eventId,
+      reservation.quantity
+    );
+
+    return {
+      message: "Reserva cancelada e ingressos devolvidos ao estoque com sucesso",
+      reservation: updatedReservation,
+    };
+  }
 }
 
 export const reservationService = new ReservationService();
