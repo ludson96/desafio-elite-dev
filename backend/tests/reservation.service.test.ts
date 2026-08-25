@@ -8,11 +8,12 @@ describe("ReservationService (Unit Tests)", () => {
   let mockReservationRepo: ReservationRepository;
   let mockEventRepo: EventRepository;
 
-  beforeEach(() => {
+    beforeEach(() => {
     mockReservationRepo = {
       findById: vi.fn(),
       findByClientId: vi.fn(),
       createReservationTransaction: vi.fn(),
+      cancelReservationWithStockRefund: vi.fn(),
     } as unknown as ReservationRepository;
 
     mockEventRepo = {
@@ -99,5 +100,70 @@ describe("ReservationService (Unit Tests)", () => {
         paymentStatus: "APPROVED",
       })
     );
+  });
+
+  describe("cancelReservation", () => {
+    it("deve cancelar uma reserva confirmada e devolver ingressos ao estoque", async () => {
+      vi.mocked(mockReservationRepo.findById).mockResolvedValue({
+        id: "res-1",
+        clientId: "client-1",
+        eventId: "ev-1",
+        quantity: 2,
+        status: "CONFIRMED",
+        tickets: [
+          { id: "t-1", status: "ACTIVE" },
+          { id: "t-2", status: "ACTIVE" },
+        ],
+      } as any);
+
+      vi.mocked(mockReservationRepo.cancelReservationWithStockRefund).mockResolvedValue({
+        id: "res-1",
+        status: "CANCELED",
+      } as any);
+
+      const result = await reservationService.cancelReservation("res-1", "client-1");
+
+      expect(result.message).toContain("Reserva cancelada");
+      expect(mockReservationRepo.cancelReservationWithStockRefund).toHaveBeenCalledWith(
+        "res-1",
+        "ev-1",
+        2
+      );
+    });
+
+    it("deve impedir o cancelamento se algum ingresso já foi utilizado na portaria", async () => {
+      vi.mocked(mockReservationRepo.findById).mockResolvedValue({
+        id: "res-1",
+        clientId: "client-1",
+        eventId: "ev-1",
+        quantity: 2,
+        status: "CONFIRMED",
+        tickets: [
+          { id: "t-1", status: "USED" },
+          { id: "t-2", status: "ACTIVE" },
+        ],
+      } as any);
+
+      await expect(
+        reservationService.cancelReservation("res-1", "client-1")
+      ).rejects.toThrow("um ou mais ingressos já foram utilizados na portaria");
+
+      expect(mockReservationRepo.cancelReservationWithStockRefund).not.toHaveBeenCalled();
+    });
+
+    it("deve impedir o cancelamento de uma reserva que pertence a outro usuário", async () => {
+      vi.mocked(mockReservationRepo.findById).mockResolvedValue({
+        id: "res-1",
+        clientId: "outro-cliente",
+        eventId: "ev-1",
+        quantity: 2,
+        status: "CONFIRMED",
+        tickets: [{ id: "t-1", status: "ACTIVE" }],
+      } as any);
+
+      await expect(
+        reservationService.cancelReservation("res-1", "client-1")
+      ).rejects.toThrow("Você não tem permissão para cancelar esta reserva");
+    });
   });
 });
