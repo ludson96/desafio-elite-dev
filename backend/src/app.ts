@@ -26,5 +26,5 @@ app.use("/api/events", eventRoutes);
 app.use("/api/reservations", reservationRoutes);
 app.use("/api/tickets", ticketRoutes);
 
-// Middleware Global de Tratamento de Erros (sempre após as rotas)
+// Middleware Global de Tratamento de Erros
 app.use(errorHandler);

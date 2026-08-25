@@ -10,7 +10,7 @@ const DEFAULT_MOVIE_COVER =
 async function main() {
   console.log("🌱 Iniciando o seed do banco de dados com capas padronizadas...");
 
-  // 1. Limpar dados anteriores (na ordem correta de integridade referencial)
+  // Limpa dados anteriores (na ordem correta de integridade referencial)
   await prisma.ticket.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.reservation.deleteMany();
@@ -19,7 +19,7 @@ async function main() {
 
   const passwordHash = await bcrypt.hash("123456", 10);
 
-  // 2. Criar Usuários Obrigatórios
+  // Cria Usuários Obrigatórios
   // 1 Organizador
   const organizer = await prisma.user.create({
     data: {
@@ -65,7 +65,7 @@ async function main() {
   console.log(` - Cliente 2: ${client2.email} (senha: 123456)`);
   console.log(` - Portaria: ${gatekeeper.email} (senha: 123456)`);
 
-  // 3. Criar Eventos Publicados com Capas Padronizadas do Unsplash
+  // Criar Eventos Publicados com Capas Padronizadas do Unsplash
   const event1 = await prisma.event.create({
     data: {
       title: "Coldplay - Music of the Spheres Tour",
@@ -220,7 +220,7 @@ async function main() {
 
   console.log("✅ 8 Eventos criados com capas oficiais padronizadas do Unsplash!");
 
-  // 4. Criar Reserva de Teste para o Cliente 1
+  // Criar Reserva de Teste para o Cliente 1
   const reservation = await prisma.reservation.create({
     data: {
       quantity: 2,
@@ -240,8 +240,10 @@ async function main() {
     },
   });
 
-  // 5. Ingressos de Teste com QR Signature e ShareToken
-  const ticket1 = await prisma.ticket.create({
+  // Ingressos de Teste com QR Signature e ShareToken
+  
+  // ticket2
+  await prisma.ticket.create({
     data: {
       code: "TKT-CP-001-ANA",
       qrSignature: "sig_seed_mock_hmac_coldplay_001",
@@ -252,7 +254,8 @@ async function main() {
     },
   });
 
-  const ticket2 = await prisma.ticket.create({
+  // ticket2
+  await prisma.ticket.create({
     data: {
       code: "TKT-CP-002-ANA",
       qrSignature: "sig_seed_mock_hmac_coldplay_002",

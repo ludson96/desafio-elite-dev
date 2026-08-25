@@ -1,7 +1,7 @@
 import type { ExternalCatalogItem } from "../services/externalCatalog.service.js";
 
 export const DEMO_CATALOG: ExternalCatalogItem[] = [
-  // --- SHOWS ---
+  // SHOWS
   {
     externalId: "tm-metallica-m72",
     externalSource: "DEMO",
@@ -53,7 +53,7 @@ export const DEMO_CATALOG: ExternalCatalogItem[] = [
     suggestedPrice: 220.0,
   },
 
-  // --- FILMES ---
+  // FILMES
   {
     externalId: "tmdb-693134",
     externalSource: "DEMO",

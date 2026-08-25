@@ -19,7 +19,7 @@ export class ExternalCatalogService {
     const { query, type } = params;
     const items: ExternalCatalogItem[] = [];
 
-    // 1. Tenta buscar no TMDb se houver chave e tipo for MOVIE ou ALL
+    // Tenta buscar no TMDb se houver chave e tipo for MOVIE ou ALL
     if (env.TMDB_API_KEY && (type === "ALL" || type === "MOVIE")) {
       try {
         const tmdbRes = await axios.get("https://api.themoviedb.org/3/search/movie", {
@@ -56,7 +56,7 @@ export class ExternalCatalogService {
       }
     }
 
-    // 2. Tenta buscar no Ticketmaster se houver chave e tipo for SHOW ou ALL
+    // Tenta buscar no Ticketmaster se houver chave e tipo for SHOW ou ALL
     if (env.TICKETMASTER_API_KEY && (type === "ALL" || type === "SHOW")) {
       try {
         const tmRes = await axios.get("https://app.ticketmaster.com/discovery/v2/events.json", {
@@ -93,7 +93,7 @@ export class ExternalCatalogService {
       }
     }
 
-    // 3. Fallback tolerante a falhas
+    // Fallback tolerante a falhas
     if (items.length === 0) {
       let filtered = DEMO_CATALOG;
 
