@@ -61,6 +61,23 @@ export interface Ticket {
   updatedAt: string;
 }
 
+export interface SharedTicket {
+  id: string;
+  shareToken: string;
+  status: TicketStatus;
+  holderName?: string;
+  event?: {
+    id: string;
+    title: string;
+    description?: string | null;
+    imageUrl?: string | null;
+    date: string;
+    location: string;
+    type: EventType;
+    category?: string | null;
+  };
+}
+
 export interface Reservation {
   id: string;
   quantity: number;

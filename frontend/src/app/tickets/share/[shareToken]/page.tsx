@@ -3,9 +3,18 @@
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, MapPin, ShieldCheck, ArrowLeft, CheckCircle2, XCircle, Ban } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  ShieldCheck,
+  ArrowLeft,
+  XCircle,
+  User,
+  Lock,
+  Film,
+} from "lucide-react";
 import { ticketsApi } from "@/services/api";
-import type { Ticket } from "@/types";
+import type { SharedTicket } from "@/types";
 import { formatDateTime, getStatusBadge } from "@/utils/formatters";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -18,7 +27,7 @@ export default function SharedTicketPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const shareToken = resolvedParams.shareToken;
 
-  const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [ticket, setTicket] = useState<SharedTicket | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +36,7 @@ export default function SharedTicketPage({ params }: PageProps) {
 
     async function loadSharedTicket() {
       try {
-        const response = await ticketsApi.getSharedTicket(shareToken);
+        const response: any = await ticketsApi.getSharedTicket(shareToken);
         if (!ignore) {
           setTicket(response.data);
         }
@@ -52,7 +61,7 @@ export default function SharedTicketPage({ params }: PageProps) {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm h-96 rounded-3xl bg-zinc-900 border border-zinc-800 animate-pulse" />
+        <div className="w-full max-w-md h-96 rounded-3xl bg-zinc-900 border border-zinc-800 animate-pulse" />
       </div>
     );
   }
@@ -77,115 +86,118 @@ export default function SharedTicketPage({ params }: PageProps) {
   }
 
   const badge = getStatusBadge(ticket.status);
-  const isUsed = ticket.status === "USED";
   const isCanceled = ticket.status === "CANCELED";
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 py-12 bg-zinc-950">
-      <div className="w-full max-w-sm space-y-6">
+      <div className="w-full max-w-md space-y-6">
+        {/* Cabeçalho da Página */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium">
             <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
-            <span>Ingresso Autenticado</span>
+            <span>Comprovante Oficial de Ingresso</span>
           </div>
           <h1 className="text-xl font-bold text-white">Elite Ingressos</h1>
         </div>
 
-        <div className={`relative bg-zinc-900 border rounded-3xl overflow-hidden shadow-2xl transition-all ${
-          isCanceled ? "border-zinc-800/40 opacity-60 grayscale" : "border-zinc-800"
-        }`}>
-          {/* Topo do Ticket */}
-          <div className="p-6 pb-5 space-y-3 bg-zinc-900 border-b border-dashed border-zinc-800">
-            <div className="flex items-center justify-between">
-              <span className={`font-mono text-xs font-bold tracking-wider ${isCanceled ? "text-zinc-500 line-through" : "text-blue-400"}`}>
-                {ticket.code}
-              </span>
-              <Badge variant={badge.variant}>
-                {badge.label}
-              </Badge>
+        {/* Card do Ingresso (Preview / Comprovante Seguro) */}
+        <div
+          className={`relative bg-zinc-900 border rounded-3xl overflow-hidden shadow-2xl transition-all ${
+            isCanceled ? "border-zinc-800/40 opacity-60 grayscale" : "border-zinc-800"
+          }`}
+        >
+          {/* Capa do Evento */}
+          <div className="relative h-44 w-full bg-zinc-950 overflow-hidden border-b border-zinc-800">
+            {ticket.event?.imageUrl ? (
+              <Image
+                src={ticket.event.imageUrl}
+                alt={ticket.event?.title || "Evento"}
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-zinc-950 text-zinc-600">
+                <Film className="w-10 h-10 opacity-40" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent" />
+
+            <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
+              <Badge variant={badge.variant}>{badge.label}</Badge>
+            </div>
+          </div>
+
+          {/* Corpo do Comprovante */}
+          <div className="p-6 space-y-5">
+            <div className="space-y-1.5">
+              <h2 className="text-xl font-extrabold text-white leading-tight">
+                {ticket.event?.title || "Evento"}
+              </h2>
+              {ticket.event?.category && (
+                <span className="text-xs text-blue-400 font-medium block">
+                  {ticket.event.category}
+                </span>
+              )}
             </div>
 
-            <h2 className="text-lg font-bold text-white leading-snug">
-              {ticket.event?.title || "Evento"}
-            </h2>
-
-            <div className="space-y-1.5 text-xs text-zinc-400">
+            <div className="space-y-2.5 text-xs text-zinc-300 bg-zinc-950/70 p-4 rounded-2xl border border-zinc-800/80">
               {ticket.event?.date && (
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                <div className="flex items-center gap-2.5">
+                  <Calendar className="w-4 h-4 text-blue-400 shrink-0" />
                   <span>{formatDateTime(ticket.event.date)}</span>
                 </div>
               )}
               {ticket.event?.location && (
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>{ticket.event.location}</span>
+                <div className="flex items-center gap-2.5">
+                  <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
+                  <span className="line-clamp-1">{ticket.event.location}</span>
                 </div>
               )}
+              <div className="flex items-center gap-2.5 pt-1 border-t border-zinc-800/60">
+                <User className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>
+                  Titular da Compra: <strong>{ticket.holderName || "Comprador"}</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* Caixa de Segurança Anti-Fraude */}
+            <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2 text-center">
+              <div className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-blue-400">
+                <Lock className="w-4 h-4" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-zinc-200">
+                  QR Code Protegido por Criptografia
+                </p>
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  Por segurança contra fraudes e revenda não autorizada, o QR Code de entrada oficial fica restrito à área autenticada do titular em <strong>Meus Ingressos</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Ações */}
+            <div className="space-y-2 pt-2">
+              <Link href="/login" className="block w-full">
+                <Button variant="primary" size="md" className="w-full text-xs">
+                  Entrar na Minha Conta
+                </Button>
+              </Link>
+              <Link href="/" className="block w-full">
+                <Button variant="ghost" size="sm" className="w-full text-xs" leftIcon={<ArrowLeft className="w-3.5 h-3.5" />}>
+                  Ver Outros Eventos
+                </Button>
+              </Link>
             </div>
           </div>
 
-          {/* Área do QR Code */}
-          <div className="p-6 text-center space-y-4">
-            {isCanceled ? (
-              <div className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3 text-center">
-                <Ban className="w-12 h-12 text-zinc-600 mx-auto" />
-                <div className="space-y-1">
-                  <p className="text-sm font-bold text-zinc-300">Ingresso Cancelado</p>
-                  <p className="text-xs text-zinc-500">
-                    Esta reserva foi cancelada e o código não é mais válido para entrada.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="p-3 bg-white rounded-2xl shadow-md inline-block mx-auto border-4 border-zinc-800">
-                  {ticket.qrCodeUrl ? (
-                    <Image
-                      src={ticket.qrCodeUrl}
-                      alt={`QR Code ${ticket.code}`}
-                      width={192}
-                      height={192}
-                      unoptimized
-                      className="mx-auto object-contain"
-                    />
-                  ) : (
-                    <div className="w-48 h-48 flex items-center justify-center text-zinc-400 text-xs">
-                      Carregando QR Code...
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-[11px] text-zinc-400 block font-medium">
-                    Apresente este código na portaria para entrar
-                  </span>
-                  {isUsed && ticket.usedAt && (
-                    <div className="p-2 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs flex items-center justify-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Utilizado em {formatDateTime(ticket.usedAt)}</span>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Rodapé do Ticket */}
-          <div className="p-4 bg-zinc-950 border-t border-zinc-800 text-center">
-            <span className="text-[10px] text-zinc-500 font-mono tracking-wider uppercase">
-              HMAC-SHA256 • Verificação Criptográfica Ativa
+          {/* Rodapé Seguro */}
+          <div className="p-3.5 bg-zinc-950 border-t border-zinc-800 text-center">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">
+              Autenticidade Verificada • Elite Ingressos
             </span>
           </div>
-        </div>
-
-        {/* Link para Vitrine */}
-        <div className="text-center">
-          <Link href="/">
-            <Button variant="ghost" size="sm" leftIcon={<ArrowLeft className="w-4 h-4" />}>
-              Conhecer a Elite Ingressos
-            </Button>
-          </Link>
         </div>
       </div>
     </div>

@@ -55,23 +55,19 @@ Para facilitar a navegação da banca avaliadora, sugerimos o seguinte fluxo de 
    - Escolha **Aprovar Pagamento** para disparar a transação atômica no PostgreSQL, debitar o estoque e emitir os ingressos com QR Code assinado;
    - Ou escolha **Recusar Pagamento** para simular uma recusa de operadora bancária (o sistema redireciona para *Minhas Compras* com o status recusado sem debitar o estoque);
 3. **Cancelamento com Estorno de Vagas**: Acesse **Minhas Compras**, clique em **Cancelar Reserva** em uma compra confirmada e confirme no modal. O status do pedido mudará para `CANCELADO`, a capacidade do evento será devolvida ao estoque e os ingressos digitais em *Meus Ingressos* ficarão em preto e branco (`grayscale`) e bloqueados;
-4. **Ingressos Digitais & Compartilhamento**: Acesse **Meus Ingressos** para ver os QR Codes em alta resolução e clique no botão para copiar o link público tokenizado (`/tickets/share/...`), que pode ser aberto em qualquer aba ou navegador sem necessidade de login;
+4. **Ingressos Digitais & Compartilhamento Seguro**: Acesse **Meus Ingressos** para ver os QR Codes em alta resolução na área autenticada. Clique no botão para copiar o link público tokenizado (`/tickets/share/...`), que abre um comprovante oficial de presença informativo sem expor o QR Code ou material criptográfico de validação;
 5. **Criação de Eventos com Assistente Inteligente**: Faça login com a conta de **Organizador**, acesse **Criar Novo Evento** e busque por títulos reais como *"Coldplay"*, *"Duna"* ou *"Batman"* para ver o auto-preenchimento com dados do TMDb e Ticketmaster;
 6. **Validação na Portaria**: Faça login com a conta de **Portaria** em `/gatekeeper/validate` e valide qualquer ingresso pela câmera do dispositivo ou digitando o código legível (`TKT-...`), observando o retorno dos status previstos (`VALID`, `ALREADY_USED`, `WRONG_EVENT`, `INVALID` ou cancelado).
-
----
 
 ## 🌟 Destaques do Projeto
 
 - 🛡️ **Zero Overbooking**: Transações atômicas no PostgreSQL (`$transaction` + decremento condicional) garantindo que nenhum ingresso seja vendido acima da capacidade;
 - 🔄 **Cancelamento com Estorno Atômico**: Permite que o comprador cancele pedidos confirmados (desde que nenhum ingresso tenha sido usado na portaria), liberando as vagas de volta ao evento e invalidando os ingressos com design desativado em escala de cinza;
-- 🔐 **Anti-Fraude Criptográfico**: QR Codes assinados com **HMAC-SHA256** e validação com tempo constante (`crypto.timingSafeEqual`) contra ataques de adulteração;
+- 🔐 **Anti-Fraude Criptográfico**: QR Codes assinados com **HMAC-SHA256** e validação com tempo constante (`crypto.timingSafeEqual`) contra ataques de temporização;
+- 🔗 **Compartilhamento Seguro (Zero Cryptographic Leakage)**: Link público tokenizado (UUID) que atua como comprovante de presença/posse expondo apenas dados de apresentação. Os segredos criptográficos (`code`, `qrSignature`, `qrCodeUrl`) permanecem estritamente restritos à sessão autenticada do comprador e protegidos por testes de contrato;
 - 🌐 **Catálogo Inteligente**: Assistente integrado ao **TMDb (The Movie Database)** e **Ticketmaster Discovery API** para auto-preenchimento de filmes e shows, com *fallback* automático tolerante a falhas;
 - 🚪 **Portaria em Tempo Real**: Validador óptico por **câmera ao vivo** e digitação manual com retorno claro dos status da especificação (`VALID`, `ALREADY_USED`, `WRONG_EVENT`, `INVALID`);
-- 🔗 **Link de Compartilhamento**: Permite que o comprador envie ingressos individuais para amigos via link público tokenizado (UUID), sem expor os outros ingressos da conta;
 - 🎯 **Design System Sólido (*Anti-AI Slop*)**: Interface moderna e minimalista, sem excessos visuais, utilizando TailwindCSS v4, badges semânticas com indicador de ponto e tipografia nítida.
-
----
 
 ## 🏗️ Arquitetura e Stack Tecnológica
 
@@ -83,7 +79,7 @@ Para facilitar a navegação da banca avaliadora, sugerimos o seguinte fluxo de 
 - **Autenticação**: JWT (JSON Web Token) com bcrypt
 - **Segurança**: Assinatura digital HMAC-SHA256 para QR Codes
 - **Validação de Dados**: Zod
-- **Testes Automatizados**: Vitest + Supertest
+- **Testes Automatizados**: Vitest + Supertest (incluindo testes de contrato de segurança)
 
 ### Front-End
 - **Framework**: Next.js 15+ (App Router)
@@ -94,8 +90,6 @@ Para facilitar a navegação da banca avaliadora, sugerimos o seguinte fluxo de 
 - **Ícones**: Lucide React
 - **Testes Automatizados**: Vitest + React Testing Library
 
----
-
 ## 👥 Contas Semeadas para Avaliação (Seed)
 
 | Perfil | Nome | E-mail | Senha | Permissões |
@@ -104,8 +98,6 @@ Para facilitar a navegação da banca avaliadora, sugerimos o seguinte fluxo de 
 | **👤 CLIENT** | Ana Cliente | `cliente1@eliteingressos.com` | `123456` | Comprar ingressos, cancelar reservas, ver QR Codes e compartilhar links |
 | **👤 CLIENT** | Bruno Cliente | `cliente2@eliteingressos.com` | `123456` | Testar concorrência de compra simultânea |
 | **🚪 GATEKEEPER** | Roberto Portaria | `portaria@eliteingressos.com` | `123456` | Validação de ingressos por câmera e código manual |
-
----
 
 ## 🔐 Configuração das Variáveis de Ambiente
 
@@ -124,8 +116,6 @@ Para facilitar a navegação da banca avaliadora, sugerimos o seguinte fluxo de 
 | Variável | Descrição | Exemplo / Padrão Local |
 | :--- | :--- | :--- |
 | `NEXT_PUBLIC_API_URL` | URL base da API do Back-End | `http://localhost:3001` |
-
----
 
 ## 🗄️ Modelagem e Relacionamento do Banco de Dados (DER)
 
@@ -212,8 +202,6 @@ erDiagram
 5. **Reservation (1) ➔ (N) Ticket**: Uma reserva aprovada emite $N$ ingressos individuais correspondentes à quantidade adquirida.
 6. **Event (1) ➔ (N) Ticket**: Cada ingresso está associado diretamente ao evento a que dá acesso.
 
----
-
 ## 📦 Detalhamento do Back-End
 
 ### Estrutura de Pastas do Back-End
@@ -260,12 +248,10 @@ backend/
 - `GET /api/reservations/:id` - Detalhes de uma reserva específica (`CLIENT`);
 - `PATCH /api/reservations/:id/cancel` - Cancelamento de reserva com estorno seguro de ingressos e devolução ao estoque (`CLIENT`).
 
-#### 🎟️ Ingressos, Compartilhamento & Portaria (`/api/tickets`)
-- `GET /api/tickets/my-tickets` - Ingressos do cliente com QR Code Base64 (`CLIENT`);
-- `GET /api/tickets/share/:shareToken` - Consulta pública de ingresso compartilhado via link;
+#### 🎟️ Ingressos, Compartilhamento Seguro & Portaria (`/api/tickets`)
+- `GET /api/tickets/my-tickets` - Ingressos completos do cliente autenticado com QR Code Base64 (`CLIENT`);
+- `GET /api/tickets/share/:shareToken` - Consulta pública de comprovante de ingresso via link (retorna apenas dados de apresentação sem expor `code`, `qrSignature` ou `qrCodeUrl`);
 - `POST /api/tickets/validate` - Validação na portaria via câmera/código (`GATEKEEPER`).
-
----
 
 ## 🎨 Detalhamento do Front-End
 
@@ -281,7 +267,7 @@ frontend/
 │   │   ├── events/[id]/page.tsx            # Detalhes do Evento & Checkout Simulado
 │   │   ├── my-tickets/page.tsx             # Área do Cliente (Cards Panorâmicos com QR Code e Grayscale)
 │   │   ├── my-reservations/page.tsx        # Histórico de Pedidos e Cancelamento com Modal
-│   │   ├── tickets/share/[shareToken]/     # Página Pública de Ingresso Compartilhado
+│   │   ├── tickets/share/[shareToken]/     # Comprovante Oficial de Ingresso / Confirmação de Presença
 │   │   ├── organizer/events/page.tsx       # Painel de Métricas & Gestão do Organizador
 │   │   ├── organizer/events/new/page.tsx   # Assistente de Criação com TMDb & Ticketmaster
 │   │   └── gatekeeper/validate/page.tsx    # Validador da Portaria (Câmera ao vivo & Digitação)
@@ -306,12 +292,10 @@ frontend/
 1. **Vitrine & Busca Inteligente (`/`)**: Filtros dinâmicos por tipo (`Todos`, `Shows`, `Filmes`), busca com debounce e paginação;
 2. **Checkout Simulado com Prevenção de Overbooking (`/events/[id]`)**: Seleção de ingressos e escolha entre `Aprovar Pagamento` ou `Recusar Pagamento`;
 3. **Cancelamento com Estorno em Tempo Real (`/my-reservations`)**: Botão de cancelamento de reservas confirmadas com modal seguro e atualização instantânea;
-4. **Ingressos Digitais com QR Code (`/my-tickets`)**: QR Codes em Base64 Data URL, botão para copiar link de compartilhamento e renderização de ingressos cancelados em preto e branco (`grayscale`);
-5. **Página Pública de Compartilhamento (`/tickets/share/[shareToken]`)**: Acesso sem login para apresentação na portaria com proteção criptográfica;
+4. **Ingressos Digitais com QR Code (`/my-tickets`)**: QR Codes em Base64 Data URL na conta autenticada, botão para copiar link de compartilhamento e renderização de ingressos cancelados em preto e branco (`grayscale`);
+5. **Comprovante Público de Ingresso (`/tickets/share/[shareToken]`)**: Acesso público seguro sem login com confirmação de titularidade (sem expor QR Code nem código de entrada);
 6. **Assistente de Catálogo Inteligente (`/organizer/events/new`)**: Busca em APIs externas de cinema e música para auto-preenchimento;
 7. **Validação da Portaria (`/gatekeeper/validate`)**: Leitor óptico via câmera (`html5-qrcode`) e digitação manual.
-
----
 
 ## 🚀 Como Executar o Projeto Localmente
 
@@ -381,18 +365,16 @@ frontend/
    ```
    Acesse a aplicação no navegador: **[http://localhost:3000](http://localhost:3000)**.
 
----
-
 ## 🧪 Executando os Testes Automatizados
 
-O projeto possui **40 testes automatizados** cobrindo serviços, segurança, repositórios, API e componentes de UI:
+O projeto possui **42 testes automatizados** cobrindo serviços, segurança, repositórios, API, testes de contrato e componentes de UI:
 
 - **Executar todos os testes (Monorepo)**:
   ```bash
   npm test
   ```
 
-- **Testes isolados do Back-End (23 testes)**:
+- **Testes isolados do Back-End (25 testes)**:
   ```bash
   cd backend
   npm test
@@ -403,8 +385,6 @@ O projeto possui **40 testes automatizados** cobrindo serviços, segurança, rep
   cd frontend
   npm test
   ```
-
----
 
 ## 🔮 Implementações Futuras & Roadmap
 

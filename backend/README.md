@@ -140,11 +140,11 @@ npm test
 - `GET /api/reservations/:id` - Detalhes de uma reserva específica (`CLIENT`);
 - `PATCH /api/reservations/:id/cancel` - Cancelamento de reserva com estorno de ingressos e devolução atômica ao estoque (`CLIENT`).
 
-### 🎟️ Ingressos, Compartilhamento & Portaria (`/api/tickets`)
-- `GET /api/tickets/my-tickets` - Ingressos do cliente com QR Code Base64 (`CLIENT`);
-- `GET /api/tickets/share/:shareToken` - Consulta pública de ingresso compartilhado via link;
+### 🎟️ Ingressos, Compartilhamento Seguro & Portaria (`/api/tickets`)
+- `GET /api/tickets/my-tickets` - Ingressos completos do cliente autenticado com QR Code Base64 (`CLIENT`);
+- `GET /api/tickets/share/:shareToken` - Consulta pública de comprovante/presença de ingresso via link (retorna apenas dados de apresentação sem expor `code`, `qrSignature` ou `qrCodeUrl`);
 - `POST /api/tickets/validate` - Validação na portaria via câmera/código (`GATEKEEPER`) retornando:
   - `VALID`: Entrada liberada e ingresso marcado como `USED`;
   - `ALREADY_USED`: Ingresso já utilizado anteriormente com data/hora do uso;
   - `WRONG_EVENT`: Ingresso válido, porém emitido para outro evento;
-  - `INVALID`: Código inexistente ou assinatura HMAC violada.
+  - `INVALID`: Código inexistente, cancelado ou assinatura HMAC violada.

@@ -96,16 +96,20 @@ Foram criados enums nativos no PostgreSQL via Prisma para evitar estados inconsi
   - Valida se nenhum dos ingressos já foi validado na portaria (`status !== 'USED'`);
   - Executa uma transação atômica no PostgreSQL que marca a reserva e seus ingressos como `CANCELED` e devolve a quantidade exata ao estoque (`availableTickets: { increment: quantity }`).
 
-### 🎟️ Módulo 5: Ingressos, Compartilhamento & Validação de Portaria (`/api/tickets`)
-- **Área do Cliente (`GET /api/tickets/my-tickets`)**: Retorna os ingressos com a imagem do QR Code gerada em Base64 Data URL (`qrCodeUrl`) para renderização direta sem requisições adicionais.
-- **Link Público (`GET /api/tickets/share/:shareToken`)**: Permite que o cliente compartilhe um ingresso específico via URL com token UUID randômico, sem expor os outros ingressos de sua conta.
+### 🎟️ Módulo 5: Ingressos, Compartilhamento Seguro & Portaria (`/api/tickets`)
+- **Área Autenticada do Cliente (`GET /api/tickets/my-tickets`)**: Retorna os ingressos completos com a imagem do QR Code gerada em Base64 Data URL (`qrCodeUrl`) e código legível para apresentação na portaria.
+- **Link Público Seguro (`GET /api/tickets/share/:shareToken`)**: 
+  - Permite que o cliente compartilhe um comprovante público de presença/posse via URL com token UUID randômico;
+  - **Contrato Estrito de Segurança**: O endpoint expõe apenas dados de apresentação (título do evento, data, local, status e primeiro nome do titular). **Nunca expõe `code`, `qrSignature` nem `qrCodeUrl`**, garantindo que o material criptográfico que autoriza a entrada permaneça exclusivo da conta autenticada do comprador;
+  - Protegido por testes de contrato automatizados no Vitest.
 - **Validação de Portaria (`POST /api/tickets/validate`)**:
-  - Aceita leitura óptica via câmera (JSON do QR) ou digitação manual do código.
+  - Aceita leitura óptica via câmera (JSON do QR) ou digitação manual do código;
+  - Validação criptográfica com `crypto.timingSafeEqual` contra ataques de temporização (*timing attacks*);
   - Retornos claros conforme a especificação:
     1. **`VALID`**: Entrada autorizada, ingresso marcado como utilizado;
     2. **`ALREADY_USED`**: Ingresso já validado anteriormente, informando a data/hora exata do uso;
     3. **`WRONG_EVENT`**: Ingresso válido, mas emitido para outro evento diferente do qual a portaria está controlando;
-    4. **`INVALID`**: Código inexistente ou assinatura adulterada.
+    4. **`INVALID`**: Código inexistente, cancelado ou assinatura adulterada.
 
 ## 5. Segurança e Prevenção de Fraudes
 

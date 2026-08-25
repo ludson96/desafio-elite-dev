@@ -55,4 +55,20 @@ describe("Integração: API Endpoints (E2E / Integration)", () => {
     expect(res.body).toHaveProperty("status", "error");
     expect(res.body).toHaveProperty("message", "E-mail ou senha incorretos");
   });
+
+  it("GET /api/tickets/share/:shareToken deve retornar dados públicos sem vazar code, qrSignature nem qrCodeUrl (Contrato de Segurança)", async () => {
+    const shareToken = "35557fe9-c0fa-4936-a25b-6d0d4698f637";
+    const res = await request(app).get(`/api/tickets/share/${shareToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("status", "success");
+    expect(res.body.data).toHaveProperty("shareToken", shareToken);
+    expect(res.body.data).toHaveProperty("event");
+    expect(res.body.data).toHaveProperty("holderName");
+
+    // Contrato de Segurança: validação explícita de não-vazamento
+    expect(res.body.data).not.toHaveProperty("code");
+    expect(res.body.data).not.toHaveProperty("qrSignature");
+    expect(res.body.data).not.toHaveProperty("qrCodeUrl");
+  });
 });

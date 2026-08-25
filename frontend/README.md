@@ -1,6 +1,6 @@
 # 🎟️ Elite Ingressos — Front-End (Desafio Técnico Elite Dev)
 
-Interface web moderna, responsiva, minimalista e acessível para a plataforma de venda, emissão e validação de ingressos para shows e cinema, desenvolvida com **Next.js 15+ (App Router)**, **TypeScript**, **TailwindCSS v4** e gerenciamento de estado global com **Zustand**.
+Interface web moderna, responsiva, minimalista e acessível para a plataforma de venda, emissão, cancelamento e validação de ingressos para shows e cinema, desenvolvida com **Next.js 15+ (App Router)**, **TypeScript**, **TailwindCSS v4** e gerenciamento de estado global com **Zustand**.
 
 ## 🚀 Tecnologias & Stack Utilizada
 
@@ -20,13 +20,13 @@ frontend/
 ├── src/
 │   ├── app/                                # Rotas e Páginas do Next.js (App Router)
 │   │   ├── layout.tsx                      # Layout raiz (Navbar, Footer, Tema Escuro Sólido)
-│   │   ├── page.tsx                        # Vitrine Pública / Catálogo de Eventos com Filtros
+│   │   ├── page.tsx                        # Vitrine Pública / Catálogo de Eventos com Filtros e LCP Otimizado
 │   │   ├── login/page.tsx                  # Login com atalhos de preenchimento rápido em 1 clique
 │   │   ├── register/page.tsx               # Cadastro com seleção de perfil (Cliente, Organizador, Portaria)
 │   │   ├── events/[id]/page.tsx            # Detalhes do Evento & Checkout Simulado com Status
-│   │   ├── my-tickets/page.tsx             # Área do Cliente (Cards Panorâmicos com QR Code)
-│   │   ├── my-reservations/page.tsx        # Histórico de Pedidos, Compras & Cancelamento
-│   │   ├── tickets/share/[shareToken]/     # Página Pública de Ingresso Compartilhado por Link
+│   │   ├── my-tickets/page.tsx             # Área do Cliente (Cards Panorâmicos com QR Code e Grayscale)
+│   │   ├── my-reservations/page.tsx        # Histórico de Pedidos, Compras & Cancelamento Seguro
+│   │   ├── tickets/share/[shareToken]/     # Comprovante Oficial de Ingresso / Confirmação de Presença
 │   │   ├── organizer/events/page.tsx       # Painel de Métricas & Gestão do Organizador
 │   │   ├── organizer/events/new/page.tsx   # Assistente de Criação com TMDb & Ticketmaster
 │   │   └── gatekeeper/validate/page.tsx    # Validador da Portaria (Câmera ao vivo & Código Manual)
@@ -89,7 +89,7 @@ Para facilitar a avaliação, a tela de login possui botões de **preenchimento 
 
 | Perfil | E-mail | Senha | Acesso / Permissões |
 | :--- | :--- | :--- | :--- |
-| **👤 Cliente 1** | `cliente1@eliteingressos.com` | `123456` | Comprar ingressos, ver QR Codes e compartilhar link |
+| **👤 Cliente 1** | `cliente1@eliteingressos.com` | `123456` | Comprar ingressos, ver QR Codes, cancelar e compartilhar link |
 | **👤 Cliente 2** | `cliente2@eliteingressos.com` | `123456` | Testar concorrência de compra simultânea |
 | **👑 Organizador** | `organizador@eliteingressos.com` | `123456` | Criar eventos (com TMDb/Ticketmaster) e painel de métricas |
 | **🚪 Portaria** | `portaria@eliteingressos.com` | `123456` | Validar ingressos por câmera ou código manual |
@@ -99,7 +99,7 @@ Para facilitar a avaliação, a tela de login possui botões de **preenchimento 
 1. **Vitrine & Busca Inteligente (`/`)**:
    - Filtros dinâmicos por tipo (`Todos`, `Shows & Festivais`, `Filmes & Cinema`);
    - Barra de busca com debounce e paginação integrada;
-   - Banners widescreen de alta qualidade para cada categoria de evento.
+   - Otimização de LCP com imagens *above the fold* pré-carregadas.
 
 2. **Checkout Simulado com Prevenção de Overbooking (`/events/[id]`)**:
    - Seleção de quantidade com travas automáticas de estoque disponível;
@@ -110,14 +110,14 @@ Para facilitar a avaliação, a tela de login possui botões de **preenchimento 
    - Botão **"Cancelar Reserva"** para pedidos confirmados, com modal de confirmação seguro e devolução automática dos ingressos ao estoque.
 
 4. **Ingressos Digitais com QR Code (`/my-tickets`)**:
-   - Pôster panorâmico do evento no topo do ingresso;
-   - QR Code em formato Base64 Data URL para apresentação imediata na portaria;
+   - Área autenticada do comprador com QR Code em formato Base64 Data URL para apresentação imediata na portaria;
    - Ingressos cancelados são renderizados em **preto e branco (`grayscale`)**, com código riscado e botões de QR Code bloqueados;
    - Botão para copiar o link público de compartilhamento com 1 clique.
 
-5. **Página Pública de Compartilhamento (`/tickets/share/[shareToken]`)**:
+5. **Página Pública de Comprovante de Ingresso (`/tickets/share/[shareToken]`)**:
    - Visual em formato de *ticket stub* acessível sem necessidade de login;
-   - Exibe código único, validação criptográfica e status do ingresso em tempo real;
+   - Exibe confirmação de presença com nome do titular da compra e dados do evento;
+   - **Zero Leakage**: O QR Code funcional e o código de validação ficam protegidos exclusivamente na conta autenticada do comprador;
    - Ingressos cancelados exibem aviso claro de invalidação em escala de cinza.
 
 6. **Assistente de Catálogo TMDb / Ticketmaster (`/organizer/events/new`)**:

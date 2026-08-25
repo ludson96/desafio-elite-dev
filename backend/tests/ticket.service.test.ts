@@ -99,4 +99,49 @@ describe("TicketService - Validação de Portaria (Unit Tests)", () => {
     expect(result.status).toBe("INVALID");
     expect(result.message).toContain("Ingresso não encontrado ou código inválido");
   });
+
+  describe("Segurança & Contrato: getSharedTicket", () => {
+    it("deve retornar apenas preview informativo e NUNCA expor code, qrSignature nem qrCodeUrl", async () => {
+      vi.mocked(mockTicketRepo.findByShareToken).mockResolvedValue({
+        id: "t-1",
+        code: "TKT-SECRETO-123",
+        qrSignature: "sig_super_secreta_hmac_123",
+        shareToken: "token-publico-uuid",
+        status: "ACTIVE",
+        eventId: "ev-1",
+        event: {
+          id: "ev-1",
+          title: "Coldplay Tour",
+          description: "Show ao vivo",
+          type: "SHOW",
+          category: "Música",
+          imageUrl: "https://images.unsplash.com/photo-1",
+          date: new Date("2026-11-20T20:00:00Z"),
+          location: "Allianz Parque",
+        },
+        reservation: {
+          client: {
+            name: "Ana Carolina",
+          },
+        },
+      } as any);
+
+      const result: any = await ticketService.getSharedTicket("token-publico-uuid");
+
+      // 1. Deve conter dados informativos de apresentação
+      expect(result.id).toBe("t-1");
+      expect(result.shareToken).toBe("token-publico-uuid");
+      expect(result.status).toBe("ACTIVE");
+      expect(result.holderName).toBe("Ana");
+      expect(result.event.title).toBe("Coldplay Tour");
+
+      // 2. CONTRATO DE SEGURANÇA: Material criptográfico e código NÃO podem existir
+      expect(result.code).toBeUndefined();
+      expect(result.qrSignature).toBeUndefined();
+      expect(result.qrCodeUrl).toBeUndefined();
+      expect(result).not.toHaveProperty("code");
+      expect(result).not.toHaveProperty("qrSignature");
+      expect(result).not.toHaveProperty("qrCodeUrl");
+    });
+  });
 });

@@ -55,23 +55,32 @@ export class TicketService {
   }
 
   async getSharedTicket(shareToken: string) {
-    const ticket = await this.ticketRepositoryInstance.findByShareToken(shareToken);
+    const ticket: any = await this.ticketRepositoryInstance.findByShareToken(shareToken);
 
     if (!ticket) {
       throw new AppError("Ingresso compartilhado não encontrado", 404);
     }
 
-    const qrPayload = JSON.stringify({
-      code: ticket.code,
-      eventId: ticket.eventId,
-      sig: ticket.qrSignature,
-    });
-
-    const qrCodeUrl = await generateQRCodeDataURL(qrPayload);
+    // Segurança: a rota pública de compartilhamento expõe estritamente dados informativos
+    // de apresentação (preview/comprovante). NUNCA expõe code, qrSignature nem qrCodeUrl.
+    const clientName = ticket.reservation?.client?.name || "Titular";
+    const holderName = clientName.split(" ")[0]; // Ex: "Ana"
 
     return {
-      ...ticket,
-      qrCodeUrl,
+      id: ticket.id,
+      shareToken: ticket.shareToken,
+      status: ticket.status,
+      holderName,
+      event: {
+        id: ticket.event?.id,
+        title: ticket.event?.title,
+        description: ticket.event?.description,
+        type: ticket.event?.type,
+        category: ticket.event?.category,
+        imageUrl: ticket.event?.imageUrl,
+        date: ticket.event?.date,
+        location: ticket.event?.location,
+      },
     };
   }
 
