@@ -102,6 +102,40 @@ export class ReservationRepository {
       return reservation;
     });
   }
+
+  // Cancela a reserva e seus ingressos e devolve a quantidade ao estoque disponível do evento atomicamente.
+  async cancelReservationWithStockRefund(reservationId: string, eventId: string, quantity: number) {
+    return prisma.$transaction(async (tx) => {
+      // Atualiza o status da reserva para CANCELED
+      const updatedReservation = await tx.reservation.update({
+        where: { id: reservationId },
+        data: { status: "CANCELED" },
+        include: {
+          event: true,
+          payment: true,
+          tickets: true,
+        },
+      });
+
+      // Cancela todos os ingressos associados à reserva
+      await tx.ticket.updateMany({
+        where: { reservationId },
+        data: { status: "CANCELED" },
+      });
+
+      // Devolve a quantidade de ingressos ao estoque do evento atomicamente
+      await tx.event.update({
+        where: { id: eventId },
+        data: {
+          availableTickets: {
+            increment: quantity,
+          },
+        },
+      });
+
+      return updatedReservation;
+    });
+  }
 }
 
 export const reservationRepository = new ReservationRepository();
