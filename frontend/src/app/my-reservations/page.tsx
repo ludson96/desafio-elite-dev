@@ -7,6 +7,7 @@ import {
   ShoppingBag,
   Calendar,
   Ticket,
+  X,
 } from "lucide-react";
 import { reservationsApi } from "@/services/api";
 import { useAuthStore } from "@/stores/authStore";
@@ -14,6 +15,7 @@ import type { Reservation } from "@/types";
 import { formatCurrency, formatDateTime, getStatusBadge } from "@/utils/formatters";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 
 export default function MyReservationsPage() {
   const router = useRouter();
@@ -21,6 +23,13 @@ export default function MyReservationsPage() {
 
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Estados para modal de cancelamento
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
+  const [cancelError, setCancelError] = useState("");
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -49,6 +58,44 @@ export default function MyReservationsPage() {
     };
   }, [user, isHydrated, router]);
 
+  const handleOpenCancelModal = (reservation: Reservation) => {
+    setSelectedReservation(reservation);
+    setCancelError("");
+    setIsCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!selectedReservation) return;
+
+    setIsCanceling(true);
+    setCancelError("");
+
+    try {
+      await reservationsApi.cancel(selectedReservation.id);
+
+      // Atualiza o estado da listagem localmente
+      setReservations((prev) =>
+        prev.map((r) => (r.id === selectedReservation.id ? { ...r, status: "CANCELED" } : r))
+      );
+
+      setIsCancelModalOpen(false);
+      setSelectedReservation(null);
+      setFeedbackMessage("Reserva cancelada com sucesso.");
+
+      setTimeout(() => {
+        setFeedbackMessage("");
+      }, 5000);
+    } catch (err) {
+      if (err instanceof Error) {
+        setCancelError(err.message);
+      } else {
+        setCancelError("Erro ao cancelar a reserva. Tente novamente.");
+      }
+    } finally {
+      setIsCanceling(false);
+    }
+  };
+
   return (
     <div className="flex-1 py-8 sm:py-12">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
@@ -69,6 +116,23 @@ export default function MyReservationsPage() {
             </Button>
           </Link>
         </div>
+
+        {/* Feedback Sóbrio e Discreto */}
+        {feedbackMessage && (
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span>{feedbackMessage}</span>
+            </div>
+            <button
+              onClick={() => setFeedbackMessage("")}
+              className="text-zinc-400 hover:text-zinc-200 p-1 transition-colors"
+              aria-label="Fechar mensagem"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
         {/* Listagem */}
         {loading ? (
@@ -137,7 +201,7 @@ export default function MyReservationsPage() {
                   <div className="flex items-center sm:flex-col sm:items-end justify-between w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-zinc-800">
                     <div className="text-left sm:text-right">
                       <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">
-                        Total Pago
+                        Total {isConfirmed ? "Pago" : "do Pedido"}
                       </span>
                       <span className="text-lg font-extrabold text-white">
                         {formatCurrency(reservation.totalAmount)}
@@ -145,11 +209,21 @@ export default function MyReservationsPage() {
                     </div>
 
                     {isConfirmed && (
-                      <Link href="/my-tickets" className="mt-2">
-                        <Button variant="outline" size="sm" className="text-xs">
-                          Ver Ingressos Digitais
+                      <div className="flex items-center gap-2 mt-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs text-rose-400 hover:text-rose-300 hover:border-rose-800"
+                          onClick={() => handleOpenCancelModal(reservation)}
+                        >
+                          Cancelar Reserva
                         </Button>
-                      </Link>
+                        <Link href="/my-tickets">
+                          <Button variant="primary" size="sm" className="text-xs">
+                            Ver Ingressos
+                          </Button>
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -157,6 +231,64 @@ export default function MyReservationsPage() {
             })}
           </div>
         )}
+
+        {/* Modal de Confirmação de Cancelamento */}
+        <Modal
+          isOpen={isCancelModalOpen}
+          onClose={() => {
+            if (!isCanceling) setIsCancelModalOpen(false);
+          }}
+          title="Confirmar Cancelamento de Reserva"
+        >
+          <div className="space-y-5">
+            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-400 space-y-1">
+              <p className="font-medium text-zinc-200">Tem certeza que deseja cancelar esta reserva?</p>
+              <p>Os {selectedReservation?.quantity} ingressos vinculados serão invalidados permanentemente.</p>
+            </div>
+
+            {cancelError && (
+              <div className="p-3 rounded-xl bg-zinc-950 border border-rose-900/60 text-xs text-rose-300">
+                {cancelError}
+              </div>
+            )}
+
+            <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2 text-xs">
+              <div className="flex justify-between text-zinc-400">
+                <span>Evento:</span>
+                <span className="font-medium text-white">{selectedReservation?.event?.title}</span>
+              </div>
+              <div className="flex justify-between text-zinc-400">
+                <span>Quantidade:</span>
+                <span className="font-medium text-white">{selectedReservation?.quantity} ingressos</span>
+              </div>
+              <div className="flex justify-between text-zinc-400">
+                <span>Valor Total:</span>
+                <span className="font-medium text-white">
+                  {selectedReservation && formatCurrency(selectedReservation.totalAmount)}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-800">
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => setIsCancelModalOpen(false)}
+                disabled={isCanceling}
+              >
+                Voltar
+              </Button>
+              <Button
+                variant="danger"
+                size="md"
+                onClick={handleConfirmCancel}
+                isLoading={isCanceling}
+              >
+                Confirmar Cancelamento
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );

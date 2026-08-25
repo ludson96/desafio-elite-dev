@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, use } from "react";
+import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, MapPin, ShieldCheck, ArrowLeft, CheckCircle2, XCircle } from "lucide-react";
+import { Calendar, MapPin, ShieldCheck, ArrowLeft, CheckCircle2, XCircle, Ban } from "lucide-react";
 import { ticketsApi } from "@/services/api";
 import type { Ticket } from "@/types";
 import { formatDateTime, getStatusBadge } from "@/utils/formatters";
@@ -78,6 +78,7 @@ export default function SharedTicketPage({ params }: PageProps) {
 
   const badge = getStatusBadge(ticket.status);
   const isUsed = ticket.status === "USED";
+  const isCanceled = ticket.status === "CANCELED";
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 py-12 bg-zinc-950">
@@ -90,11 +91,13 @@ export default function SharedTicketPage({ params }: PageProps) {
           <h1 className="text-xl font-bold text-white">Elite Ingressos</h1>
         </div>
 
-        <div className="relative bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl">
+        <div className={`relative bg-zinc-900 border rounded-3xl overflow-hidden shadow-2xl transition-all ${
+          isCanceled ? "border-zinc-800/40 opacity-60 grayscale" : "border-zinc-800"
+        }`}>
           {/* Topo do Ticket */}
           <div className="p-6 pb-5 space-y-3 bg-zinc-900 border-b border-dashed border-zinc-800">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-bold text-blue-400 tracking-wider">
+              <span className={`font-mono text-xs font-bold tracking-wider ${isCanceled ? "text-zinc-500 line-through" : "text-blue-400"}`}>
                 {ticket.code}
               </span>
               <Badge variant={badge.variant}>
@@ -109,13 +112,13 @@ export default function SharedTicketPage({ params }: PageProps) {
             <div className="space-y-1.5 text-xs text-zinc-400">
               {ticket.event?.date && (
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                  <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                   <span>{formatDateTime(ticket.event.date)}</span>
                 </div>
               )}
               {ticket.event?.location && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                  <MapPin className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                   <span>{ticket.event.location}</span>
                 </div>
               )}
@@ -124,34 +127,48 @@ export default function SharedTicketPage({ params }: PageProps) {
 
           {/* Área do QR Code */}
           <div className="p-6 text-center space-y-4">
-            <div className="p-3 bg-white rounded-2xl shadow-md inline-block mx-auto border-4 border-zinc-800">
-              {ticket.qrCodeUrl ? (
-                <Image
-                  src={ticket.qrCodeUrl}
-                  alt={`QR Code ${ticket.code}`}
-                  width={192}
-                  height={192}
-                  unoptimized
-                  className="mx-auto object-contain"
-                />
-              ) : (
-                <div className="w-48 h-48 flex items-center justify-center text-zinc-400 text-xs">
-                  Carregando QR Code...
+            {isCanceled ? (
+              <div className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3 text-center">
+                <Ban className="w-12 h-12 text-zinc-600 mx-auto" />
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-zinc-300">Ingresso Cancelado</p>
+                  <p className="text-xs text-zinc-500">
+                    Esta reserva foi cancelada e o código não é mais válido para entrada.
+                  </p>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <>
+                <div className="p-3 bg-white rounded-2xl shadow-md inline-block mx-auto border-4 border-zinc-800">
+                  {ticket.qrCodeUrl ? (
+                    <Image
+                      src={ticket.qrCodeUrl}
+                      alt={`QR Code ${ticket.code}`}
+                      width={192}
+                      height={192}
+                      unoptimized
+                      className="mx-auto object-contain"
+                    />
+                  ) : (
+                    <div className="w-48 h-48 flex items-center justify-center text-zinc-400 text-xs">
+                      Carregando QR Code...
+                    </div>
+                  )}
+                </div>
 
-            <div className="space-y-1">
-              <span className="text-[11px] text-zinc-400 block font-medium">
-                Apresente este código na portaria para entrar
-              </span>
-              {isUsed && ticket.usedAt && (
-                <div className="p-2 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs flex items-center justify-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Utilizado em {formatDateTime(ticket.usedAt)}</span>
+                <div className="space-y-1">
+                  <span className="text-[11px] text-zinc-400 block font-medium">
+                    Apresente este código na portaria para entrar
+                  </span>
+                  {isUsed && ticket.usedAt && (
+                    <div className="p-2 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs flex items-center justify-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Utilizado em {formatDateTime(ticket.usedAt)}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
 
           {/* Rodapé do Ticket */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -9,18 +9,18 @@ import {
   QrCode,
   Calendar,
   MapPin,
+  Clock,
   Share2,
   Check,
-  Clock,
-  ShieldCheck,
-  ExternalLink,
-  ShoppingBag,
   Film,
+  ExternalLink,
+  ShieldCheck,
+  Ban,
 } from "lucide-react";
 import { ticketsApi } from "@/services/api";
 import { useAuthStore } from "@/stores/authStore";
 import type { Ticket } from "@/types";
-import { formatDateTime } from "@/utils/formatters";
+import { formatDateTime, getStatusBadge } from "@/utils/formatters";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -30,7 +30,7 @@ export default function MyTicketsPage() {
   const { user, isHydrated } = useAuthStore();
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
@@ -51,7 +51,7 @@ export default function MyTicketsPage() {
       } catch (error) {
         console.error("Erro ao carregar ingressos:", error);
       } finally {
-        if (!ignore) setIsLoading(false);
+        if (!ignore) setLoading(false);
       }
     }
 
@@ -62,16 +62,17 @@ export default function MyTicketsPage() {
   }, [user, isHydrated, router]);
 
   const handleCopyShareLink = (shareToken: string) => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
-    const url = `${origin}/tickets/share/${shareToken}`;
-    navigator.clipboard.writeText(url);
+    const shareUrl = `${window.location.origin}/tickets/share/${shareToken}`;
+    navigator.clipboard.writeText(shareUrl);
     setCopiedToken(shareToken);
-    setTimeout(() => setCopiedToken(null), 3000);
+    setTimeout(() => {
+      setCopiedToken(null);
+    }, 2500);
   };
 
   return (
     <div className="flex-1 py-8 sm:py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Cabeçalho */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-zinc-800/80">
           <div className="space-y-1">
@@ -80,19 +81,18 @@ export default function MyTicketsPage() {
               Meus Ingressos Digitais
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400">
-              Apresente o QR Code na portaria do evento ou compartilhe o link do ingresso.
+              Apresente o QR Code na portaria ou compartilhe o link seguro de acesso.
             </p>
           </div>
-
           <Link href="/my-reservations">
-            <Button variant="outline" size="sm" leftIcon={<ShoppingBag className="w-4 h-4" />}>
+            <Button variant="outline" size="sm">
               Ver Histórico de Compras
             </Button>
           </Link>
         </div>
 
         {/* Listagem de Ingressos */}
-        {isLoading ? (
+        {loading ? (
           <div className="text-center py-20 space-y-3">
             <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
             <p className="text-xs text-zinc-400">Carregando seus ingressos...</p>
@@ -103,9 +103,9 @@ export default function MyTicketsPage() {
               <TicketIcon className="w-7 h-7" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-white">Você não possui ingressos</h3>
+              <h3 className="text-lg font-bold text-white">Nenhum ingresso encontrado</h3>
               <p className="text-xs text-zinc-400">
-                Explore a vitrine de eventos e compre seus primeiros ingressos para shows ou cinema.
+                Você ainda não possui ingressos emitidos.
               </p>
             </div>
             <Link href="/">
@@ -118,13 +118,17 @@ export default function MyTicketsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tickets.map((ticket) => {
               const isUsed = ticket.status === "USED";
+              const isCanceled = ticket.status === "CANCELED";
               const isCopied = copiedToken === ticket.shareToken;
+              const badge = getStatusBadge(ticket.status);
 
               return (
                 <div
                   key={ticket.id}
                   className={`bg-zinc-900 border rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between transition-all ${
-                    isUsed
+                    isCanceled
+                      ? "border-zinc-800/40 opacity-50 grayscale"
+                      : isUsed
                       ? "border-zinc-800/60 opacity-70"
                       : "border-zinc-800 hover:border-zinc-700"
                   }`}
@@ -148,13 +152,17 @@ export default function MyTicketsPage() {
 
                     {/* Status Flutuante */}
                     <div className="absolute top-3 left-3 z-10">
-                      <Badge variant={isUsed ? "purple" : "success"}>
-                        {isUsed ? "Utilizado" : "Válido / Ativo"}
+                      <Badge variant={badge.variant}>
+                        {badge.label}
                       </Badge>
                     </div>
 
                     {/* Código do Ticket */}
-                    <div className="absolute bottom-2 right-3 z-10 font-mono text-xs font-bold text-blue-400 bg-zinc-950/80 px-2 py-0.5 rounded-md border border-white/10">
+                    <div className={`absolute bottom-2 right-3 z-10 font-mono text-xs font-bold px-2 py-0.5 rounded-md border ${
+                      isCanceled
+                        ? "text-zinc-500 bg-zinc-950/90 border-zinc-800 line-through"
+                        : "text-blue-400 bg-zinc-950/80 border-white/10"
+                    }`}>
                       {ticket.code}
                     </div>
                   </div>
@@ -169,13 +177,13 @@ export default function MyTicketsPage() {
                       <div className="space-y-1.5 text-xs text-zinc-400">
                         {ticket.event?.date && (
                           <div className="flex items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                            <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                             <span>{formatDateTime(ticket.event.date)}</span>
                           </div>
                         )}
                         {ticket.event?.location && (
                           <div className="flex items-center gap-2">
-                            <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                            <MapPin className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                             <span className="line-clamp-1">{ticket.event.location}</span>
                           </div>
                         )}
@@ -184,48 +192,57 @@ export default function MyTicketsPage() {
 
                     {/* Ações do Ingresso */}
                     <div className="space-y-2 pt-3 border-t border-zinc-800/80">
-                      <Button
-                        variant={isUsed ? "secondary" : "primary"}
-                        size="sm"
-                        className="w-full"
-                        onClick={() => setSelectedTicket(ticket)}
-                        leftIcon={<QrCode className="w-4 h-4" />}
-                      >
-                        {isUsed ? "Ver QR Code (Utilizado)" : "Apresentar QR Code"}
-                      </Button>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleCopyShareLink(ticket.shareToken)}
-                          leftIcon={
-                            isCopied ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-400" />
-                            ) : (
-                              <Share2 className="w-3.5 h-3.5" />
-                            )
-                          }
-                          className="text-xs"
-                        >
-                          {isCopied ? "Copiado!" : "Compartilhar"}
-                        </Button>
-
-                        <Link
-                          href={`/tickets/share/${ticket.shareToken}`}
-                          target="_blank"
-                          className="w-full"
-                        >
+                      {isCanceled ? (
+                        <div className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-500 font-medium">
+                          <Ban className="w-4 h-4 text-zinc-600" />
+                          <span>Ingresso Cancelado / Inativo</span>
+                        </div>
+                      ) : (
+                        <>
                           <Button
-                            variant="ghost"
+                            variant={isUsed ? "secondary" : "primary"}
                             size="sm"
-                            className="w-full text-xs"
-                            rightIcon={<ExternalLink className="w-3 h-3" />}
+                            className="w-full"
+                            onClick={() => setSelectedTicket(ticket)}
+                            leftIcon={<QrCode className="w-4 h-4" />}
                           >
-                            Ver Link
+                            {isUsed ? "Ver QR Code (Utilizado)" : "Apresentar QR Code"}
                           </Button>
-                        </Link>
-                      </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleCopyShareLink(ticket.shareToken)}
+                              leftIcon={
+                                isCopied ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                ) : (
+                                  <Share2 className="w-3.5 h-3.5" />
+                                )
+                              }
+                              className="text-xs"
+                            >
+                              {isCopied ? "Copiado!" : "Compartilhar"}
+                            </Button>
+
+                            <Link
+                              href={`/tickets/share/${ticket.shareToken}`}
+                              target="_blank"
+                              className="w-full"
+                            >
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full text-xs"
+                                rightIcon={<ExternalLink className="w-3 h-3" />}
+                              >
+                                Ver Link
+                              </Button>
+                            </Link>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
