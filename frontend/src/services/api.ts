@@ -151,6 +151,15 @@ export const reservationsApi = {
       requiresAuth: true,
     });
   },
+  cancel: async (id: string) => {
+    return apiFetch<{ status: string; message: string; data: Reservation }>(
+      `/api/reservations/${id}/cancel`,
+      {
+        method: "PATCH",
+        requiresAuth: true,
+      }
+    );
+  },
 };
 
 export const ticketsApi = {
