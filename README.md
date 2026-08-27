@@ -1,5 +1,7 @@
 # 🎟️ Elite Ingressos — Plataforma de Eventos e Ingressos Digitais
 
+🌍 Read this in [English](README.en.md)
+
 > **Projeto Desenvolvido para o Desafio Técnico Elite Dev da Verzel**  
 > Solução *Full-Stack* completa para compra, gestão, emissão, cancelamento e validação segura de ingressos para **Shows** e **Cinema**, com prevenção rigorosa de *overbooking*, assinatura criptográfica anti-fraude em QR Codes e integração com catálogos externos em tempo real.
 
