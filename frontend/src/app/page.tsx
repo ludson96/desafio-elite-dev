@@ -20,6 +20,7 @@ import { formatCurrency, formatDateTime } from "@/utils/formatters";
 import { cn } from "@/utils/cn";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ServerNoticeBanner } from "@/components/ui/Banner";
 
 export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -70,6 +71,7 @@ export default function HomePage() {
 
   return (
     <div className="flex-1 flex flex-col">
+      <ServerNoticeBanner />
       {/* Banner de Destaque da Semana */}
       {featuredEvent && (
         <section className="relative border-b border-zinc-800 bg-zinc-950">
