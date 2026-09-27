@@ -264,7 +264,11 @@ export function Navbar() {
           </div>
         </div>
       )}
-      <ServerNoticeBanner />
+      <div className="absolute top-full left-0 w-full z-50 pointer-events-none">
+        <div className="pointer-events-auto">
+          <ServerNoticeBanner />
+        </div>
+      </div>
     </header>
   );
 }

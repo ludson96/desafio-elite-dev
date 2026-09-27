@@ -20,7 +20,6 @@ import { formatCurrency, formatDateTime } from "@/utils/formatters";
 import { cn } from "@/utils/cn";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { ServerNoticeBanner } from "@/components/ui/Banner";
 
 export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
