@@ -24,12 +24,9 @@ export default function RootLayout({
         className={`${inter.className} min-h-screen flex flex-col bg-zinc-950 text-zinc-100 antialiased selection:bg-red-600 selection:text-white`}
       >
         <Navbar />
-        <div className="sticky top-0 z-40">
-          <div className="absolute top-full left-0 w-full z-50 pointer-events-none">
-            <div className="pointer-events-auto">
-              <ServerNoticeBanner />
-            </div>
-          </div>
+
+        <div className="fixed top-16 left-0 w-full z-30">
+          <ServerNoticeBanner />
         </div>
 
         <main className="flex-1 flex flex-col">{children}</main>
