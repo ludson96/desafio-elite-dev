@@ -71,7 +71,6 @@ export default function HomePage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <ServerNoticeBanner />
       {/* Banner de Destaque da Semana */}
       {featuredEvent && (
         <section className="relative border-b border-zinc-800 bg-zinc-950">

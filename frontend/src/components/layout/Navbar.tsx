@@ -16,6 +16,7 @@ import {
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
+import { ServerNoticeBanner } from "../ui/Banner";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -263,6 +264,7 @@ export function Navbar() {
           </div>
         </div>
       )}
+      <ServerNoticeBanner />
     </header>
   );
 }
