@@ -1,133 +1,189 @@
-# 🎟️ Elite Ingressos — Event & Digital Ticketing Platform
+# 🎟️ Elite Ingressos — Event Management & Digital Ticketing Platform
 
-🇧🇷 Leia isto em [Português](README.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.3-black.svg?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React 19](https://img.shields.io/badge/React-19.2-61DAFB.svg?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Express 5](https://img.shields.io/badge/Express-5.2-000000.svg?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Prisma ORM 7](https://img.shields.io/badge/Prisma-7.9-2D3748.svg?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![TailwindCSS 4](https://img.shields.io/badge/TailwindCSS-4.0-06B6D4.svg?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-4.1-6E9F18.svg?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 
-> **Project Developed for the Verzel Elite Dev Technical Challenge**  
-> Complete *Full-Stack* solution for purchasing, managing, issuing, canceling, and securely validating tickets for **Concerts** and **Movies**, featuring strict *overbooking* prevention, anti-fraud cryptographic signatures on QR Codes, and real-time external catalog integration.
+> 🇺🇸 **English** | 🇧🇷 [**Versão em Português**](README.md)
 
-## 📌 Summary / Quick Navigation
+High-reliability Full-Stack solution for purchasing, managing, issuing, canceling, and validating in real-time tickets for Concerts and Movies. The system features strict concurrency control with ACID transactions (Zero Overbooking), cryptographic HMAC-SHA256 digital signature anti-fraud in QR Codes, secure sharing of proof-of-ownership, and intelligent integration with external catalogs (TMDb and Ticketmaster).
 
-- [🌐 Production Deployment (Live Demo)](#-production-deployment-live-demo)
-- [📑 Technical Decisions Documents (DECISIONS.md)](#-technical-decisions-documents-decisionsmd)
-- [🤖 Technical Leadership & AI Pair Programming](#-technical-leadership--ai-pair-programming)
-- [⚡ Quick Evaluation Walkthrough (How to Test in 3 Minutes)](#-quick-evaluation-walkthrough-how-to-test-in-3-minutes)
-- [🌟 Project Highlights](#-project-highlights)
-- [🏗️ Architecture & Tech Stack](#️-architecture--tech-stack)
-- [👥 Seeded Accounts for Evaluation (Seed)](#-seeded-accounts-for-evaluation-seed)
-- [🔐 Environment Variables Configuration](#-environment-variables-configuration)
-- [🗄️ Database Modeling & Entity Relationship Diagram (ERD)](#️-database-modeling--entity-relationship-diagram-erd)
-- [📦 Back-End Details](#-back-end-details)
-  - [Back-End Folder Structure](#back-end-folder-structure)
-  - [API Endpoints](#api-endpoints)
-- [🎨 Front-End Details](#-front-end-details)
-  - [Front-End Folder Structure](#front-end-folder-structure)
-  - [Front-End Features](#front-end-features)
-- [🚀 How to Run the Project Locally](#-how-to-run-the-project-locally)
-- [🧪 Running Automated Tests](#-running-automated-tests)
-- [🔮 Future Implementations & Roadmap](#-future-implementations--roadmap)
+## 📌 Quick Navigation
 
-## 🌐 Production Deployment (Live Demo)
+- [📝 About the Project](#-about-the-project)
+- [🖼️ Preview](#️-preview)
+- [🌐 Application Deployment](#-application-deployment)
+- [⚡ API Endpoints](#-api-endpoints)
+- [✨ Key Features](#-key-features)
+- [🛠️ Technologies & Tools Used](#️-technologies--tools-used)
+- [🏛️ Solution Architecture](#️-solution-architecture)
+- [📁 Repository Structure](#-repository-structure)
+- [💡 Technical Decisions](#-technical-decisions)
+- [🚀 How to Run the Project](#-how-to-run-the-project)
 
-The application is deployed and ready for online use:
+## 📝 About the Project
 
-- 🔗 **Access the Application**: **[https://desafio-elite-dev-theta.vercel.app/](https://desafio-elite-dev-theta.vercel.app/)**
+**Elite Ingressos** was designed and built as an engineering solution for the **Verzel Elite Dev Technical Challenge**. Its core purpose is to deliver a modern, resilient, and secure platform for the digital ticketing and entertainment ecosystem.
 
-> ⚠️ **Notice regarding Cold Start (First Request)**:  
-> The **Front-End** is hosted on **Vercel** and the **Back-End API** is hosted on **Render.com's** free tier.  
-> Due to the sleep mode of Render's free tier, the **first request to the backend may take approximately 50 seconds** to spin up the instance. After this initial wake-up, all subsequent requests will respond instantly!
+The application addresses critical challenges in modern software engineering:
+- **Inventory Consistency**: Mathematical and transactional guarantee against overselling (*overbooking*) under high-concurrency conditions.
+- **Security & Anti-Fraud**: QR Codes generated with HMAC-SHA256 cryptographically signed payloads, verified via constant-time equality (`crypto.timingSafeEqual`) to eliminate timing-attack vulnerabilities.
+- **Privacy & Asset Protection**: Public ticket sharing via tokenized UUID links that allow proving attendance without leaking private cryptographic material or gate admission codes (*Zero Cryptographic Leakage*).
+- **Smooth Gate Operations**: Real-time validation module supporting optical scanning via camera and resilient manual code entry.
 
-## 📑 Technical Decisions Documents (DECISIONS.md)
+## 🖼️ Preview
 
-To inspect the comprehensive and deep architectural rationale:
-- 📄 [Backend DECISIONS.md](./backend/DECISIONS.md)
-- 📄 [Frontend DECISIONS.md](./frontend/DECISIONS.md)
+<img src="./frontend/public/projeto.gif" alt="App Demonstration" />
 
-## 🤖 Technical Leadership & AI Pair Programming
+## 🌐 Application Deployment
 
-For details on how Artificial Intelligence was leveraged as a technical co-pilot, maintaining full architectural control and strictly hands-on development:
-- 📄 [AI Pair Programming Process & Critical Rationale](./docs/ai-workflow/AI_PAIR_PROGRAMMING.md)
-- 📋 [Actual Implementation Plan Example Used](./docs/ai-workflow/IMPLEMENTATION_PLAN_EXAMPLE.md)
+Access the live application in production:
+👉 **[Elite Ingressos](https://desafio-elite-dev-theta.vercel.app/)**
 
-## ⚡ Quick Evaluation Walkthrough (How to Test in 3 Minutes)
+> ⚠️ **Cold Start Notice**: The front-end is hosted on Vercel and the back-end on Render.com free tier. Due to container idle sleep mode, the first request may take around 50 seconds to wake up. Subsequent requests respond immediately.
 
-To assist the review committee, we suggest the following end-to-end testing flow:
+### 👥 Seeded Test Accounts
 
-1. **Showcase & Catalog**: Access the home page, use the search bar or filter by *Concerts* / *Movies* to explore available events;
-2. **Purchase & Simulated Checkout**: Click an event card and choose the number of tickets. In the checkout modal:
-   - Select **Approve Payment** to trigger the atomic PostgreSQL transaction, deduct inventory, and issue tickets with signed QR Codes;
-   - Or select **Decline Payment** to simulate a payment gateway refusal (the system redirects to *My Orders* with the declined status without deducting inventory);
-3. **Cancellation with Ticket Refund**: Go to **My Orders**, click **Cancel Reservation** on a confirmed order, and confirm in the modal. The order status changes to `CANCELADO`, event capacity is restored to inventory, and digital tickets in *My Tickets* become grayscale and blocked;
-4. **Digital Tickets & Secure Sharing**: Go to **My Tickets** to view high-resolution QR Codes in the authenticated area. Click the button to copy the tokenized public link (`/tickets/share/...`), which opens an official informational proof-of-attendance voucher without exposing the QR Code or validation cryptographic material;
-5. **Event Creation with Smart Assistant**: Log in with the **Organizer** account, go to **Create New Event**, and search for real titles like *"Coldplay"*, *"Dune"*, or *"Batman"* to test auto-completion powered by TMDb and Ticketmaster;
-6. **Gatekeeper Validation**: Log in with the **Gatekeeper** account at `/gatekeeper/validate` and validate any ticket using the device camera or by typing the human-readable code (`TKT-...`), observing the return of all expected statuses (`VALID`, `ALREADY_USED`, `WRONG_EVENT`, `INVALID`, or canceled).
-
-## 🌟 Project Highlights
-
-- 🛡️ **Zero Overbooking**: Atomic PostgreSQL transactions (`$transaction` + conditional decrement) ensuring no ticket is sold beyond venue capacity;
-- 🔄 **Atomic Cancellation & Restock**: Allows the buyer to cancel confirmed orders (provided no ticket has been scanned at the gate), releasing spots back to event inventory and invalidating tickets with a disabled grayscale design;
-- 🔐 **Cryptographic Anti-Fraud**: QR Codes signed with **HMAC-SHA256** and validated using constant-time comparison (`crypto.timingSafeEqual`) against timing attacks;
-- 🔗 **Secure Sharing (Zero Cryptographic Leakage)**: Tokenized public link (UUID) serving as proof-of-attendance/ownership that exposes only presentation data. Cryptographic secrets (`code`, `qrSignature`, `qrCodeUrl`) remain strictly restricted to the buyer's authenticated session and protected by contract tests;
-- 🌐 **Smart Catalog**: Assistant integrated with **TMDb (The Movie Database)** and **Ticketmaster Discovery API** for auto-filling movie and concert details, with fault-tolerant automatic fallback;
-- 🚪 **Real-Time Gatekeeper**: Optical validation via **live camera** and manual input with clear feedback for all specification statuses (`VALID`, `ALREADY_USED`, `WRONG_EVENT`, `INVALID`);
-- 🎯 **Solid Design System (*Anti-AI Slop*)**: Modern, minimalist interface with no visual bloat, built with TailwindCSS v4, semantic dot-indicator badges, and sharp typography.
-
-## 🏗️ Architecture & Tech Stack
-
-### Back-End
-- **Runtime**: Node.js 20+ with TypeScript (native ESM)
-- **Web Framework**: Express.js
-- **Database**: PostgreSQL 16
-- **ORM**: Prisma ORM v7
-- **Authentication**: JWT (JSON Web Token) with bcrypt
-- **Security**: HMAC-SHA256 digital signature for QR Codes
-- **Data Validation**: Zod
-- **Automated Tests**: Vitest + Supertest (including security contract tests)
-
-### Front-End
-- **Framework**: Next.js 15+ (App Router)
-- **Language**: TypeScript (Strict Mode)
-- **Styling**: TailwindCSS v4
-- **State Management**: Zustand with local persistence
-- **QR Code Reader**: html5-qrcode (live camera and webcam)
-- **Icons**: Lucide React
-- **Automated Tests**: Vitest + React Testing Library
-
-## 👥 Seeded Accounts for Evaluation (Seed)
-
-| Profile | Name | Email | Password | Permissions |
+| Role | Name | E-mail | Password | Permissions / Access |
 | :--- | :--- | :--- | :--- | :--- |
-| **👑 ORGANIZER** | Carlos Organizador | `organizador@eliteingressos.com` | `123456` | Create/edit events, import from TMDb/Ticketmaster, view metrics |
-| **👤 CLIENT** | Ana Cliente | `cliente1@eliteingressos.com` | `123456` | Purchase tickets, cancel reservations, view QR Codes, share links |
-| **👤 CLIENT** | Bruno Cliente | `cliente2@eliteingressos.com` | `123456` | Test simultaneous purchase concurrency |
-| **🚪 GATEKEEPER** | Roberto Portaria | `portaria@eliteingressos.com` | `123456` | Validate tickets via camera and manual code entry |
+| **👑 ORGANIZER** | Carlos Organizador | `organizador@eliteingressos.com` | `123456` | Create/manage events, sales analytics, TMDb/Ticketmaster wizard |
+| **👤 CLIENT** | Ana Cliente | `cliente1@eliteingressos.com` | `123456` | Buy tickets, cancel orders, view QR Codes, share attendance vouchers |
+| **👤 CLIENT** | Bruno Cliente | `cliente2@eliteingressos.com` | `123456` | Secondary account for concurrency and simultaneous purchase tests |
+| **🚪 GATEKEEPER** | Roberto Portaria | `portaria@eliteingressos.com` | `123456` | Gate ticket validation (Live Camera and manual code input) |
 
-## 🔐 Environment Variables Configuration
+## ⚡ API Endpoints
 
-### Back-End (`backend/.env`)
-| Variable | Description | Example / Local Default |
+The API follows RESTful architecture with standardized JSON responses and centralized error handling.
+
+### 🔐 Authentication (`/api/auth`)
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Registers a new user (`ORGANIZER`, `CLIENT`, `GATEKEEPER`) |
+| `POST` | `/api/auth/login` | Public | Authenticates credentials and returns a Bearer JWT |
+| `GET` | `/api/auth/me` | Authenticated | Returns profile data of the logged-in user |
+
+### 🌐 External Catalog (`/api/catalog`)
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/catalog/search` | `ORGANIZER` | Queries movies/concerts on TMDb and Ticketmaster with fallback |
+
+### 🎭 Events (`/api/events`)
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/events` | Public | Lists published events with search, type filters, and pagination |
+| `GET` | `/api/events/:id` | Public | Returns complete details for a specific event |
+| `GET` | `/api/events/organizer/my-events` | `ORGANIZER` | Lists all events created by the logged-in organizer with metrics |
+| `POST` | `/api/events` | `ORGANIZER` | Creates a new event in the system |
+| `PUT` | `/api/events/:id` | `ORGANIZER` | Updates an existing event owned by the organizer |
+
+### 💳 Reservations, Payment & Cancellation (`/api/reservations`)
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/reservations` | `CLIENT` | Places reservation in atomic transaction with simulated payment (`APPROVED`/`REFUSED`) |
+| `GET` | `/api/reservations/my-reservations` | `CLIENT` | Returns order history and statuses for the client |
+| `GET` | `/api/reservations/:id` | `CLIENT` | Retrieves details of a specific reservation |
+| `PATCH` | `/api/reservations/:id/cancel` | `CLIENT` | Cancels confirmed order, restores seats to inventory, and revokes tickets |
+
+### 🎟️ Tickets, Sharing & Gatekeeping (`/api/tickets`)
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/tickets/my-tickets` | `CLIENT` | Lists active tickets for client with Base64 Data URL QR Codes |
+| `GET` | `/api/tickets/share/:shareToken` | Public | Safe public attendance proof check (without exposing secrets) |
+| `POST` | `/api/tickets/validate` | `GATEKEEPER` | Validates ticket at entrance via camera or manual entry |
+
+## ✨ Key Features
+
+- 🛡️ **Zero Overbooking Guarantee**: Purchase and cancellation operations run inside PostgreSQL atomic transactions (`prisma.$transaction`) with database-level capacity validation.
+- 🔄 **Atomic Cancellation & Inventory Rollback**: Buyers can cancel confirmed orders, releasing seats back to inventory and rendering canceled tickets in disabled grayscale.
+- 🔐 **Cryptographic Anti-Fraud**: HMAC-SHA256 signatures embedded directly into the QR Code payload and constant-time checks prevent forging or tampering.
+- 🔗 **Zero Cryptographic Leakage Public Sharing**: Dedicated UUID public link creates an attendance confirmation voucher without exposing admission secrets or QR Codes.
+- 🌐 **Intelligent External Catalog**: Live auto-fill integration with **TMDb (The Movie Database)** and **Ticketmaster Discovery** APIs with robust fallback mechanisms.
+- 🚪 **Gatekeeper Entrance Scanner**: Real-time camera optical decoder via `html5-qrcode` alongside manual code entry, providing explicit diagnostics (`VALID`, `ALREADY_USED`, `WRONG_EVENT`, `INVALID`, `CANCELED`).
+- 🎨 **Modern & Accessible Design System**: Built with Next.js 16 and TailwindCSS v4, featuring dot-indicator semantic status badges and responsive layouts.
+
+## 🛠️ Technologies & Tools Used
+
+| Layer / Purpose | Technology | Description |
 | :--- | :--- | :--- |
-| `PORT` | Express server port | `3001` |
-| `NODE_ENV` | Execution environment | `development` |
-| `DATABASE_URL` | PostgreSQL connection string (Prisma) | `postgresql://postgres:password123@localhost:5432/desafio_elite_dev?schema=public` |
-| `JWT_SECRET` | Secret key for signing JWT tokens | `super-secret-desafio-elite-dev-jwt-key` |
-| `QR_SECRET` | Secret key for HMAC cryptographic signing of QR Codes | `super-secret-hmac-qr-signing-key` |
-| `TMDB_API_KEY` | The Movie Database API Key (Optional - includes fallback) | *(Optional)* |
-| `TICKETMASTER_API_KEY` | Ticketmaster API Key (Optional - includes fallback) | *(Optional)* |
+| **Core Language** | **TypeScript 5.8** | Compile-time static typing across the full stack |
+| **Front-End Framework** | **Next.js 16 (App Router)** | Hybrid rendering and modern server/client component routing |
+| **UI Library** | **React 19** | Modern UI primitives with functional components and hooks |
+| **Styling** | **TailwindCSS 4** | High-performance CSS utility engine with custom design system |
+| **Global State** | **Zustand 5** | Lightweight and reactive client state with LocalStorage persistence |
+| **Back-End Framework** | **Express 5** | Robust REST HTTP framework with native async handler support |
+| **Data Persistence** | **Prisma ORM 7** | Declarative data modeling, static typing, and ACID transactions |
+| **Database** | **PostgreSQL 16** | Relational database with native Enums and indexed queries |
+| **Auth & Cryptography** | **JWT & HMAC-SHA256** | Bearer Token authentication and cryptographic QR signatures |
+| **Schema Validation** | **Zod 4** | Declarative runtime validation with TypeScript type inference |
+| **HTTP Security** | **Helmet & CORS** | Standard OWASP headers and cross-origin security controls |
+| **QR Code Engine** | **html5-qrcode** | Real-time optical barcode/QR decoding via browser camera |
+| **Automated Testing** | **Vitest 4 + RTL + Supertest** | Comprehensive test suite covering business logic, contracts, and UI |
+| **Containerization** | **Docker & Docker Compose** | Reproducible, isolated environment for local development |
 
-### Front-End (`frontend/.env.local`)
-| Variable | Description | Example / Local Default |
-| :--- | :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | Back-End API base URL | `http://localhost:3001` |
+## 🏛️ Solution Architecture
 
-## 🗄️ Database Modeling & Entity Relationship Diagram (ERD)
+The application is structured into decoupled layers with single responsibility principles, isolating UI presentation, REST controllers, business services, and database persistence.
 
-The relational database schema designed in PostgreSQL using Prisma ORM:
+```mermaid
+flowchart TD
+    subgraph ClientLayer ["Presentation Layer (Front-End)"]
+        UI["Next.js 16 (React 19 + Tailwind v4)"]
+        State["Auth Store (Zustand)"]
+        Scanner["Optical Scanner (html5-qrcode)"]
+        UI --> State
+        UI --> Scanner
+    end
+
+    subgraph APILayer ["Application Layer (Express 5 REST API)"]
+        Router["Express Routes & Middlewares"]
+        AuthGuard["JWT Auth & Role Guards (RBAC)"]
+        Validator["Input Validation (Zod)"]
+        Controller["REST Controllers"]
+        
+        Router --> AuthGuard --> Validator --> Controller
+    end
+
+    subgraph DomainLayer ["Domain Layer & Business Logic"]
+        AuthService["Auth Service (Bcrypt + JWT)"]
+        EventService["Event Service (Filters & Metrics)"]
+        ReservationService["Reservation Service (ACID Transactions)"]
+        TicketService["Ticket Service (HMAC-SHA256 & QR Code)"]
+        CatalogService["Catalog Service (TMDb & Ticketmaster API)"]
+        
+        Controller --> AuthService
+        Controller --> EventService
+        Controller --> ReservationService
+        Controller --> TicketService
+        Controller --> CatalogService
+    end
+
+    subgraph DataLayer ["Data & Persistence Layer"]
+        PrismaRepo["Prisma Repositories"]
+        Postgres[("PostgreSQL 16 (Tables, Enums & Indexes)")]
+        
+        ReservationService --> PrismaRepo
+        EventService --> PrismaRepo
+        TicketService --> PrismaRepo
+        AuthService --> PrismaRepo
+        PrismaRepo --> Postgres
+    end
+
+    ClientLayer -->|HTTP Requests / JSON| APILayer
+```
+
+### Entity-Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
     USER ||--o{ EVENT : "organizes (1:N)"
     USER ||--o{ RESERVATION : "makes (1:N)"
-    EVENT ||--o{ RESERVATION : "has (1:N)"
+    EVENT ||--o{ RESERVATION : "holds (1:N)"
     EVENT ||--o{ TICKET : "belongs_to (1:N)"
     RESERVATION ||--|| PAYMENT : "generates (1:1)"
     RESERVATION ||--o{ TICKET : "issues (1:N)"
@@ -196,122 +252,85 @@ erDiagram
     }
 ```
 
-### Cardinalities & Integrity Rules:
-1. **User (1) ➔ (N) Event**: An `ORGANIZER` user can create and manage multiple events.
-2. **User (1) ➔ (N) Reservation**: A `CLIENT` user can make multiple purchases and reservations over time.
-3. **Event (1) ➔ (N) Reservation**: An event receives reservations from different buyers up to its capacity limit.
-4. **Reservation (1) ➔ (1) Payment**: Each reservation attempt has exactly one associated simulated payment record (`APPROVED` or `REFUSED`).
-5. **Reservation (1) ➔ (N) Ticket**: An approved reservation issues $N$ individual tickets corresponding to the purchased quantity.
-6. **Event (1) ➔ (N) Ticket**: Each ticket is directly associated with the event it grants access to.
+## 📁 Repository Structure
 
-## 📦 Back-End Details
-
-### Back-End Folder Structure
 ```text
-backend/
-├── prisma/
-│   ├── schema.prisma           # Data models, enums, and indexes
-│   └── seed.ts                 # Full seed with 4 profiles, 8 events, and Unsplash covers
-├── src/
-│   ├── config/                 # Prisma Client, environment variables (Zod)
-│   ├── controllers/            # Decoupled REST controllers
-│   ├── middlewares/            # JWT Auth, Role Guard (RBAC), Schema Validation, Error Handler
-│   ├── repositories/           # Data access and Prisma ACID Atomic Transactions
-│   ├── routes/                 # REST routes organized by domain
-│   ├── schemas/                # Zod validation schemas (Input and Queries)
-│   ├── services/               # Business logic, inventory calculation, and external API integration
-│   ├── utils/                  # HMAC-SHA256 signing, AppError, and generators
-│   ├── app.ts                  # Express and CORS configuration
-│   └── server.ts               # HTTP server bootstrap
-├── tests/                      # Automated test suite with Vitest
-└── package.json
+desafio-elite-dev/
+├── backend/
+│   ├── prisma/
+│   │   ├── schema.prisma           # Relational schema, Enums, and models
+│   │   └── seed.ts                 # Database seeding with 4 users and 8 events
+│   ├── src/
+│   │   ├── config/                 # Environment variables and Prisma Client
+│   │   ├── controllers/            # REST route controllers
+│   │   ├── middlewares/            # JWT Auth, RBAC, Zod validation, error handlers
+│   │   ├── repositories/           # Isolated queries and Prisma transactions
+│   │   ├── routes/                 # Domain-segmented REST route definitions
+│   │   ├── schemas/                # Zod validation schemas
+│   │   ├── services/               # Business logic, HMAC signing, transactions, catalogs
+│   │   ├── utils/                  # Encryption, error handling, helpers
+│   │   ├── app.ts                  # Express setup, Middlewares, and CORS
+│   │   └── server.ts               # HTTP server entry point
+│   ├── tests/                      # Integration, unit, and contract tests
+│   ├── docker-compose.yml          # PostgreSQL 16 container definition
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── app/                    # Pages & routing (Next.js App Router)
+│   │   │   ├── page.tsx            # Public showcase with search and filters
+│   │   │   ├── login/              # 1-click test credentials login
+│   │   │   ├── register/           # Role-based user registration
+│   │   │   ├── events/[id]/        # Event detail & checkout modal
+│   │   │   ├── my-tickets/         # Client ticket wallet with QR Codes
+│   │   │   ├── my-reservations/    # Order history & cancellation modal
+│   │   │   ├── tickets/share/      # Safe tokenized public voucher
+│   │   │   ├── organizer/          # Event management & TMDb/Ticketmaster wizard
+│   │   │   └── gatekeeper/         # Live camera & code gate validation
+│   │   ├── components/             # Layout components and reusable UI elements
+│   │   ├── services/               # HTTP client with JWT interceptor
+│   │   ├── stores/                 # Global auth state with Zustand
+│   │   ├── types/                  # Shared TypeScript types
+│   │   └── utils/                  # Formatters and styling helpers
+│   ├── __tests__/                  # Automated UI component tests
+│   └── package.json
+├── docs/                           # Supplementary flow and AI workflow documentation
+├── README.md                       # Main documentation in Portuguese
+└── README.en.md                    # English documentation
 ```
 
-### API Endpoints
+## 💡 Technical Decisions
 
-#### 🔐 Authentication (`/api/auth`)
-- `POST /api/auth/register` - User registration (`ORGANIZER`, `CLIENT`, `GATEKEEPER`);
-- `POST /api/auth/login` - Authentication and JWT Bearer Token generation;
-- `GET /api/auth/me` - Authenticated profile information retrieval.
+Architecture decisions were driven by robustness, maintainability, and security:
 
-#### 🌐 External Catalog (`/api/catalog`)
-- `GET /api/catalog/search?query=coldplay&type=ALL` - Search TMDb and Ticketmaster with automatic fallback.
+1. **Zero-Overbooking Guarantee with ACID Transactions**: The reservation process leverages `$transaction` with strict conditional decrements on `availableTickets`, preventing race conditions during concurrent checkouts.
+2. **HMAC-SHA256 Cryptography for Tickets**: Ticket authenticity is validated via server-side cryptographic signatures, preventing unauthorized ticket generation.
+3. **Zero Cryptographic Leakage Public Sharing**: Attendance proof verification uses an isolated UUID token that strips admission codes and QR payload data, keeping entry credentials safe.
+4. **Resilient External Catalog Integration**: The catalog service wraps external TMDb and Ticketmaster API calls with resilient error handling and automated fallback.
+5. **Decoupled Layered Architecture**: Clean separation among Controllers, Services, and Repositories ensures high testability with mocks and independent database evolution.
 
-#### 🎭 Events (`/api/events`)
-- `GET /api/events` - Public listing of published events (with search, filters, and pagination);
-- `GET /api/events/:id` - Details of a specific event;
-- `GET /api/events/organizer/my-events` - Events created by the authenticated organizer (`ORGANIZER`);
-- `POST /api/events` - Event creation (`ORGANIZER`);
-- `PUT /api/events/:id` - Event editing by the owner organizer (`ORGANIZER`).
+> For in-depth technical decisions:
+> - 📄 [Backend DECISIONS.md](./backend/DECISIONS.md)
+> - 📄 [Frontend DECISIONS.md](./frontend/DECISIONS.md)
+> - 📄 [AI Pair Programming Process](./docs/ai-workflow/AI_PAIR_PROGRAMMING.md)
 
-#### 💳 Reservations, Simulated Payment & Cancellation (`/api/reservations`)
-- `POST /api/reservations` - Purchase with atomic transaction and payment simulation (`APPROVED` or `REFUSED`) (`CLIENT`);
-- `GET /api/reservations/my-reservations` - Complete order history for the client (`CLIENT`);
-- `GET /api/reservations/:id` - Details of a specific reservation (`CLIENT`);
-- `PATCH /api/reservations/:id/cancel` - Reservation cancellation with safe ticket refund and inventory restock (`CLIENT`).
+## 🚀 How to Run the Project
 
-#### 🎟️ Tickets, Secure Sharing & Gatekeeper (`/api/tickets`)
-- `GET /api/tickets/my-tickets` - Full tickets of the authenticated client with Base64 QR Code (`CLIENT`);
-- `GET /api/tickets/share/:shareToken` - Public voucher lookup via link (returns presentation data only without exposing `code`, `qrSignature`, or `qrCodeUrl`);
-- `POST /api/tickets/validate` - Gatekeeper validation via camera/code (`GATEKEEPER`).
-
-## 🎨 Front-End Details
-
-### Front-End Folder Structure
-```text
-frontend/
-├── src/
-│   ├── app/                                # Next.js Routes and Pages (App Router)
-│   │   ├── layout.tsx                      # Root layout (Navbar, Footer, Solid Dark Theme)
-│   │   ├── page.tsx                        # Public Showcase with Search and Filters
-│   │   ├── login/page.tsx                  # Login with 1-click quick-fill shortcuts
-│   │   ├── register/page.tsx               # Registration with role selection
-│   │   ├── events/[id]/page.tsx            # Event Details & Simulated Checkout
-│   │   ├── my-tickets/page.tsx             # Client Area (Panoramic Cards with QR Code and Grayscale)
-│   │   ├── my-reservations/page.tsx        # Order History and Cancellation with Modal
-│   │   ├── tickets/share/[shareToken]/     # Official Ticket Voucher / Attendance Confirmation
-│   │   ├── organizer/events/page.tsx       # Metrics Dashboard & Organizer Management
-│   │   ├── organizer/events/new/page.tsx   # Creation Assistant with TMDb & Ticketmaster
-│   │   └── gatekeeper/validate/page.tsx    # Gatekeeper Validator (Live Camera & Manual Entry)
-│   ├── components/
-│   │   ├── layout/                         # Structural Components (Navbar, Footer)
-│   │   └── ui/                             # Solid Design System (Button, Input, Dot Badge, Modal)
-│   ├── services/
-│   │   └── api.ts                          # Typed HTTP client with automatic Bearer Token injection
-│   ├── stores/
-│   │   └── authStore.ts                    # Global Authentication State (Zustand with hydration)
-│   ├── types/
-│   │   └── index.ts                        # Complete TypeScript typings
-│   └── utils/
-│       ├── cn.ts                           # Tailwind conditional class utility
-│       ├── constants.ts                    # Default cover images and fallbacks
-│       └── formatters.ts                   # Currency (BRL), date, and badge formatters
-├── __tests__/                              # Automated unit and component tests
-└── package.json
-```
-
-### Front-End Features
-1. **Showcase & Smart Search (`/`)**: Dynamic filters by type (`All`, `Concerts`, `Movies`), debounced search, and pagination;
-2. **Simulated Checkout with Overbooking Prevention (`/events/[id]`)**: Ticket quantity selection and choice between `Approve Payment` or `Decline Payment`;
-3. **Real-Time Cancellation with Restock (`/my-reservations`)**: Cancellation button for confirmed reservations with safe confirmation modal and instant update;
-4. **Digital Tickets with QR Code (`/my-tickets`)**: Base64 Data URL QR Codes on authenticated accounts, share link copy button, and grayscale rendering for canceled tickets;
-5. **Public Ticket Voucher (`/tickets/share/[shareToken]`)**: Secure public access without login confirming ownership (without exposing QR Code or entry secrets);
-6. **Smart Catalog Assistant (`/organizer/events/new`)**: Search on external movie and music APIs for auto-completion;
-7. **Gatekeeper Validation (`/gatekeeper/validate`)**: Optical reader via camera (`html5-qrcode`) and manual code typing.
-
-## 🚀 How to Run the Project Locally
-
-### 1. Prerequisites
-- [Node.js](https://nodejs.org/) (version 20 or higher)
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v20 or higher)
 - [Docker](https://www.docker.com/) and Docker Compose
 - [Git](https://git-scm.com/)
 
-### 2. Setting Up and Starting the Back-End
+### 1. Clone the Repository
+```bash
+git clone https://github.com/ludson96/desafio-elite-dev.git
+cd desafio-elite-dev
+```
 
-1. Open a terminal and clone the repository:
+### 2. Configure and Start the Back-End
+
+1. Navigate to the backend directory:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/desafio-elite-dev.git
-   cd desafio-elite-dev/backend
+   cd backend
    ```
 
 2. Install dependencies:
@@ -319,35 +338,33 @@ frontend/
    npm install
    ```
 
-3. Configure environment variables:
-   Copy the example file:
+3. Set up environment variables:
    ```bash
    cp .env.example .env
    ```
-   *(On Windows PowerShell: `Copy-Item .env.example .env`)*.
 
-4. Start the database via Docker:
+4. Start the PostgreSQL database via Docker:
    ```bash
    docker compose up -d
    ```
 
-5. Run migrations and initial seed:
+5. Run Prisma migrations and seed database:
    ```bash
    npx prisma migrate dev
    npm run seed
    ```
 
-6. Start the API server:
+6. Start the API development server:
    ```bash
    npm run dev
    ```
-   The API will run at: `http://localhost:3001` (Healthcheck: `http://localhost:3001/health`).
+   The API will be available at `http://localhost:3001` (Healthcheck: `http://localhost:3001/health`).
 
-### 3. Setting Up and Starting the Front-End
+### 3. Configure and Start the Front-End
 
-1. Open a **second terminal** and navigate to the frontend folder:
+1. Open a **new terminal** and navigate to the frontend directory:
    ```bash
-   cd desafio-elite-dev/frontend
+   cd frontend
    ```
 
 2. Install dependencies:
@@ -355,40 +372,35 @@ frontend/
    npm install
    ```
 
-3. Configure environment variables:
+3. Set up environment variables:
    ```bash
    cp .env.example .env.local
    ```
-   *(On Windows PowerShell: `Copy-Item .env.example .env.local`)*.
 
-4. Start Next.js:
+4. Start the Next.js development server:
    ```bash
    npm run dev
    ```
-   Open the application in your browser: **[http://localhost:3000](http://localhost:3000)**.
+   Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
-## 🧪 Running Automated Tests
+### 4. Running Automated Tests
 
-The project includes **42 automated tests** covering services, security, repositories, API endpoints, contract tests, and UI components:
+The repository contains **42 automated tests** covering business logic, concurrency, security contracts, and components:
 
-- **Run all tests (Monorepo)**:
+- **Run all monorepo tests**:
   ```bash
   npm test
   ```
-
-- **Back-End tests only (25 tests)**:
+- **Run Back-End tests (25 tests)**:
   ```bash
-  cd backend
-  npm test
+  cd backend && npm test
+  ```
+- **Run Front-End tests (17 tests)**:
+  ```bash
+  cd frontend && npm test
   ```
 
-- **Front-End tests only (17 tests)**:
-  ```bash
-  cd frontend
-  npm test
-  ```
-
-## 🔮 Future Implementations & Roadmap
-
-- **Visual Seat Map (Interactive Seat Selector)**: Evolving from the current numerical capacity model to support a numbered seat matrix (e.g., cinema halls and theaters with rows/columns), integrating temporary holds with automatic expiration (optimistic locking via WebSocket/Redis);
-- **Continuous Design Refinement & Micro-Interactions**: Expanding the modular design system (*Bento Grid*) with richer transition animations and customizable theme support for event organizers.
+<div align="center">
+  Developed by <strong>Ludson Pereira dos Santos</strong> 🚀<br />
+  <a href="https://www.linkedin.com/in/ludson96/">LinkedIn</a> • <a href="https://github.com/ludson96">GitHub</a> • <a href="mailto:ludson_ps27@hotmail.com">E-mail</a>
+</div>

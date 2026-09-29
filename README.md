@@ -1,127 +1,183 @@
 # 🎟️ Elite Ingressos — Plataforma de Eventos e Ingressos Digitais
 
-🌍 Read this in [English](README.en.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.3-black.svg?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React 19](https://img.shields.io/badge/React-19.2-61DAFB.svg?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Express 5](https://img.shields.io/badge/Express-5.2-000000.svg?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Prisma ORM 7](https://img.shields.io/badge/Prisma-7.9-2D3748.svg?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![TailwindCSS 4](https://img.shields.io/badge/TailwindCSS-4.0-06B6D4.svg?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-4.1-6E9F18.svg?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 
-> **Projeto Desenvolvido para o Desafio Técnico Elite Dev da Verzel**  
-> Solução *Full-Stack* completa para compra, gestão, emissão, cancelamento e validação segura de ingressos para **Shows** e **Cinema**, com prevenção rigorosa de *overbooking*, assinatura criptográfica anti-fraude em QR Codes e integração com catálogos externos em tempo real.
+> 🇧🇷 **Português** | 🇺🇸 [**English Version**](README.en.md)
 
-## 📌 Sumário / Navegação Rápida
+Solução Full-Stack de alta confiabilidade para compra, gestão, emissão, cancelamento e validação em tempo real de ingressos para Shows e Cinema. O sistema conta com controle estrito de concorrência com transações ACID (Zero Overbooking), assinatura digital criptográfica HMAC-SHA256 anti-fraude em QR Codes, compartilhamento seguro de comprovante de titularidade e integração inteligente com catálogos externos (TMDb e Ticketmaster).
 
-- [🌐 Deploy em Produção (Live Demo)](#-deploy-em-produção-live-demo)
-- [📑 Documentos de Decisões Técnicas (DECISIONS.md)](#-documentos-de-decisões-técnicas-decisionsmd)
-- [🤖 Condução Técnica & AI Pair Programming](#-condução-técnica--ai-pair-programming)
-- [⚡ Roteiro Rápido para Avaliação (Como Testar em 3 Minutos)](#-roteiro-rápido-para-avaliação-como-testar-em-3-minutos)
-- [🌟 Destaques do Projeto](#-destaques-do-projeto)
-- [🏗️ Arquitetura e Stack Tecnológica](#️-arquitetura-e-stack-tecnológica)
-- [👥 Contas Semeadas para Avaliação (Seed)](#-contas-semeadas-para-avaliação-seed)
-- [🔐 Configuração das Variáveis de Ambiente](#-configuração-das-variáveis-de-ambiente)
-- [🗄️ Modelagem e Relacionamento do Banco de Dados (DER)](#️-modelagem-e-relacionamento-do-banco-de-dados-der)
-- [📦 Detalhamento do Back-End](#-detalhamento-do-back-end)
-  - [Estrutura de Pastas do Back-End](#estrutura-de-pastas-do-back-end)
-  - [Endpoints da API](#endpoints-da-api)
-- [🎨 Detalhamento do Front-End](#-detalhamento-do-front-end)
-  - [Estrutura de Pastas do Front-End](#estrutura-de-pastas-do-front-end)
-  - [Funcionalidades do Front-End](#funcionalidades-do-front-end)
-- [🚀 Como Executar o Projeto Localmente](#-como-executar-o-projeto-localmente)
-- [🧪 Executando os Testes Automatizados](#-executando-os-testes-automatizados)
-- [🔮 Implementações Futuras & Roadmap](#-implementações-futuras--roadmap)
+## 📌 Navegação Rápida
 
-## 🌐 Deploy em Produção (Live Demo)
+- [📝 Sobre o Projeto](#-sobre-o-projeto)
+- [🖼️ Preview](#️-preview)
+- [🌐 Deploy da Aplicação](#-deploy-da-aplicação)
+- [⚡ API Endpoints](#-api-endpoints)
+- [✨ Funcionalidades](#-funcionalidades)
+- [🛠️ Tecnologias e Ferramentas Utilizadas](#️-tecnologias-e-ferramentas-utilizadas)
+- [🏛️ Arquitetura da Solução](#️-arquitetura-da-solução)
+- [📁 Estrutura do Repositório](#-estrutura-do-repositório)
+- [💡 Decisões Técnicas](#-decisões-técnicas)
+- [🚀 Como Executar o Projeto](#-como-executar-o-projeto)
 
-A aplicação está disponível e pronta para uso online:
+## 📝 Sobre o Projeto
 
-- 🔗 **Acesse a Aplicação**: **[https://desafio-elite-dev-theta.vercel.app/](https://desafio-elite-dev-theta.vercel.app/)**
+O **Elite Ingressos** foi concebido e desenvolvido como resposta técnica ao **Desafio Técnico Elite Dev da Verzel**. O objetivo central é fornecer uma plataforma moderna, resiliente e segura para o ecossistema de entretenimento e bilheteria digital.
 
-> ⚠️ **Aviso sobre a Primeira Requisição (Cold Start)**:  
-> O **Front-End** está hospedado na **Vercel** e a **API do Back-End** está hospedada na plataforma gratuita do **Render.com**.  
-> Por conta do modo de hibernação (*sleep mode*) do plano gratuito do Render, a **primeira requisição ao backend pode levar aproximadamente 50 segundos** para acordar a instância. Após essa inicialização inicial, todas as requisições subsequentes responderão instantaneamente!
+A aplicação aborda desafios críticos da engenharia de software contemporânea:
+- **Consistência de Estoque**: Garantia matemática e transacional contra vendas acima da capacidade (*overbooking*) sob alta concorrência de requisições simultâneas.
+- **Segurança e Anti-Fraude**: QR Codes emitidos com payloads assinados criptograficamente em HMAC-SHA256 e validados com checagem em tempo constante (`crypto.timingSafeEqual`) para anular vulnerabilidades de *timing attacks*.
+- **Privacidade e Proteção de Ativos**: Compartilhamento público de ingressos via links tokenizados com UUID dedicado, permitindo comprovação de presença sem vazar materiais criptográficos ou códigos que viabilizem clonagem na portaria (*Zero Cryptographic Leakage*).
+- **Operação de Portaria Fluida**: Módulo para validação em tempo real utilizando leitura óptica por câmera e entrada manual resiliente.
 
-## 📑 Documentos de Decisões Técnicas (DECISIONS.md)
+## 🖼️ Preview
 
-Para consultar o racional arquitetural completo e aprofundado:
-- 📄 [Backend DECISIONS.md](./backend/DECISIONS.md)
-- 📄 [Frontend DECISIONS.md](./frontend/DECISIONS.md)
+<img src="./frontend/public/projeto.gif" alt="Demonstração do App" />
 
-## 🤖 Condução Técnica & AI Pair Programming
+## 🌐 Deploy da Aplicação
 
-Para detalhes sobre como a Inteligência Artificial foi conduzida como ferramenta de co-pilotagem técnica, mantendo o controle arquitetural e o desenvolvimento estritamente *hands-on*:
-- 📄 [Processo de AI Pair Programming & Racional Crítico](./docs/ai-workflow/AI_PAIR_PROGRAMMING.md)
-- 📋 [Exemplo Real de Implementation Plan Utilizado](./docs/ai-workflow/IMPLEMENTATION_PLAN_EXAMPLE.md)
+Acesse a aplicação em produção:
+👉 **[Elite Ingressos](https://desafio-elite-dev-theta.vercel.app/)**
 
-## ⚡ Roteiro Rápido para Avaliação (Como Testar em 3 Minutos)
+> ⚠️ **Aviso de Cold Start**: O front-end está hospedado na Vercel e o back-end na camada gratuita do Render.com. Devido ao modo de suspensão de instâncias inativas, a primeira requisição pode levar cerca de 50 segundos para inicializar o container. As requisições seguintes ocorrem com resposta imediata.
 
-Para facilitar a navegação da banca avaliadora, sugerimos o seguinte fluxo de testes de ponta a ponta:
+### 👥 Contas Semeadas para Testes (Seed)
 
-1. **Vitrine & Catálogo**: Acesse a home, utilize a barra de busca ou filtre por *Shows* / *Filmes* para visualizar os eventos disponíveis;
-2. **Compra & Checkout Simulado**: Clique no card de um evento e selecione a quantidade de ingressos. No modal de checkout:
-   - Escolha **Aprovar Pagamento** para disparar a transação atômica no PostgreSQL, debitar o estoque e emitir os ingressos com QR Code assinado;
-   - Ou escolha **Recusar Pagamento** para simular uma recusa de operadora bancária (o sistema redireciona para *Minhas Compras* com o status recusado sem debitar o estoque);
-3. **Cancelamento com Estorno de Vagas**: Acesse **Minhas Compras**, clique em **Cancelar Reserva** em uma compra confirmada e confirme no modal. O status do pedido mudará para `CANCELADO`, a capacidade do evento será devolvida ao estoque e os ingressos digitais em *Meus Ingressos* ficarão em preto e branco (`grayscale`) e bloqueados;
-4. **Ingressos Digitais & Compartilhamento Seguro**: Acesse **Meus Ingressos** para ver os QR Codes em alta resolução na área autenticada. Clique no botão para copiar o link público tokenizado (`/tickets/share/...`), que abre um comprovante oficial de presença informativo sem expor o QR Code ou material criptográfico de validação;
-5. **Criação de Eventos com Assistente Inteligente**: Faça login com a conta de **Organizador**, acesse **Criar Novo Evento** e busque por títulos reais como *"Coldplay"*, *"Duna"* ou *"Batman"* para ver o auto-preenchimento com dados do TMDb e Ticketmaster;
-6. **Validação na Portaria**: Faça login com a conta de **Portaria** em `/gatekeeper/validate` e valide qualquer ingresso pela câmera do dispositivo ou digitando o código legível (`TKT-...`), observando o retorno dos status previstos (`VALID`, `ALREADY_USED`, `WRONG_EVENT`, `INVALID` ou cancelado).
-
-## 🌟 Destaques do Projeto
-
-- 🛡️ **Zero Overbooking**: Transações atômicas no PostgreSQL (`$transaction` + decremento condicional) garantindo que nenhum ingresso seja vendido acima da capacidade;
-- 🔄 **Cancelamento com Estorno Atômico**: Permite que o comprador cancele pedidos confirmados (desde que nenhum ingresso tenha sido usado na portaria), liberando as vagas de volta ao evento e invalidando os ingressos com design desativado em escala de cinza;
-- 🔐 **Anti-Fraude Criptográfico**: QR Codes assinados com **HMAC-SHA256** e validação com tempo constante (`crypto.timingSafeEqual`) contra ataques de temporização;
-- 🔗 **Compartilhamento Seguro (Zero Cryptographic Leakage)**: Link público tokenizado (UUID) que atua como comprovante de presença/posse expondo apenas dados de apresentação. Os segredos criptográficos (`code`, `qrSignature`, `qrCodeUrl`) permanecem estritamente restritos à sessão autenticada do comprador e protegidos por testes de contrato;
-- 🌐 **Catálogo Inteligente**: Assistente integrado ao **TMDb (The Movie Database)** e **Ticketmaster Discovery API** para auto-preenchimento de filmes e shows, com *fallback* automático tolerante a falhas;
-- 🚪 **Portaria em Tempo Real**: Validador óptico por **câmera ao vivo** e digitação manual com retorno claro dos status da especificação (`VALID`, `ALREADY_USED`, `WRONG_EVENT`, `INVALID`);
-- 🎯 **Design System Sólido (*Anti-AI Slop*)**: Interface moderna e minimalista, sem excessos visuais, utilizando TailwindCSS v4, badges semânticas com indicador de ponto e tipografia nítida.
-
-## 🏗️ Arquitetura e Stack Tecnológica
-
-### Back-End
-- **Runtime**: Node.js 20+ com TypeScript (ESM nativo)
-- **Framework Web**: Express.js
-- **Banco de Dados**: PostgreSQL 16
-- **ORM**: Prisma ORM v7
-- **Autenticação**: JWT (JSON Web Token) com bcrypt
-- **Segurança**: Assinatura digital HMAC-SHA256 para QR Codes
-- **Validação de Dados**: Zod
-- **Testes Automatizados**: Vitest + Supertest (incluindo testes de contrato de segurança)
-
-### Front-End
-- **Framework**: Next.js 15+ (App Router)
-- **Linguagem**: TypeScript (Strict Mode)
-- **Estilização**: TailwindCSS v4
-- **Gerenciamento de Estado**: Zustand com persistência local
-- **Leitor de QR Code**: html5-qrcode (câmera ao vivo e webcam)
-- **Ícones**: Lucide React
-- **Testes Automatizados**: Vitest + React Testing Library
-
-## 👥 Contas Semeadas para Avaliação (Seed)
-
-| Perfil | Nome | E-mail | Senha | Permissões |
+| Perfil | Nome | E-mail | Senha | Acesso / Permissões |
 | :--- | :--- | :--- | :--- | :--- |
-| **👑 ORGANIZER** | Carlos Organizador | `organizador@eliteingressos.com` | `123456` | Criar/editar eventos, importar do TMDb/Ticketmaster e ver métricas |
-| **👤 CLIENT** | Ana Cliente | `cliente1@eliteingressos.com` | `123456` | Comprar ingressos, cancelar reservas, ver QR Codes e compartilhar links |
-| **👤 CLIENT** | Bruno Cliente | `cliente2@eliteingressos.com` | `123456` | Testar concorrência de compra simultânea |
-| **🚪 GATEKEEPER** | Roberto Portaria | `portaria@eliteingressos.com` | `123456` | Validação de ingressos por câmera e código manual |
+| **👑 ORGANIZER** | Carlos Organizador | `organizador@eliteingressos.com` | `123456` | Criar/gerenciar eventos, métricas de vendas e assistente TMDb/Ticketmaster |
+| **👤 CLIENT** | Ana Cliente | `cliente1@eliteingressos.com` | `123456` | Comprar ingressos, cancelar pedidos, ver QR Codes e compartilhar comprovante |
+| **👤 CLIENT** | Bruno Cliente | `cliente2@eliteingressos.com` | `123456` | Conta adicional para testes de compras simultâneas e concorrência |
+| **🚪 GATEKEEPER** | Roberto Portaria | `portaria@eliteingressos.com` | `123456` | Validação de ingressos na portaria (Câmera ao vivo e código manual) |
 
-## 🔐 Configuração das Variáveis de Ambiente
+## ⚡ API Endpoints
 
-### Back-End (`backend/.env`)
-| Variável | Descrição | Exemplo / Padrão Local |
+A API segue os padrões RESTful com respostas padronizadas em JSON e tratamento centralizado de exceções.
+
+### 🔐 Autenticação (`/api/auth`)
+| Método | Endpoint | Proteção | Descrição |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Pública | Cadastra um novo usuário (`ORGANIZER`, `CLIENT`, `GATEKEEPER`) |
+| `POST` | `/api/auth/login` | Pública | Autentica o usuário e retorna o Bearer JWT |
+| `GET` | `/api/auth/me` | Autenticado | Retorna os dados do perfil do usuário autenticado |
+
+### 🌐 Catálogo Externo (`/api/catalog`)
+| Método | Endpoint | Proteção | Descrição |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/catalog/search` | `ORGANIZER` | Pesquisa filmes/shows no TMDb e Ticketmaster com fallback automático |
+
+### 🎭 Eventos (`/api/events`)
+| Método | Endpoint | Proteção | Descrição |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/events` | Pública | Lista eventos publicados com busca textual, filtros por tipo e paginação |
+| `GET` | `/api/events/:id` | Pública | Retorna os detalhes completos de um evento específico |
+| `GET` | `/api/events/organizer/my-events` | `ORGANIZER` | Lista todos os eventos criados pelo organizador logado com métricas |
+| `POST` | `/api/events` | `ORGANIZER` | Cria um novo evento no sistema |
+| `PUT` | `/api/events/:id` | `ORGANIZER` | Atualiza os dados de um evento existente pertencente ao organizador |
+
+### 💳 Reservas, Pagamento & Cancelamento (`/api/reservations`)
+| Método | Endpoint | Proteção | Descrição |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/reservations` | `CLIENT` | Cria reserva com transação atômica e simulação de pagamento (`APPROVED`/`REFUSED`) |
+| `GET` | `/api/reservations/my-reservations` | `CLIENT` | Retorna o histórico de pedidos e status do cliente logado |
+| `GET` | `/api/reservations/:id` | `CLIENT` | Obtém detalhes de um pedido específico |
+| `PATCH` | `/api/reservations/:id/cancel` | `CLIENT` | Cancela reserva confirmada, devolve vagas ao estoque e invalida ingressos |
+
+### 🎟️ Ingressos, Compartilhamento & Portaria (`/api/tickets`)
+| Método | Endpoint | Proteção | Descrição |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/tickets/my-tickets` | `CLIENT` | Lista os ingressos ativos do cliente com QR Codes em Base64 Data URL |
+| `GET` | `/api/tickets/share/:shareToken` | Pública | Consulta pública segura de comprovante de titularidade (sem expor segredos) |
+| `POST` | `/api/tickets/validate` | `GATEKEEPER` | Valida ingresso na portaria via câmera ou código manual |
+
+## ✨ Funcionalidades
+
+- 🛡️ **Garantia de Zero Overbooking**: Operações de reserva e estorno executadas dentro de transações atômicas no PostgreSQL (`prisma.$transaction`) com validação de capacidade em nível de banco de dados.
+- 🔄 **Cancelamento com Estorno Atômico**: Permite ao comprador cancelar pedidos confirmados com estorno imediato de ingressos, devolução da capacidade ao estoque e bloqueio visual em escala de cinza (`grayscale`).
+- 🔐 **Anti-Fraude Criptográfico**: Ingressos emitidos com assinatura HMAC-SHA256 embutida no payload do QR Code e checagem em tempo constante contra tentativas de falsificação.
+- 🔗 **Compartilhamento Seguro Tokenizado**: Geração de link público com token UUID exclusivo para exibição de comprovante de presença oficial sem vazamento de chaves ou do QR Code de acesso.
+- 🌐 **Assistente de Catálogo Inteligente**: Integração com as APIs públicas do **TMDb (The Movie Database)** e **Ticketmaster Discovery**, permitindo auto-preenchimento rápido no cadastro de eventos.
+- 🚪 **Módulo de Portaria (Gatekeeper)**: Leitura rápida por câmera ao vivo via `html5-qrcode` e digitação manual, com diagnósticos precisos (`VALID`, `ALREADY_USED`, `WRONG_EVENT`, `INVALID`, `CANCELED`).
+- 🎨 **Design System Moderno & Acessível**: Interface construída com Next.js 16 e TailwindCSS v4, badges semânticas com indicador dot e layout totalmente responsivo.
+
+## 🛠️ Tecnologias e Ferramentas Utilizadas
+
+| Camada / Finalidade | Tecnologia | Descrição |
 | :--- | :--- | :--- |
-| `PORT` | Porta de execução do servidor Express | `3001` |
-| `NODE_ENV` | Ambiente de execução | `development` |
-| `DATABASE_URL` | String de conexão do PostgreSQL (Prisma) | `postgresql://postgres:password123@localhost:5432/desafio_elite_dev?schema=public` |
-| `JWT_SECRET` | Chave secreta para assinatura dos tokens JWT | `super-secret-desafio-elite-dev-jwt-key` |
-| `QR_SECRET` | Chave secreta para assinatura criptográfica HMAC dos QR Codes | `super-secret-hmac-qr-signing-key` |
-| `TMDB_API_KEY` | Chave de API do The Movie Database (Opcional - possui fallback) | *(Opcional)* |
-| `TICKETMASTER_API_KEY` | Chave de API do Ticketmaster (Opcional - possui fallback) | *(Opcional)* |
+| **Linguagem Principal** | **TypeScript 5.8** | Tipagem estática em tempo de compilação em todo o ecossistema Full-Stack |
+| **Framework Front-End** | **Next.js 16 (App Router)** | Framework React com renderização híbrida e roteamento moderno |
+| **Biblioteca de UI** | **React 19** | Biblioteca para interfaces de usuário com componentes funcionais e hooks |
+| **Estilização** | **TailwindCSS 4** | Utilitários CSS de alto desempenho e design system padronizado |
+| **Estado Global** | **Zustand 5** | Gerenciamento de estado leve e eficiente com persistência no LocalStorage |
+| **Framework Back-End** | **Express 5** | Servidor HTTP REST robusto com suporte nativo a rotas assíncronas |
+| **Persistência de Dados** | **Prisma ORM 7** | Modelagem declarativa, tipagem estática e transações ACID seguras |
+| **Banco de Dados** | **PostgreSQL 16** | Banco relacional robusto com suporte nativo a Enums e índices |
+| **Autenticação & Criptografia** | **JWT & HMAC-SHA256** | Autenticação via Bearer Token e assinatura digital de QR Codes |
+| **Validação de Schemas** | **Zod 4** | Validação declarativa de requisições com inferência de tipos |
+| **Segurança HTTP** | **Helmet & CORS** | Proteção de headers HTTP e controle de acesso a origens cruzadas |
+| **Leitura de QR Code** | **html5-qrcode** | Decodificação óptica em tempo real via câmera do navegador |
+| **Testes Automatizados** | **Vitest 4 + RTL + Supertest** | Suíte completa cobrindo regras de negócio, contratos e componentes |
+| **Containerização** | **Docker & Docker Compose** | Ambiente isolado e reprodutível para desenvolvimento local |
 
-### Front-End (`frontend/.env.local`)
-| Variável | Descrição | Exemplo / Padrão Local |
-| :--- | :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | URL base da API do Back-End | `http://localhost:3001` |
+## 🏛️ Arquitetura da Solução
 
-## 🗄️ Modelagem e Relacionamento do Banco de Dados (DER)
+O sistema foi estruturado seguindo os princípios de camadas desacopladas com responsabilidades bem definidas, isolando a interface web, os controladores REST, os serviços de domínio e a camada de persistência.
 
-A estrutura do banco de dados relacional foi desenhada no PostgreSQL via Prisma ORM:
+```mermaid
+flowchart TD
+    subgraph ClientLayer ["Camada de Apresentação (Front-End)"]
+        UI["Next.js 16 (React 19 + Tailwind v4)"]
+        State["Auth Store (Zustand)"]
+        Scanner["Scanner Óptico (html5-qrcode)"]
+        UI --> State
+        UI --> Scanner
+    end
+
+    subgraph APILayer ["Camada de Aplicação (Express 5 REST API)"]
+        Router["Express Routes & Middlewares"]
+        AuthGuard["JWT Auth & Role Guards (RBAC)"]
+        Validator["Validação de Entrada (Zod)"]
+        Controller["Controllers REST"]
+        
+        Router --> AuthGuard --> Validator --> Controller
+    end
+
+    subgraph DomainLayer ["Camada de Domínio & Regras de Negócio"]
+        AuthService["Auth Service (Bcrypt + JWT)"]
+        EventService["Event Service (Filtros e Métricas)"]
+        ReservationService["Reservation Service (Transações ACID)"]
+        TicketService["Ticket Service (HMAC-SHA256 & QR Code)"]
+        CatalogService["Catalog Service (TMDb & Ticketmaster API)"]
+        
+        Controller --> AuthService
+        Controller --> EventService
+        Controller --> ReservationService
+        Controller --> TicketService
+        Controller --> CatalogService
+    end
+
+    subgraph DataLayer ["Camada de Dados & Persistência"]
+        PrismaRepo["Prisma Repositories"]
+        Postgres[("PostgreSQL 16 (Tabelas, Enums & Índices)")]
+        
+        ReservationService --> PrismaRepo
+        EventService --> PrismaRepo
+        TicketService --> PrismaRepo
+        AuthService --> PrismaRepo
+        PrismaRepo --> Postgres
+    end
+
+    ClientLayer -->|Requisições HTTP / JSON| APILayer
+```
+
+### Modelagem Entidade-Relacionamento (DER)
 
 ```mermaid
 erDiagram
@@ -196,122 +252,85 @@ erDiagram
     }
 ```
 
-### Explicação das Cardinalidades e Regras de Integridade:
-1. **User (1) ➔ (N) Event**: Um usuário do tipo `ORGANIZER` pode criar e gerenciar múltiplos eventos.
-2. **User (1) ➔ (N) Reservation**: Um usuário do tipo `CLIENT` pode realizar diversas compras e reservas ao longo do tempo.
-3. **Event (1) ➔ (N) Reservation**: Um evento recebe reservas de diferentes compradores até o limite de sua capacidade.
-4. **Reservation (1) ➔ (1) Payment**: Cada tentativa de reserva possui exatamente um registro de pagamento simulado vinculado (`APPROVED` ou `REFUSED`).
-5. **Reservation (1) ➔ (N) Ticket**: Uma reserva aprovada emite $N$ ingressos individuais correspondentes à quantidade adquirida.
-6. **Event (1) ➔ (N) Ticket**: Cada ingresso está associado diretamente ao evento a que dá acesso.
+## 📁 Estrutura do Repositório
 
-## 📦 Detalhamento do Back-End
-
-### Estrutura de Pastas do Back-End
 ```text
-backend/
-├── prisma/
-│   ├── schema.prisma           # Modelagem de dados, enums e índices
-│   └── seed.ts                 # Seed completo com 4 perfis, 8 eventos e capas Unsplash
-├── src/
-│   ├── config/                 # Prisma Client, variáveis de ambiente (Zod)
-│   ├── controllers/            # Controladores REST desacoplados
-│   ├── middlewares/            # Auth JWT, Role Guard (RBAC), Validação de Schema, Error Handler
-│   ├── repositories/           # Acesso a dados e Transações Atômicas ACID do Prisma
-│   ├── routes/                 # Definição das rotas REST organizadas por domínio
-│   ├── schemas/                # Schemas de validação Zod (Entrada e Queries)
-│   ├── services/               # Regras de negócio, cálculo de estoque e integração com APIs
-│   ├── utils/                  # Assinatura HMAC-SHA256, AppError e geradores
-│   ├── app.ts                  # Configuração do Express e CORS
-│   └── server.ts               # Inicialização do servidor HTTP
-├── tests/                      # Suíte de testes automatizados com Vitest
-└── package.json
+desafio-elite-dev/
+├── backend/
+│   ├── prisma/
+│   │   ├── schema.prisma           # Esquema relacional, Enums e tabelas
+│   │   └── seed.ts                 # Povoamento inicial com 4 usuários e 8 eventos
+│   ├── src/
+│   │   ├── config/                 # Variáveis de ambiente e Prisma Client
+│   │   ├── controllers/            # Controladores das rotas REST
+│   │   ├── middlewares/            # Auth JWT, RBAC, Validações Zod e Error Handler
+│   │   ├── repositories/           # Isolamento das queries e transações Prisma
+│   │   ├── routes/                 # Definição das rotas segmentadas por domínio
+│   │   ├── schemas/                # Schemas de validação Zod
+│   │   ├── services/               # Regras de negócio, HMAC, transações e catálogos
+│   │   ├── utils/                  # Utilitários de criptografia e tratamento de erros
+│   │   ├── app.ts                  # Configuração do Express, Middlewares e CORS
+│   │   └── server.ts               # Ponto de entrada do servidor HTTP
+│   ├── tests/                      # Testes automatizados de integração, unitários e contrato
+│   ├── docker-compose.yml          # Definição do container PostgreSQL 16
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── app/                    # Páginas e rotas (Next.js App Router)
+│   │   │   ├── page.tsx            # Vitrine pública com busca e filtros
+│   │   │   ├── login/              # Login com preenchimento rápido em 1 clique
+│   │   │   ├── register/           # Cadastro de usuários com perfis
+│   │   │   ├── events/[id]/        # Detalhes do evento e checkout
+│   │   │   ├── my-tickets/         # Ingressos do cliente com QR Codes
+│   │   │   ├── my-reservations/    # Histórico de pedidos e cancelamento
+│   │   │   ├── tickets/share/      # Comprovante público tokenizado
+│   │   │   ├── organizer/          # Gestão de eventos e assistente TMDb/Ticketmaster
+│   │   │   └── gatekeeper/         # Validação na portaria via câmera/código
+│   │   ├── components/             # Componentes de layout e elementos de UI
+│   │   ├── services/               # Cliente HTTP com interceptor para JWT
+│   │   ├── stores/                 # Estado global de autenticação com Zustand
+│   │   ├── types/                  # Tipagens TypeScript compartilhadas
+│   │   └── utils/                  # Formatadores e utilitários visuais
+│   ├── __tests__/                  # Testes automatizados de componentes
+│   └── package.json
+├── docs/                           # Documentações complementares de fluxo e IA
+├── README.md                       # Documentação principal em Português
+└── README.en.md                    # English documentation
 ```
 
-### Endpoints da API
+## 💡 Decisões Técnicas
 
-#### 🔐 Autenticação (`/api/auth`)
-- `POST /api/auth/register` - Cadastro de usuário (`ORGANIZER`, `CLIENT`, `GATEKEEPER`);
-- `POST /api/auth/login` - Autenticação e geração do Bearer Token JWT;
-- `GET /api/auth/me` - Consulta dos dados do perfil autenticado.
+As decisões arquiteturais foram pautadas em robustez, manutenibilidade e segurança:
 
-#### 🌐 Catálogo Externo (`/api/catalog`)
-- `GET /api/catalog/search?query=coldplay&type=ALL` - Busca em TMDb e Ticketmaster com fallback automático.
+1. **Garantia de Não-Overbooking com Transações ACID**: O processo de reserva emprega `$transaction` com verificação estrita e decremento atômico condicional do campo `availableTickets`, evitando condições de corrida (*race conditions*) em compras simultâneas.
+2. **Criptografia HMAC-SHA256 para Ingressos**: A autenticidade dos ingressos é garantida por assinatura digital baseada em chave secreta do servidor, impedindo a geração fraudulenta de códigos por terceiros.
+3. **Compartilhamento Seguro sem Vazamento de Chaves (*Zero Cryptographic Leakage*)**: A visualização de comprovantes públicos utiliza um token UUID desvinculado dos códigos de entrada e QR Codes, garantindo que o comprador possa compartilhar o comprovante sem risco de cópia do ingresso.
+4. **Resiliência na Integração de Catálogo Externo**: A consulta às APIs do TMDb e Ticketmaster possui tratamento tolerante a falhas com fallback automático, assegurando que indisponibilidades externas não afetem o funcionamento da aplicação.
+5. **Arquitetura em Camadas Desacopladas**: Separação clara entre Controllers, Services e Repositories, facilitando a execução de testes unitários com mocks e garantindo baixo acoplamento com o banco de dados.
 
-#### 🎭 Eventos (`/api/events`)
-- `GET /api/events` - Listagem pública de eventos publicados (com busca, filtros e paginação);
-- `GET /api/events/:id` - Detalhes de um evento específico;
-- `GET /api/events/organizer/my-events` - Eventos criados pelo organizador autenticado (`ORGANIZER`);
-- `POST /api/events` - Criação de evento (`ORGANIZER`);
-- `PUT /api/events/:id` - Edição de evento pelo organizador proprietário (`ORGANIZER`).
+> Para detalhes aprofundados sobre as decisões arquiteturais:
+> - 📄 [Backend DECISIONS.md](./backend/DECISIONS.md)
+> - 📄 [Frontend DECISIONS.md](./frontend/DECISIONS.md)
+> - 📄 [Processo de AI Pair Programming](./docs/ai-workflow/AI_PAIR_PROGRAMMING.md)
 
-#### 💳 Reservas, Pagamento Simulado & Cancelamento (`/api/reservations`)
-- `POST /api/reservations` - Compra com transação atômica e simulação de pagamento (`APPROVED` ou `REFUSED`) (`CLIENT`);
-- `GET /api/reservations/my-reservations` - Histórico completo de pedidos do cliente (`CLIENT`);
-- `GET /api/reservations/:id` - Detalhes de uma reserva específica (`CLIENT`);
-- `PATCH /api/reservations/:id/cancel` - Cancelamento de reserva com estorno seguro de ingressos e devolução ao estoque (`CLIENT`).
+## 🚀 Como Executar o Projeto
 
-#### 🎟️ Ingressos, Compartilhamento Seguro & Portaria (`/api/tickets`)
-- `GET /api/tickets/my-tickets` - Ingressos completos do cliente autenticado com QR Code Base64 (`CLIENT`);
-- `GET /api/tickets/share/:shareToken` - Consulta pública de comprovante de ingresso via link (retorna apenas dados de apresentação sem expor `code`, `qrSignature` ou `qrCodeUrl`);
-- `POST /api/tickets/validate` - Validação na portaria via câmera/código (`GATEKEEPER`).
-
-## 🎨 Detalhamento do Front-End
-
-### Estrutura de Pastas do Front-End
-```text
-frontend/
-├── src/
-│   ├── app/                                # Rotas e Páginas do Next.js (App Router)
-│   │   ├── layout.tsx                      # Layout raiz (Navbar, Footer, Tema Escuro Sólido)
-│   │   ├── page.tsx                        # Vitrine Pública com Busca e Filtros
-│   │   ├── login/page.tsx                  # Login com atalhos de preenchimento rápido em 1 clique
-│   │   ├── register/page.tsx               # Cadastro com seleção de perfil
-│   │   ├── events/[id]/page.tsx            # Detalhes do Evento & Checkout Simulado
-│   │   ├── my-tickets/page.tsx             # Área do Cliente (Cards Panorâmicos com QR Code e Grayscale)
-│   │   ├── my-reservations/page.tsx        # Histórico de Pedidos e Cancelamento com Modal
-│   │   ├── tickets/share/[shareToken]/     # Comprovante Oficial de Ingresso / Confirmação de Presença
-│   │   ├── organizer/events/page.tsx       # Painel de Métricas & Gestão do Organizador
-│   │   ├── organizer/events/new/page.tsx   # Assistente de Criação com TMDb & Ticketmaster
-│   │   └── gatekeeper/validate/page.tsx    # Validador da Portaria (Câmera ao vivo & Digitação)
-│   ├── components/
-│   │   ├── layout/                         # Componentes Estruturais (Navbar, Footer)
-│   │   └── ui/                             # Design System Sólido (Button, Input, Badge com dot, Modal)
-│   ├── services/
-│   │   └── api.ts                          # Cliente HTTP tipado com injeção automática de Bearer Token
-│   ├── stores/
-│   │   └── authStore.ts                    # Estado Global de Autenticação (Zustand com hidratação)
-│   ├── types/
-│   │   └── index.ts                        # Tipagens TypeScript completas
-│   └── utils/
-│       ├── cn.ts                           # Utilitário de classes condicionais Tailwind
-│       ├── constants.ts                    # Imagens de capa padrão e fallbacks
-│       └── formatters.ts                   # Formatadores de moeda (BRL), datas e badges
-├── __tests__/                              # Testes automatizados unitários e de componentes
-└── package.json
-```
-
-### Funcionalidades do Front-End
-1. **Vitrine & Busca Inteligente (`/`)**: Filtros dinâmicos por tipo (`Todos`, `Shows`, `Filmes`), busca com debounce e paginação;
-2. **Checkout Simulado com Prevenção de Overbooking (`/events/[id]`)**: Seleção de ingressos e escolha entre `Aprovar Pagamento` ou `Recusar Pagamento`;
-3. **Cancelamento com Estorno em Tempo Real (`/my-reservations`)**: Botão de cancelamento de reservas confirmadas com modal seguro e atualização instantânea;
-4. **Ingressos Digitais com QR Code (`/my-tickets`)**: QR Codes em Base64 Data URL na conta autenticada, botão para copiar link de compartilhamento e renderização de ingressos cancelados em preto e branco (`grayscale`);
-5. **Comprovante Público de Ingresso (`/tickets/share/[shareToken]`)**: Acesso público seguro sem login com confirmação de titularidade (sem expor QR Code nem código de entrada);
-6. **Assistente de Catálogo Inteligente (`/organizer/events/new`)**: Busca em APIs externas de cinema e música para auto-preenchimento;
-7. **Validação da Portaria (`/gatekeeper/validate`)**: Leitor óptico via câmera (`html5-qrcode`) e digitação manual.
-
-## 🚀 Como Executar o Projeto Localmente
-
-### 1. Pré-requisitos
+### Pré-requisitos
 - [Node.js](https://nodejs.org/) (versão 20 ou superior)
 - [Docker](https://www.docker.com/) e Docker Compose
 - [Git](https://git-scm.com/)
 
-### 2. Configurando e Iniciando o Back-End
+### 1. Clonar o Repositório
+```bash
+git clone https://github.com/ludson96/desafio-elite-dev.git
+cd desafio-elite-dev
+```
 
-1. Abra um terminal e clone o repositório:
+### 2. Configurar e Iniciar o Back-End
+
+1. Acesse o diretório do back-end:
    ```bash
-   git clone https://github.com/SEU-USUARIO/desafio-elite-dev.git
-   cd desafio-elite-dev/backend
+   cd backend
    ```
 
 2. Instale as dependências:
@@ -319,19 +338,17 @@ frontend/
    npm install
    ```
 
-3. Configure as variáveis de ambiente:
-   Copie o arquivo de exemplo:
+3. Configure o arquivo de variáveis de ambiente:
    ```bash
    cp .env.example .env
    ```
-   *(No Windows PowerShell: `Copy-Item .env.example .env`)*.
 
-4. Suba o banco de dados via Docker:
+4. Suba o banco de dados PostgreSQL via Docker:
    ```bash
    docker compose up -d
    ```
 
-5. Execute as migrações e o seed inicial:
+5. Execute as migrações do Prisma e popule a base de dados:
    ```bash
    npx prisma migrate dev
    npm run seed
@@ -341,13 +358,13 @@ frontend/
    ```bash
    npm run dev
    ```
-   A API estará rodando em: `http://localhost:3001` (Healthcheck: `http://localhost:3001/health`).
+   A API estará ativa em `http://localhost:3001` (Healthcheck: `http://localhost:3001/health`).
 
-### 3. Configurando e Iniciando o Front-End
+### 3. Configurar e Iniciar o Front-End
 
-1. Abra um **segundo terminal** e acesse a pasta do frontend:
+1. Em um **novo terminal**, acesse a pasta do front-end:
    ```bash
-   cd desafio-elite-dev/frontend
+   cd frontend
    ```
 
 2. Instale as dependências:
@@ -355,40 +372,35 @@ frontend/
    npm install
    ```
 
-3. Configure as variáveis de ambiente:
+3. Configure o arquivo de variáveis de ambiente:
    ```bash
    cp .env.example .env.local
    ```
-   *(No Windows PowerShell: `Copy-Item .env.example .env.local`)*.
 
-4. Inicie o Next.js:
+4. Inicie o servidor de desenvolvimento do Next.js:
    ```bash
    npm run dev
    ```
-   Acesse a aplicação no navegador: **[http://localhost:3000](http://localhost:3000)**.
+   Acesse a aplicação no navegador em **[http://localhost:3000](http://localhost:3000)**.
 
-## 🧪 Executando os Testes Automatizados
+### 4. Executando os Testes Automatizados
 
-O projeto possui **42 testes automatizados** cobrindo serviços, segurança, repositórios, API, testes de contrato e componentes de UI:
+O projeto conta com **42 testes automatizados** cobrindo regras de negócio, concorrência, contratos e componentes:
 
-- **Executar todos os testes (Monorepo)**:
+- **Todos os testes do Monorepo**:
   ```bash
   npm test
   ```
-
-- **Testes isolados do Back-End (25 testes)**:
+- **Testes do Back-End (25 testes)**:
   ```bash
-  cd backend
-  npm test
+  cd backend && npm test
+  ```
+- **Testes do Front-End (17 testes)**:
+  ```bash
+  cd frontend && npm test
   ```
 
-- **Testes isolados do Front-End (17 testes)**:
-  ```bash
-  cd frontend
-  npm test
-  ```
-
-## 🔮 Implementações Futuras & Roadmap
-
-- **Mapa Visual de Assentos (Seat Map Interativo)**: Evolução do modelo atual de capacidade numérica para suporte a matriz de poltronas numeradas (ex.: salas de cinema e teatros com filas/colunas), integrando reserva temporária com expiração automática (*lock* otimista por WebSocket/Redis);
-- **Refinamento Contínuo de Design & Microinterações**: Expansão do design system modular (*Bento Grid*) com animações de transição mais ricas e suporte a temas personalizáveis para organizadores.
+<div align="center">
+  Desenvolvido por <strong>Ludson Pereira dos Santos</strong> 🚀<br />
+  <a href="https://www.linkedin.com/in/ludson96/">LinkedIn</a> • <a href="https://github.com/ludson96">GitHub</a> • <a href="mailto:ludson_ps27@hotmail.com">E-mail</a>
+</div>
